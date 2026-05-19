@@ -51,7 +51,7 @@ export default function Home() {
           <h1 className="hero-h1">Your art.<br /><em>Your income.</em><br />Your circle.</h1>
           <p className="hero-sub">The platform where artists get booked, get paid, get professional and build communities.</p>
           <div className="hero-ctas">
-            <a href="#signup" className="btn btn-primary">Join as an artist</a>
+            <a href="/auth/signup" className="btn btn-primary">Join as an artist</a>
             <a href="#organiser" className="btn btn-secondary">I'm looking for talent</a>
           </div>
           <div className="hero-stats" >
@@ -81,7 +81,7 @@ export default function Home() {
               <li><span className="check">✓</span> Escrow: your money is safe before you even arrive</li>
               <li><span className="check">✓</span> YouTube, TikTok, Spotify: all in one portfolio</li>
             </ul>
-            <a href="#signup" className="btn btn-card-artist">Get my Circle profile →</a>
+            <a href="/auth/signup" className="btn btn-card-artist">Get my Circle profile →</a>
           </div>
 
           {/* Organiser card */}
@@ -97,7 +97,7 @@ export default function Home() {
               <li><span className="check">✓</span> Auto-generated contracts: Protect your payments and bookings</li>
               <li><span className="check">✓</span> From solo artists to full lineups: one platform</li>
             </ul>
-            <a href="#signup" className="btn btn-card-org">Find an artist →</a>
+            <a href="/auth/signup" className="btn btn-card-org">Find an artist →</a>
           </div>
         </div>
       </section>
@@ -209,8 +209,8 @@ export default function Home() {
           <h2 className="cta-h reveal" ref={addRef}>Your art<br />deserves a<br /><em>proper home.</em></h2>
           <p className="cta-sub reveal" ref={addRef}>Join the first 50 artists on The Circle. Build your profile, set your prices, and start getting booked: safely.</p>
           <div className="hero-ctas reveal" ref={addRef}>
-            <a href="#signup" className="btn btn-primary">Join as an artist: it's free</a>
-            <a href="#login" className="btn btn-secondary">Log in</a>
+            <a href="/auth/signup" className="btn btn-primary">Join as an artist — it's free</a>
+            <a href="/auth/login" className="btn btn-secondary">Log in</a>
           </div>
           <p className="cta-note">Get Professional. Get Paid!</p>
         </div>

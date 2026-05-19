@@ -1,0 +1,242 @@
+    <!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .step-indicator-active {
+      width: 48px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#f6f3f2",
+            "primary-container": "#0f6e56",
+            "on-error": "#ffffff",
+            "inverse-surface": "#313030",
+            "inverse-on-surface": "#f3f0ef",
+            "surface-container": "#f0eded",
+            "primary-fixed-dim": "#84d6b9",
+            "on-tertiary-fixed-variant": "#00513d",
+            "on-primary-fixed-variant": "#00513e",
+            "on-secondary-fixed-variant": "#693c00",
+            "secondary-container": "#feb56b",
+            "surface-variant": "#e5e2e1",
+            "on-tertiary-fixed": "#002117",
+            "surface-dim": "#dcd9d9",
+            "on-secondary": "#ffffff",
+            "background": "#fcf9f8",
+            "secondary": "#88520e",
+            "error-container": "#ffdad6",
+            "tertiary-fixed": "#8af7cf",
+            "on-tertiary-container": "#85f1ca",
+            "outline-variant": "#bec9c3",
+            "on-primary-fixed": "#002117",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed": "#2d1600",
+            "outline": "#6f7a74",
+            "secondary-fixed-dim": "#ffb870",
+            "tertiary-fixed-dim": "#6edab4",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#ffdcbe",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "on-secondary-container": "#774400",
+            "surface-container-highest": "#e5e2e1",
+            "primary-fixed": "#a0f3d4",
+            "tertiary": "#00543f",
+            "surface-container-high": "#eae7e7",
+            "surface": "#fcf9f8",
+            "tertiary-container": "#006f54",
+            "on-surface-variant": "#3f4944",
+            "on-primary-container": "#9aedcf",
+            "surface-tint": "#086b53",
+            "on-surface": "#1c1b1b",
+            "surface-bright": "#fcf9f8",
+            "on-error-container": "#93000a",
+            "primary": "#005440",
+            "inverse-primary": "#84d6b9",
+            "on-background": "#1c1b1b"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-mobile": "16px",
+            "xl": "80px",
+            "base": "8px",
+            "xs": "4px",
+            "lg": "48px",
+            "gutter": "24px",
+            "md": "24px",
+            "sm": "12px",
+            "margin-desktop": "64px"
+          },
+          "fontFamily": {
+            "body-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-mono": ["JetBrains Mono"],
+            "caption": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "label-mono": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+            "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+            "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+            "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+            "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<header class="w-full py-md px-margin-mobile md:px-margin-desktop flex justify-between items-center bg-transparent">
+<div class="flex items-center gap-xs">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]">fireplace</span>
+</div>
+<span class="font-headline-md text-headline-md tracking-tight text-primary">ArtHearth</span>
+</div>
+<div class="hidden md:flex items-center gap-sm">
+<span class="font-label-mono text-label-mono text-on-surface-variant">Step 2 of 4</span>
+<div class="flex gap-1">
+<div class="h-1.5 w-6 rounded-full bg-primary-container"></div>
+<div class="h-1.5 step-indicator-active rounded-full bg-primary-container"></div>
+<div class="h-1.5 w-6 rounded-full bg-surface-variant"></div>
+<div class="h-1.5 w-6 rounded-full bg-surface-variant"></div>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center px-margin-mobile py-lg md:py-xl">
+<div class="w-full max-w-[1100px] grid grid-cols-1 md:grid-cols-12 gap-gutter items-start">
+<!-- Visual Side -->
+<div class="hidden md:flex md:col-span-5 flex-col gap-md pr-md sticky top-xl">
+<div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-lg group">
+<img alt="Musician performing on stage" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGmY7zqCFZu_YrRtzFZQEbE3O55PCHTXM9k4vq-kBWD_64YywnaFbnNUFSy3xKwZ0SirvOE2gcc4KhVCVKuYFuONvRn4YhibqOkbCUtfp2YY6g6_t3BpohjesEEE-rOhmIatvTKvyUHQNiGD6Dxc_SBNDx6YomBRxRKYkwwmr40io0xZqdrtozDN0oNc242VoMBoc137hwvKnpNRAHeR3iXtFCagGCC8K9864qtqNjTtEOSPin8RMWPaMBGHrRvA7EIbAxvRRWu6Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent flex flex-col justify-end p-md">
+<p class="font-headline-md text-headline-md text-white">Share your complete offering.</p>
+</div>
+</div>
+<div class="p-md rounded-xl bg-primary-container/5 border border-primary-container/10">
+<p class="font-body-md text-body-md text-on-surface-variant italic">
+            "Your first product represents the heart of your craft. Set clear expectations to build immediate trust with your future clients."
+          </p>
+</div>
+</div>
+<!-- Form Side -->
+<div class="md:col-span-7 flex flex-col gap-lg">
+<div class="flex flex-col gap-sm">
+<span class="md:hidden font-label-mono text-label-mono text-primary font-bold uppercase tracking-widest">Step 2 of 4</span>
+<h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary leading-tight">Your Signature Product</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Define your core service. This single, comprehensive package will be your primary feature on ArtHearth.</p>
+</div>
+<form class="flex flex-col gap-md" onsubmit="event.preventDefault(); window.location.href='#';">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Art Form Core / Category -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant">Art Form Category</label>
+<select class="w-full px-md py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none transition-all font-body-md text-on-surface appearance-none">
+<option value="">Select Category</option>
+<option value="music">Live Music &amp; Performance</option>
+<option value="visual">Visual Arts &amp; Murals</option>
+<option value="digital">Digital Design</option>
+<option value="photography">Photography &amp; Film</option>
+<option value="workshop">Workshops &amp; Teaching</option>
+</select>
+</div>
+<!-- Package Name -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant">Package Name</label>
+<input class="w-full px-md py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none transition-all font-body-md text-on-surface" placeholder="e.g., Signature Performance" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Duration -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant">Duration / Unit</label>
+<input class="w-full px-md py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none transition-all font-body-md text-on-surface" placeholder="e.g., 60 mins, Full Day, Per Piece" type="text"/>
+</div>
+<!-- Price -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant">Price (UGX)</label>
+<div class="relative">
+<span class="absolute left-md top-1/2 -translate-y-1/2 font-label-mono text-on-surface-variant">UGX</span>
+<input class="w-full pl-xl pr-md py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none transition-all font-body-md text-on-surface" placeholder="0.00" type="number"/>
+</div>
+</div>
+</div>
+<!-- Package Inclusions -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant">Package Inclusions</label>
+<textarea class="w-full px-md py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none transition-all font-body-md text-on-surface min-h-[100px]" placeholder="e.g., Sound system, Setup, Post-processing, 2 Revisions (comma separated)"></textarea>
+<p class="text-caption text-on-surface-variant/70 mt-1">List everything the client gets with this price.</p>
+</div>
+<!-- Logistics -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant">Logistics (Transport &amp; Accommodation)</label>
+<div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant/30 w-full md:w-fit">
+<label class="flex-1 md:flex-none cursor-pointer">
+<input checked="" class="hidden peer" name="logistics" type="radio" value="inclusive"/>
+<div class="px-lg py-sm rounded-md text-center peer-checked:bg-primary-container peer-checked:text-white text-on-surface-variant transition-all font-medium">
+                  Inclusive
+                </div>
+</label>
+<label class="flex-1 md:flex-none cursor-pointer">
+<input class="hidden peer" name="logistics" type="radio" value="exclusive"/>
+<div class="px-lg py-sm rounded-md text-center peer-checked:bg-primary-container peer-checked:text-white text-on-surface-variant transition-all font-medium">
+                  Exclusive
+                </div>
+</label>
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-base flex flex-col md:flex-row gap-sm items-center">
+<button class="w-full md:w-auto px-xl py-sm bg-primary-container text-white font-bold rounded-lg hover:bg-primary-container/90 active:scale-[0.98] transition-all shadow-md" type="submit">
+              Continue to Gallery
+            </button>
+<button class="w-full md:w-auto px-md py-sm text-on-surface-variant font-medium hover:text-primary transition-colors" type="button">
+              I'll complete this later
+            </button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<footer class="mt-auto py-md border-t border-outline-variant/20">
+<div class="px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-sm">
+<span class="text-caption text-on-surface-variant/60">© 2024 ArtHearth. All artist rights reserved.</span>
+<div class="flex gap-md">
+<a class="text-caption text-on-surface-variant hover:text-primary" href="#">Need Help?</a>
+<a class="text-caption text-on-surface-variant hover:text-primary" href="#">Onboarding Guide</a>
+</div>
+</div>
+</footer>
+</body></html>

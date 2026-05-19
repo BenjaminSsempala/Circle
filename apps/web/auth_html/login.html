@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Join the Circle | ArtHearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f6f3f2",
+                    "primary-container": "#0f6e56",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#313030",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-container": "#f0eded",
+                    "primary-fixed-dim": "#84d6b9",
+                    "on-tertiary-fixed-variant": "#00513d",
+                    "on-primary-fixed-variant": "#00513e",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "secondary-container": "#feb56b",
+                    "surface-variant": "#e5e2e1",
+                    "on-tertiary-fixed": "#002117",
+                    "surface-dim": "#dcd9d9",
+                    "on-secondary": "#ffffff",
+                    "background": "#fcf9f8",
+                    "secondary": "#88520e",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#8af7cf",
+                    "on-tertiary-container": "#85f1ca",
+                    "outline-variant": "#bec9c3",
+                    "on-primary-fixed": "#002117",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#2d1600",
+                    "outline": "#6f7a74",
+                    "secondary-fixed-dim": "#ffb870",
+                    "tertiary-fixed-dim": "#6edab4",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#ffdcbe",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#774400",
+                    "surface-container-highest": "#e5e2e1",
+                    "primary-fixed": "#a0f3d4",
+                    "tertiary": "#00543f",
+                    "surface-container-high": "#eae7e7",
+                    "surface": "#fcf9f8",
+                    "tertiary-container": "#006f54",
+                    "on-surface-variant": "#3f4944",
+                    "on-primary-container": "#9aedcf",
+                    "surface-tint": "#086b53",
+                    "on-surface": "#1c1b1b",
+                    "surface-bright": "#fcf9f8",
+                    "on-error-container": "#93000a",
+                    "primary": "#005440",
+                    "inverse-primary": "#84d6b9",
+                    "on-background": "#1c1b1b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "xl": "80px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "sm": "12px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "body-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-mono": ["JetBrains Mono"],
+                    "caption": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-mono": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+        }
+        .image-side {
+            flex: 1;
+            position: relative;
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .image-side { display: block; }
+        }
+        .form-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 24px;
+            background-color: #fcf9f8;
+        }
+        .glass-effect {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface bg-background">
+<main class="auth-container">
+<!-- Left Side: Editorial Image -->
+<section class="image-side overflow-hidden">
+<div class="absolute inset-0 z-10 bg-gradient-to-t from-primary/60 to-transparent"></div>
+<img alt="East African Artist Performing" class="absolute inset-0 w-full h-full object-cover" data-alt="A warm, intimate editorial photograph of a professional East African female artist singing into a vintage microphone in a dimly lit studio. The lighting is golden and soft, reminiscent of a crackling fire at dusk. The background shows blurred acoustic panels and organic textures. The overall mood is soulful, credible, and culturally rich, utilizing a deep teal and amber color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsfxu0lBhBq7C2q16-LddUOIbJdzupDGAYxRgVisxCIEKHW5TM3G5WnTqrlKrUWw8cGYPEim20GLOsA2KbkRN975cy9ztjigpsn5nEvyjNOiuwhbOee0D3xngmk5ZwCg6XOV0xjJtVbY0gnEiaFzgC1a7JbLJKkZqK7zt8J6iNHHVJOo97dsEDdSOypspEDoaqjLI59ZbELQqtU3Urr6JZtIyH5y3VAkCDbVQNa88Mu9eYxNWCJbwQsadXOoDCYnCGxbrV2HbgE0"/>
+<!-- Branding Overlay -->
+<div class="absolute top-12 left-12 z-20">
+<h1 class="font-headline-md text-headline-md text-white tracking-tight">ArtHearth</h1>
+<p class="font-body-md text-body-md text-primary-fixed mt-2 opacity-90 max-w-xs">Connecting the pulse of East African creativity.</p>
+</div>
+<!-- Quote Overlay -->
+<div class="absolute bottom-12 left-12 right-12 z-20">
+<div class="glass-effect p-8 rounded-xl border border-white/20">
+<span class="material-symbols-outlined text-secondary-fixed text-4xl mb-4">format_quote</span>
+<p class="font-body-lg text-body-lg text-white italic">"ArtHearth is more than a platform; it's the digital fire where our stories are told and our crafts are honored."</p>
+<p class="font-label-mono text-label-mono text-secondary-fixed mt-4 uppercase tracking-widest">— Abdi K., Visual Poet</p>
+</div>
+</div>
+</section>
+<!-- Right Side: Auth Form -->
+<section class="form-side md:px-margin-desktop lg:px-32">
+<div class="max-w-md w-full mx-auto">
+<header class="mb-10 text-center md:text-left">
+<h2 class="font-headline-xl text-headline-xl text-primary mb-2" id="form-title">Join the Circle</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant" id="form-subtitle">Your professional home for your craft.</p>
+</header>
+<div class="space-y-4">
+<!-- OAuth Options -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 active:scale-95 shadow-sm">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzDT57qR6dc1IWADQGMfsiVrlEWUTHCkpMwyKnlhP-2Ad6hsuIdYLU3EfaFxMKKeHYfRc1gNtIuUbGU5BqD7OacZ63GnRkY5kHY87BDQcD_Q3h5yt3GmvLIdxgdluLXZpphLtU6s7lu3zK9krgXekFD_es4QfLWOAShqNlwzrlJ5zLekO2AMAokWvlyc34-ivGH2AxVFdapYzjFq25lk5OEh_9k9ZqZAJzWCPCvDhevx4GR8mia0wmvCeJuflafb5QKBGobJy8UJU"/>
+<span class="font-label-mono text-label-mono">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-on-surface">ios</span>
+<span class="font-label-mono text-label-mono">Apple</span>
+</button>
+</div>
+<div class="relative flex items-center py-4">
+<div class="flex-grow border-t border-outline-variant/30"></div>
+<span class="flex-shrink mx-4 font-caption text-caption text-outline">OR CONTINUE WITH EMAIL</span>
+<div class="flex-grow border-t border-outline-variant/30"></div>
+</div>
+<!-- Main Form -->
+<form class="space-y-5" id="auth-form" onsubmit="return false;">
+<div id="name-field">
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">FULL NAME</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="Amani Okafor" type="text"/>
+</div>
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="artist@arthearth.com" type="email"/>
+</div>
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">PASSWORD</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="••••••••" type="password"/>
+</div>
+<div class="flex items-start gap-3 py-2" id="terms-container">
+<input class="mt-1 rounded border-outline-variant text-primary focus:ring-primary" id="terms" type="checkbox"/>
+<label class="font-caption text-caption text-on-surface-variant" for="terms">
+                                I agree to the <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a class="text-primary hover:underline" href="#">Privacy Policy</a>.
+                            </label>
+</div>
+<button class="w-full py-4 rounded-xl bg-primary text-white font-headline-md text-headline-md hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/10" id="submit-btn">
+                            Create Account
+                        </button>
+</form>
+<!-- Toggle Mode -->
+<div class="pt-8 text-center">
+<p class="font-body-md text-body-md text-on-surface-variant" id="toggle-text">
+                            Already a member? 
+                            <button class="text-secondary font-bold hover:underline ml-1 transition-all" onclick="toggleAuthMode()">Log In</button>
+</p>
+</div>
+</div>
+<!-- Footer Links -->
+<footer class="mt-12 pt-8 border-t border-outline-variant/30 flex justify-between items-center">
+<span class="font-caption text-caption text-outline">© 2024 ArtHearth</span>
+<div class="flex gap-4">
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary" href="#">Support</a>
+<a class="font-caption text-caption text-on-surface-variant hover:text-primary" href="#">Contact</a>
+</div>
+</footer>
+</div>
+</section>
+</main>
+<script>
+        let isLogin = false;
+
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            const title = document.getElementById('form-title');
+            const subtitle = document.getElementById('form-subtitle');
+            const nameField = document.getElementById('name-field');
+            const termsContainer = document.getElementById('terms-container');
+            const submitBtn = document.getElementById('submit-btn');
+            const toggleText = document.getElementById('toggle-text');
+
+            if (isLogin) {
+                title.innerText = 'Welcome Back';
+                subtitle.innerText = 'Continue your creative journey.';
+                nameField.classList.add('hidden');
+                termsContainer.classList.add('hidden');
+                submitBtn.innerText = 'Log In';
+                toggleText.innerHTML = `New to the Circle? <button onclick="toggleAuthMode()" class="text-secondary font-bold hover:underline ml-1 transition-all">Sign Up</button>`;
+            } else {
+                title.innerText = 'Join the Circle';
+                subtitle.innerText = 'Your professional home for your craft.';
+                nameField.classList.remove('hidden');
+                termsContainer.classList.remove('hidden');
+                submitBtn.innerText = 'Create Account';
+                toggleText.innerHTML = `Already a member? <button onclick="toggleAuthMode()" class="text-secondary font-bold hover:underline ml-1 transition-all">Log In</button>`;
+            }
+            
+            // Fade-in animation effect
+            const form = document.getElementById('auth-form');
+            form.style.opacity = '0';
+            setTimeout(() => {
+                form.style.transition = 'opacity 0.4s ease';
+                form.style.opacity = '1';
+            }, 50);
+        }
+
+        // Add subtle hover lift to primary button
+        const btn = document.getElementById('submit-btn');
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'translateY(-2px)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'translateY(0)';
+        });
+    </script>
+</body></html>

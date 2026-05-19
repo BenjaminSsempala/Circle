@@ -1,0 +1,251 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Artist Onboarding - ArtHearth</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#0f6e56",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-container": "#f0eded",
+                        "primary-fixed-dim": "#84d6b9",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "on-primary-fixed-variant": "#00513e",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "secondary-container": "#feb56b",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed": "#002117",
+                        "surface-dim": "#dcd9d9",
+                        "on-secondary": "#ffffff",
+                        "background": "#fcf9f8",
+                        "secondary": "#88520e",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#8af7cf",
+                        "on-tertiary-container": "#85f1ca",
+                        "outline-variant": "#bec9c3",
+                        "on-primary-fixed": "#002117",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#2d1600",
+                        "outline": "#6f7a74",
+                        "secondary-fixed-dim": "#ffb870",
+                        "tertiary-fixed-dim": "#6edab4",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#ffdcbe",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#774400",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-fixed": "#a0f3d4",
+                        "tertiary": "#00543f",
+                        "surface-container-high": "#eae7e7",
+                        "surface": "#fcf9f8",
+                        "tertiary-container": "#006f54",
+                        "on-surface-variant": "#3f4944",
+                        "on-primary-container": "#9aedcf",
+                        "surface-tint": "#086b53",
+                        "on-surface": "#1c1b1b",
+                        "surface-bright": "#fcf9f8",
+                        "on-error-container": "#93000a",
+                        "primary": "#005440",
+                        "inverse-primary": "#84d6b9",
+                        "on-background": "#1c1b1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-mono": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .form-input-focus:focus {
+            outline: none;
+            border-color: #5DCAA5;
+            box-shadow: 0 0 0 4px rgba(93, 202, 165, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Anchor (Shared Component suppressed as per task instructions for focused journey) -->
+<header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center">
+<div class="font-headline-md text-headline-md text-primary tracking-tight">Circle</div>
+<div class="hidden md:flex items-center gap-base">
+<span class="font-label-mono text-label-mono text-primary bg-primary-container/10 px-3 py-1 rounded-full">Step 1 of 4</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</header>
+<main class="min-h-screen pt-[120px] pb-xl flex items-center justify-center">
+<div class="w-full max-w-2xl px-margin-mobile">
+<!-- Mobile Step Indicator -->
+<div class="md:hidden mb-gutter text-center">
+<span class="font-label-mono text-label-mono text-primary bg-primary-container/10 px-3 py-1 rounded-full">Step 1 of 4</span>
+</div>
+<!-- Onboarding Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-primary-container/10 p-md md:p-lg">
+<div class="mb-lg text-center md:text-left">
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Claim your space</h1>
+<p class="text-on-surface-variant font-body-md">Tell us who you are. This information will help us build your own webpage</p>
+</div>
+<form class="space-y-gutter" id="onboarding-form">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Full Name -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant" for="fullname">Full Name</label>
+<input class="w-full bg-surface-container-low border-outline-variant/30 rounded-lg p-3 font-body-md form-input-focus transition-all" id="fullname" placeholder="Amani Okafor" required="" type="text">
+</div>
+<!-- Pronouns -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant" for="pronouns">Profile tags</label>
+<input class="w-full bg-surface-container-low border-outline-variant/30 rounded-lg p-3 font-body-md form-input-focus transition-all" id="pronouns" placeholder="They/Them" type="text">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Primary Art Form -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant" for="artform">Primary Art Form</label>
+<select class="w-full bg-surface-container-low border-outline-variant/30 rounded-lg p-3 font-body-md form-input-focus transition-all appearance-none cursor-pointer" id="artform">
+<option disabled="" selected="" value="">Select your craft</option>
+<option value="poet">Poet</option>
+<option value="musician">Musician</option>
+<option value="painter">Visual Artist</option>
+<option value="sculptor">Sculptor</option>
+<option value="dancer">Dancer</option>
+<option value="digital">Digital Media</option>
+</select>
+</div>
+<!-- City -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant" for="city">City</label>
+<input class="w-full bg-surface-container-low border-outline-variant/30 rounded-lg p-3 font-body-md form-input-focus transition-all" id="city" placeholder="Nairobi" required="" type="text">
+</div>
+</div>
+<!-- Tagline -->
+<div class="flex flex-col gap-xs">
+<div class="flex justify-between items-center">
+<label class="font-label-mono text-label-mono text-on-surface-variant" for="tagline">Your story, Bio or description</label>
+<span class="font-label-mono text-caption text-on-surface-variant" id="word-count">0/12 words</span>
+</div>
+<textarea class="w-full bg-surface-container-low border-outline-variant/30 rounded-lg p-3 font-body-md form-input-focus transition-all resize-none" id="tagline" maxlength="150" placeholder="Bridging ancestral rhythms with modern jazz through the strings of an nyatiti." rows="2"></textarea>
+<p class="text-caption text-on-surface-variant mt-1 italic">Make it resonant. This will be your primary greeting to the community.</p>
+</div>
+<!-- Navigation Action -->
+<div class="pt-base flex justify-end">
+<button class="group relative overflow-hidden flex items-center gap-2 bg-primary text-on-primary font-body-md px-lg py-3 rounded-lg shadow-sm hover:shadow-md active:scale-95 transition-all duration-200" type="submit">
+<span class="">Continue</span>
+<span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- High Trust Aesthetic Element -->
+<div class="mt-gutter flex flex-col md:flex-row items-center justify-between gap-base opacity-60">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]" data-weight="fill">verified_user</span>
+<span class="font-caption text-caption">Your data stays within the ArtHearth circle.</span>
+</div>
+
+</div>
+</div>
+</main>
+<!-- Background Decorative Element (Subtle Warm Modernism) -->
+<div class="fixed top-0 right-0 -z-10 w-1/3 h-1/2 bg-gradient-to-bl from-primary-fixed-dim/10 to-transparent blur-3xl"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-1/4 h-1/3 bg-gradient-to-tr from-secondary-fixed/10 to-transparent blur-3xl"></div>
+<script>
+        // Micro-interaction for Word Counter
+        const tagline = document.getElementById('tagline');
+        const wordCountDisplay = document.getElementById('word-count');
+
+        tagline.addEventListener('input', (e) => {
+            const text = e.target.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            
+            wordCountDisplay.textContent = `${words}/12 words`;
+            
+            if (words > 12) {
+                wordCountDisplay.classList.add('text-error');
+                wordCountDisplay.classList.remove('text-on-surface-variant');
+            } else {
+                wordCountDisplay.classList.remove('text-error');
+                wordCountDisplay.classList.add('text-on-surface-variant');
+            }
+        });
+
+        // Form Submission Interaction
+        document.getElementById('onboarding-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">progress_activity</span><span>Preparing Step 2...</span>`;
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert('Profile details saved. Moving to portfolio setup.');
+                window.location.reload(); // Placeholder for next step
+            }, 1200);
+        });
+
+        // Focus ring color shift for inputs
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').style.color = '#005440';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').style.color = '';
+            });
+        });
+    </script>
+
+
+</body></html>
