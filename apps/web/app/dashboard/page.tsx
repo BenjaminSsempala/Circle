@@ -1,24 +1,45 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import '../auth/auth.css';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const userEmail = typeof window !== 'undefined' ? sessionStorage.getItem('userEmail') : '';
+  const { user, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/auth/login');
+  };
+
+  const handleResetOnboarding = async () => {
+    try {
+      const res = await fetch('/api/auth/reset-onboarding', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert('Onboarding reset! Redirecting to onboarding page...');
+        router.push('/onboarding/artist');
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (err) {
+      alert('Error resetting onboarding: ' + err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-surface border-b border-outline-variant/30 px-margin-mobile md:px-margin-desktop py-md">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
+          
+          <Link href="/" className="text-headline-md font-headline-md text-primary tracking-tight">
+            Circle
+          </Link>
           <button
-            onClick={() => {
-              sessionStorage.clear();
-              router.push('/');
-            }}
+            onClick={handleLogout}
             className="text-body-md font-body-md text-on-surface hover:text-primary transition-colors"
           >
             Log out
@@ -33,7 +54,7 @@ export default function DashboardPage() {
               Welcome back! 👋
             </h1>
             <p className="text-body-lg font-body-lg text-on-surface-variant">
-              {userEmail ? `Logged in as ${userEmail}` : 'Your Circle dashboard'}
+              {user?.full_name ? `Logged in as ${user.full_name}` : 'Your Circle dashboard'}
             </p>
           </div>
 
@@ -104,6 +125,12 @@ export default function DashboardPage() {
               >
                 Onboarding
               </Link>
+              <button
+                onClick={handleResetOnboarding}
+                className="bg-error text-on-error px-lg py-2 rounded-lg hover:opacity-90 transition-all text-body-md font-body-md"
+              >
+                Reset Onboarding (for testing)
+              </button>
             </div>
           </div>
         </div>

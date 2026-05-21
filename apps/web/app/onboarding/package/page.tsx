@@ -1,11 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 import '../../auth/auth.css';
 
 export default function PackageOnboardingPage() {
   const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (loading) return; // Wait for auth state to load
+    
+    if (!user) {
+      // Not authenticated - need to sign up
+      router.push('/auth/signup');
+      return;
+    }
+
+    if (user.onboarding_complete) {
+      // Already completed onboarding - go to dashboard
+      router.push('/dashboard');
+      return;
+    }
+
+    // Allow access if:
+    // 1. Role is 'artist' (already selected)
+    // 2. Role is null/undefined but not yet onboarded (in process of selecting role)
+    // 3. Role is 'organiser' - reject to their onboarding page
+    if (user.role === 'organiser') {
+      router.push('/onboarding/organiser');
+      return;
+    }
+
+    // Otherwise allow (role === 'artist' or role === null/undefined)
+  }, [user, loading, router]);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="text-body-lg font-body-lg text-on-surface-variant">Loading...</div></div>;
+  if (!user || user.onboarding_complete || (user.role && user.role !== 'artist')) return null;
   const [formData, setFormData] = useState({
     packageName: '',
     description: '',

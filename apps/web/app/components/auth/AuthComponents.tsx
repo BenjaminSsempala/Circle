@@ -44,3 +44,34 @@ export const OAuthButton = ({
     </button>
   );
 };
+
+export const GoogleButton = ({
+  onClick,
+  disabled = false,
+  label = 'Sign up with Google',
+}: {
+  onClick?: () => void;
+  disabled?: boolean;
+  label?: string;
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <span className="text-lg">🔍</span>
+      <span className="text-label-mono font-label-mono">{label}</span>
+    </button>
+  );
+};
+
+export const ErrorBanner = ({ message }: { message?: string }) => {
+  if (!message) return null;
+
+  return (
+    <div className="w-full bg-error-container text-on-error-container px-4 py-3 rounded-lg border border-error mb-4">
+      <p className="text-sm font-medium">{message}</p>
+    </div>
+  );
+};

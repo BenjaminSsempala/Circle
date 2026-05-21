@@ -34,8 +34,8 @@ export default function Home() {
         <div className="nav-logo">The Circle</div>
         <div className="nav-links">
           <a href="#how">How it works</a>
-          <a href="#login" className="btn-nav-ghost">Log in</a>
-          <a href="#signup" className="btn-nav-primary">Join free</a>
+          <a href="/auth/login" className="btn-nav-ghost">Log in</a>
+          <a href="/auth/signup" className="btn-nav-primary">Join free</a>
         </div>
       </nav>
 

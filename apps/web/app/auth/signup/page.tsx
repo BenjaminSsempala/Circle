@@ -1,186 +1,298 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/app/context/AuthContext';
 import { AuthLayout } from '../../components/auth/AuthLayout';
-import { OAuthButton } from '../../components/auth/AuthComponents';
-import '../auth.css'; 
+import { GoogleButton, ErrorBanner } from '../../components/auth/AuthComponents';
+import '../auth.css';
+
+type Step = 'credentials' | 'email-confirmation' | 'role';
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    termsAccepted: false,
-  });
-  const [step, setStep] = useState<'auth' | 'role'>('auth');
+  const router       = useRouter();
+  const { refetchProfile } = useAuth();
+  const searchParams = useSearchParams();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
+  // If arriving from Google OAuth callback without a role yet
+  const initialStep: Step = searchParams.get('step') === 'role' ? 'role' : 'credentials';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [step, setStep]         = useState<Step>(initialStep);
+  const [name, setName]         = useState('');
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [terms, setTerms]       = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState<string | null>(null);
+
+  // Step 1 — create account with email + password
+  async function handleCreateAccount(e: React.FormEvent) {
     e.preventDefault();
+    if (!terms) { setError('Please accept the Terms of Service to continue.'); return; }
+    setError(null);
+    setLoading(true);
 
-    // Frontend-only validation
-    if (!formData.name || !formData.email || !formData.password || !formData.termsAccepted) {
-      alert('Please fill all fields and accept terms');
-      return;
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, fullName: name }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Signup failed');
+        setLoading(false);
+        return;
+      }
+
+      // Move to email confirmation step
+      setStep('email-confirmation');
+      setLoading(false);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      setLoading(false);
     }
+  }
 
-    // Simulate API call - if true, skip wait and progress
-    if (true) {
-      // Bypass API, go to role selection
+  // Step 2 — check if email is confirmed, then proceed to role
+  async function handleCheckEmailConfirmation() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/auth/me', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        setError('Please confirm your email address first. Check your inbox for a confirmation link.');
+        setLoading(false);
+        return;
+      }
+
+      // Email is confirmed, proceed to role selection
       setStep('role');
+      setLoading(false);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      setLoading(false);
     }
-  };
+  }
 
-  const handleRoleSelect = (role: 'artist' | 'organiser') => {
-    // Store role and redirect to appropriate onboarding
-    sessionStorage.setItem('userRole', role);
-    sessionStorage.setItem('userEmail', formData.email);
+  // Resend confirmation email
+  async function handleResendEmail() {
+    setLoading(true);
+    setError(null);
 
-    // Frontend flag - immediate progression without API
-    if (true) {
-      router.push('/onboarding/artist');
+    try {
+      const res = await fetch('/api/auth/resend-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Failed to resend email');
+        setLoading(false);
+        return;
+      }
+
+      // Show success message
+      setError(null);
+      alert('Confirmation email resent! Check your inbox.');
+      setLoading(false);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      setLoading(false);
     }
-  };
+  }
+
+  // Step 3 — write role to profiles table, then route to onboarding
+  async function handleRoleSelect(role: 'artist' | 'organiser') {
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('Setting role to:', role);
+      
+      const res = await fetch('/api/auth/role', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role, fullName: name }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Failed to set role');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      console.log('Role set successfully. API response:', data);
+      
+      // Refresh profile in AuthContext so onboarding pages see the updated role
+      console.log('Calling refetchProfile...');
+      await refetchProfile();
+      
+      // Small delay to ensure context updates
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      console.log('Redirecting to:', data.redirectTo);
+      router.push(data.redirectTo);
+    } catch (err) {
+      console.error('Error in handleRoleSelect:', err);
+      setError('An error occurred. Please try again.');
+      setLoading(false);
+    }
+  }
 
   return (
     <AuthLayout
-      title={step === 'auth' ? 'Join the Circle' : 'What brings you here?'}
-      subtitle={
-        step === 'auth'
-          ? 'Your professional home for your craft.'
-          : 'Let us know your role so we can personalize your experience.'
+      title={
+        step === 'credentials'
+          ? 'Join the Circle'
+          : step === 'email-confirmation'
+          ? 'Confirm Your Email'
+          : 'What brings you here?'
       }
-      showImage={true}
+      subtitle={
+        step === 'credentials'
+          ? 'Your professional home for your craft.'
+          : step === 'email-confirmation'
+          ? `We've sent a confirmation link to ${email}. Click the link to verify your email.`
+          : 'This helps us personalise your experience.'
+      }
+      showImage
     >
-      {step === 'auth' ? (
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* OAuth Options */}
-          <div className="grid grid-cols-2 gap-4">
-            <OAuthButton provider="google" />
-            <OAuthButton provider="apple" />
-          </div>
+      {error && <ErrorBanner message={error} />}
+
+      {step === 'credentials' ? (
+        <form onSubmit={handleCreateAccount} className="space-y-5">
+          <GoogleButton label="Sign up with Google" />
 
           <div className="relative flex items-center py-4">
-            <div className="flex-grow border-t border-outline-variant/30"></div>
-            <span className="flex-shrink mx-4 text-caption font-caption text-outline">
-              OR CONTINUE WITH EMAIL
-            </span>
-            <div className="flex-grow border-t border-outline-variant/30"></div>
+            <div className="flex-grow border-t border-outline-variant/30" />
+            <span className="flex-shrink mx-4 text-caption font-caption text-outline">OR CONTINUE WITH EMAIL</span>
+            <div className="flex-grow border-t border-outline-variant/30" />
           </div>
 
-          {/* Form Fields */}
           <div>
-            <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">
-              FULL NAME
-            </label>
+            <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">FULL NAME</label>
             <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Amani Okafor"
-              className="w-full"
-              required
+              type="text" value={name} onChange={e => setName(e.target.value)}
+              placeholder="Amani Okafor" className="w-full" required
             />
           </div>
 
           <div>
-            <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">
-              EMAIL ADDRESS
-            </label>
+            <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="artist@circle.com"
-              className="w-full"
-              required
+              type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="artist@circle.com" className="w-full" required
             />
           </div>
 
           <div>
-            <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">
-              PASSWORD
-            </label>
+            <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">PASSWORD</label>
             <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="••••••••"
-              className="w-full"
-              required
+              type="password" value={password} onChange={e => setPassword(e.target.value)}
+              placeholder="Min 8 characters" minLength={8} className="w-full" required
             />
           </div>
 
           <div className="flex items-start gap-3 py-2">
             <input
-              type="checkbox"
-              id="terms"
-              name="termsAccepted"
-              checked={formData.termsAccepted}
-              onChange={handleInputChange}
+              type="checkbox" id="terms" checked={terms} onChange={e => setTerms(e.target.checked)}
               className="mt-1 rounded border-outline-variant text-primary"
             />
             <label htmlFor="terms" className="text-caption font-caption text-on-surface-variant">
               I agree to the{' '}
-              <Link href="#" className="text-primary hover:underline">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link href="#" className="text-primary hover:underline">
-                Privacy Policy
-              </Link>
-              .
+              <Link href="#" className="text-primary hover:underline">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>.
             </label>
           </div>
 
           <button
-            type="submit"
-            className="w-full py-4 rounded-xl bg-primary text-white text-headline-md font-headline-md hover:opacity-90 transition-all shadow-lg shadow-primary/10"
+            type="submit" disabled={loading || !name || !email || password.length < 8 || !terms}
+            className="w-full py-4 rounded-xl bg-primary text-white text-headline-md font-headline-md hover:opacity-90 transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Account
+            {loading ? 'Creating account…' : 'Create Account'}
           </button>
 
-          <div className="text-center text-body-md font-body-md text-on-surface-variant">
+          <p className="text-center text-body-md font-body-md text-on-surface-variant">
             Already have an account?{' '}
-            <Link href="/auth/login" className="text-primary hover:underline font-semibold">
-              Log in
-            </Link>
-          </div>
+            <Link href="/auth/login" className="text-primary hover:underline font-semibold">Log in</Link>
+          </p>
         </form>
+      ) : step === 'email-confirmation' ? (
+        <div className="space-y-6 text-center">
+          <div className="py-6">
+            <div className="text-5xl mb-4">✉️</div>
+            <p className="text-body-md font-body-md text-on-surface-variant mb-4">
+              Please check your inbox and click the confirmation link we sent to <strong>{email}</strong>.
+            </p>
+            <p className="text-caption font-caption text-on-surface-variant mb-4">
+              Didn't receive it? Check your spam folder.
+            </p>
+          </div>
+
+          <button
+            onClick={handleCheckEmailConfirmation}
+            disabled={loading}
+            className="w-full py-4 rounded-xl bg-primary text-white text-headline-md font-headline-md hover:opacity-90 transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Checking confirmation…' : 'Email Confirmed?'}
+          </button>
+
+          <button
+            onClick={handleResendEmail}
+            disabled={loading}
+            className="w-full py-4 rounded-xl border border-outline-variant text-on-surface-variant text-headline-md font-headline-md hover:bg-surface-container-low transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Resending…' : 'Resend Confirmation Email'}
+          </button>
+
+          <button
+            onClick={() => setStep('credentials')}
+            disabled={loading}
+            className="w-full py-4 rounded-xl border border-outline-variant text-on-surface-variant text-headline-md font-headline-md hover:bg-surface-container-low transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Go Back
+          </button>
+        </div>
       ) : (
         <div className="space-y-4">
           <button
-            onClick={() => handleRoleSelect('artist')}
-            className="w-full p-6 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all text-left"
+            onClick={() => handleRoleSelect('artist')} disabled={loading}
+            className="w-full p-6 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all text-left disabled:opacity-50"
           >
-            <h3 className="text-headline-md font-headline-md text-primary mb-2">I'm an Artist</h3>
+            <div className="text-2xl mb-2">🎤</div>
+            <h3 className="text-headline-md font-headline-md text-primary mb-1">I'm an Artist</h3>
             <p className="text-body-md font-body-md text-on-surface-variant">
-              Get booked, get paid, and build your portfolio
+              Build my profile, list my packages, get booked safely
             </p>
           </button>
 
           <button
-            onClick={() => handleRoleSelect('organiser')}
-            className="w-full p-6 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all text-left"
+            onClick={() => handleRoleSelect('organiser')} disabled={loading}
+            className="w-full p-6 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all text-left disabled:opacity-50"
           >
-            <h3 className="text-headline-md font-headline-md text-primary mb-2">I'm an Organizer</h3>
+            <div className="text-2xl mb-2">🎪</div>
+            <h3 className="text-headline-md font-headline-md text-primary mb-1">I'm an Organiser</h3>
             <p className="text-body-md font-body-md text-on-surface-variant">
-              Find and book vetted talent for your events
+              Find and book vetted talent for my events
             </p>
           </button>
+
+          {loading && (
+            <p className="text-center text-sm text-on-surface-variant animate-pulse">Setting up your account…</p>
+          )}
         </div>
       )}
     </AuthLayout>

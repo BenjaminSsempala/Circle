@@ -1,114 +1,97 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AuthLayout } from '../../components/auth/AuthLayout';
-import { OAuthButton } from '../../components/auth/AuthComponents';
+import { GoogleButton, ErrorBanner } from '../../components/auth/AuthComponents';
 import '../auth.css';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const router       = useRouter();
+  const searchParams = useSearchParams();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState<string | null>(
+    searchParams.get('error') ? 'There was a problem signing in. Please try again.' : null,
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-    if (!formData.email || !formData.password) {
-      alert('Please fill all fields');
-      return;
-    }
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Frontend-only flag - skip API wait
-    if (true) {
-      sessionStorage.setItem('userEmail', formData.email);
-      // Redirect to dashboard
-      router.push('/dashboard');
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Login failed');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      router.push(data.redirectTo);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      setLoading(false);
     }
-  };
+  }
 
   return (
-    <AuthLayout
-      title="Welcome Back"
-      subtitle="Log in to your Circle profile."
-      showImage={true}
-    >
+    <AuthLayout title="Welcome Back" subtitle="Log in to your Circle profile." showImage>
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* OAuth Options */}
-        <div className="grid grid-cols-2 gap-4">
-          <OAuthButton provider="google" />
-          <OAuthButton provider="apple" />
-        </div>
+
+        {error && <ErrorBanner message={error} />}
+
+        <GoogleButton label="Continue with Google" />
 
         <div className="relative flex items-center py-4">
-          <div className="flex-grow border-t border-outline-variant/30"></div>
-          <span className="flex-shrink mx-4 text-caption font-caption text-outline">
-            OR CONTINUE WITH EMAIL
-          </span>
-          <div className="flex-grow border-t border-outline-variant/30"></div>
+          <div className="flex-grow border-t border-outline-variant/30" />
+          <span className="flex-shrink mx-4 text-caption font-caption text-outline">OR CONTINUE WITH EMAIL</span>
+          <div className="flex-grow border-t border-outline-variant/30" />
         </div>
 
-        {/* Form Fields */}
         <div>
-          <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">
-            EMAIL ADDRESS
-          </label>
+          <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
           <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="artist@circle.com"
-            className="w-full"
-            required
+            type="email" value={email} onChange={e => setEmail(e.target.value)}
+            placeholder="artist@circle.com" className="w-full" required
           />
         </div>
 
         <div>
-          <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">
-            PASSWORD
-          </label>
+          <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">PASSWORD</label>
           <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            placeholder="••••••••"
-            className="w-full"
-            required
+            type="password" value={password} onChange={e => setPassword(e.target.value)}
+            placeholder="••••••••" className="w-full" required
           />
         </div>
 
         <div className="text-right">
-          <Link href="#" className="text-primary text-body-md font-body-md hover:underline">
+          <Link href="/auth/reset-password" className="text-primary text-body-md font-body-md hover:underline">
             Forgot password?
           </Link>
         </div>
 
         <button
-          type="submit"
-          className="w-full py-4 rounded-xl bg-primary text-white text-headline-md font-headline-md hover:opacity-90 transition-all shadow-lg shadow-primary/10"
+          type="submit" disabled={loading || !email || !password}
+          className="w-full py-4 rounded-xl bg-primary text-white text-headline-md font-headline-md hover:opacity-90 transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Log In
+          {loading ? 'Logging in…' : 'Log In'}
         </button>
 
-        <div className="text-center text-body-md font-body-md text-on-surface-variant">
+        <p className="text-center text-body-md font-body-md text-on-surface-variant">
           Don't have an account?{' '}
-          <Link href="/auth/signup" className="text-primary hover:underline font-semibold">
-            Sign up
-          </Link>
-        </div>
+          <Link href="/auth/signup" className="text-primary hover:underline font-semibold">Sign up</Link>
+        </p>
       </form>
     </AuthLayout>
   );

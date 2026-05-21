@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import '../../auth/auth.css';
 
 export default function ArtistOnboardingPage() {
   const router = useRouter();
+  const { user, loading, session, refetchProfile } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     tags: '',
@@ -15,6 +17,68 @@ export default function ArtistOnboardingPage() {
     bio: '',
   });
   const [wordCount, setWordCount] = useState(0);
+
+  // Redirect if not authenticated, already onboarded, or wrong role
+  useEffect(() => {
+    console.log('ArtistOnboarding check:', { user, session: !!session, loading });
+    
+    if (loading) return; // Wait for auth state to load
+    
+    // If no user but session exists, wait for subscription to load profile
+    if (!user && session) {
+      console.log('Session exists but profile not loaded yet, waiting...');
+      return;
+    }
+
+    // No user AND no session = not authenticated
+    if (!user && !session) {
+      console.log('Not authenticated, redirecting to signup');
+      router.push('/auth/signup');
+      return;
+    }
+
+    // User exists but no role = not finished role selection
+    if (user && !user.role) {
+      console.log('User has no role, redirecting to role selection');
+      router.push('/auth/signup?step=role');
+      return;
+    }
+
+    // User completed onboarding already
+    if (user && user.onboarding_complete) {
+      console.log('Onboarding already complete, redirecting to dashboard');
+      router.push('/dashboard');
+      return;
+    }
+
+    // User is organiser, not artist
+    if (user && user.role === 'organiser') {
+      console.log('User is organiser, redirecting to organiser onboarding');
+      router.push('/onboarding/organiser');
+      return;
+    }
+
+    console.log('Allowing access to artist onboarding page');
+  }, [user, session, loading, router]);
+
+
+// Show loading state while auth is initializing
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-body-lg font-body-lg text-on-surface-variant">Loading...</div>
+    </div>
+  );
+}
+
+// Show nothing while waiting for profile to load (session exists but user not yet populated)
+if (!user && session) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-body-lg font-body-lg text-on-surface-variant">Authenticating...</div>
+    </div>
+  );
+}
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
