@@ -26,133 +26,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Use a ref to keep the Supabase client stable across renders
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    // Timeout to ensure loading completes within 5 seconds
-    const loadingTimeout = setTimeout(() => {
-      if (isMounted) {
-        console.warn('AuthContext: Loading timeout reached, forcing loading to false');
-        setLoading(false);
-      }
-    }, 5000);
-
-    // Handle all auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        console.log(`AuthContext: [${event}] triggered, session:`, newSession ? 'yes' : 'no');
-        
-        if (!isMounted) return;
-        
-        clearTimeout(loadingTimeout);
-        setSession(newSession);
-
-        if (newSession?.user) {
-          try {
-            console.log('AuthContext: Loading profile for user:', newSession.user.id);
-            const { data: profile, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', newSession.user.id)
-              .maybeSingle();
-            
-            if (!isMounted) return;
-            
-            if (error) {
-              console.error('AuthContext: Error loading profile:', error);
-              // Create empty user on error
-              setUser({
-                id: newSession.user.id,
-                full_name: newSession.user.user_metadata?.full_name || '',
-                role: undefined,
-                onboarding_complete: false,
-              });
-            } else if (profile) {
-              console.log('AuthContext: Profile loaded:', profile.role);
-              setUser({
-                id: profile.id,
-                full_name: profile.full_name || '',
-                role: profile.role || undefined,
-                onboarding_complete: profile.onboarding_complete || false,
-              });
-            } else {
-              console.log('AuthContext: No profile row, creating empty user');
-              setUser({
-                id: newSession.user.id,
-                full_name: newSession.user.user_metadata?.full_name || '',
-                role: undefined,
-                onboarding_complete: false,
-              });
-            }
-          } catch (err) {
-            console.error('AuthContext: Exception loading profile:', err);
-            // Still create user even on exception
-            setUser({
-              id: newSession.user.id,
-              full_name: newSession.user.user_metadata?.full_name || '',
-              role: undefined,
-              onboarding_complete: false,
-            });
-          }
-        } else {
-          console.log('AuthContext: No user in session');
-          setUser(null);
-        }
-
-        // Always complete loading (after profile is loaded or errored)
-        if (isMounted) {
-          console.log('AuthContext: Setting loading to false');
-          setLoading(false);
-        }
-      }
-    );
-
-    return () => {
-      isMounted = false;
-      clearTimeout(loadingTimeout);
-      subscription?.unsubscribe();
-    };
-  }, []);
-
-
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.error('Error during signOut:', err);
-    } finally {
-      // Always clear auth state, regardless of signOut success/failure
+  /**
+   * Helper function to fetch profile data and update state.
+   * This ensures consistent behavior between initial load and auth changes.
+   */
+  const loadUserData = async (currentSession: Session | null) => {
+    if (!currentSession?.user) {
+      console.log('AuthContext: No session found, clearing user state.');
       setSession(null);
       setUser(null);
       setLoading(false);
-    }
-  };
-
-  const refetchProfile = async () => {
-    // Get user ID from current session in state
-    if (!session?.user?.id) {
-      console.log('refetchProfile: No session, skipping');
       return;
     }
 
+    setSession(currentSession);
+    const userId = currentSession.user.id;
+
     try {
-      console.log('refetchProfile: Fetching profile for', session.user.id);
+      console.log('AuthContext: Fetching profile for:', userId);
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', session.user.id)
+        .eq('id', userId)
         .maybeSingle();
-      
+
       if (error) {
-        console.error('refetchProfile: Error:', error);
-        return;
-      }
-      
-      if (profile) {
-        console.log('refetchProfile: Profile loaded:', profile.role);
+        console.error('AuthContext: Error fetching profile:', error);
+        // Fallback to basic user info from session metadata if DB fetch fails
+        setUser({
+          id: userId,
+          full_name: currentSession.user.user_metadata?.full_name || '',
+          role: undefined,
+          onboarding_complete: false,
+        });
+      } else if (profile) {
+        console.log('AuthContext: Profile loaded with role:', profile.role);
         setUser({
           id: profile.id,
           full_name: profile.full_name || '',
@@ -160,10 +73,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           onboarding_complete: profile.onboarding_complete || false,
         });
       } else {
-        console.log('refetchProfile: No profile found');
+        console.log('AuthContext: No profile row found in DB.');
+        setUser({
+          id: userId,
+          full_name: currentSession.user.user_metadata?.full_name || '',
+          role: undefined,
+          onboarding_complete: false,
+        });
       }
     } catch (err) {
-      console.error('refetchProfile: Exception:', err);
+      console.error('AuthContext: Unexpected error during profile load:', err);
+    } finally {
+      // CRITICAL: Always stop loading regardless of success/fail
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // 1. Initial Kickstart: Check session immediately on mount
+    const initializeAuth = async () => {
+      console.log('AuthContext: Performing initial session check...');
+      const { data: { session: initialSession } } = await supabase.auth.getSession();
+      if (isMounted) {
+        await loadUserData(initialSession);
+      }
+    };
+
+    initializeAuth();
+
+    // 2. Listener: Handle login, logout, and token refreshes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        console.log(`AuthContext: [${event}] triggered.`);
+        
+        if (!isMounted) return;
+
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          await loadUserData(newSession);
+        } else if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setUser(null);
+          setLoading(false);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('AuthContext: Error during signOut:', err);
+    } finally {
+      // Immediate UI cleanup
+      setSession(null);
+      setUser(null);
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Manual refetch method (e.g., call this after updating a user's role)
+   */
+  const refetchProfile = async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (currentSession) {
+      console.log('AuthContext: Manually refetching profile...');
+      await loadUserData(currentSession);
     }
   };
 

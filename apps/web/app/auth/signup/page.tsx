@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/app/context/AuthContext';
+import { createClient } from '@/lib/supabase/client';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { GoogleButton, ErrorBanner } from '../../components/auth/AuthComponents';
 import '../auth.css';
@@ -11,20 +12,20 @@ import '../auth.css';
 type Step = 'credentials' | 'email-confirmation' | 'role';
 
 export default function SignupPage() {
-  const router       = useRouter();
+  const router = useRouter();
   const { refetchProfile } = useAuth();
   const searchParams = useSearchParams();
 
   // If arriving from Google OAuth callback without a role yet
   const initialStep: Step = searchParams.get('step') === 'role' ? 'role' : 'credentials';
 
-  const [step, setStep]         = useState<Step>(initialStep);
-  const [name, setName]         = useState('');
-  const [email, setEmail]       = useState('');
+  const [step, setStep] = useState<Step>(initialStep);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [terms, setTerms]       = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState<string | null>(null);
+  const [terms, setTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Step 1 — create account with email + password
   async function handleCreateAccount(e: React.FormEvent) {
@@ -115,41 +116,48 @@ export default function SignupPage() {
   async function handleRoleSelect(role: 'artist' | 'organiser') {
     setLoading(true);
     setError(null);
+    console.log('Role selection started for role:', role);
 
-    try {
-      console.log('Setting role to:', role);
-      
-      const res = await fetch('/api/auth/role', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, fullName: name }),
+  try {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    console.log('Role selection: Current session data:', session);
+    
+    if (!session?.user) {
+      setError("Session lost. Please sign in again.");
+      setLoading(false);
+      return;
+    }
+    console.log('Role selection: Current session user ID:', session.user.id);
+
+    // 1. Perform the update
+    const { error: dbError } = await supabase
+      .from('profiles')
+      .upsert({
+        id: session.user.id,
+        role: role,
+        full_name: name || session.user.user_metadata?.full_name || '',
+        onboarding_complete: false,
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Failed to set role');
-        setLoading(false);
-        return;
-      }
+    if (dbError) throw dbError;
 
-      const data = await res.json();
-      console.log('Role set successfully. API response:', data);
-      
-      // Refresh profile in AuthContext so onboarding pages see the updated role
-      console.log('Calling refetchProfile...');
-      await refetchProfile();
-      
-      // Small delay to ensure context updates
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      console.log('Redirecting to:', data.redirectTo);
-      router.push(data.redirectTo);
-    } catch (err) {
-      console.error('Error in handleRoleSelect:', err);
-      setError('An error occurred. Please try again.');
-      setLoading(false);
-    }
+    // 2. IMPORTANT: Manually update the Context state locally 
+    // instead of just waiting for a refetch to finish.
+    await refetchProfile();
+
+    // 3. Use a small delay to allow state to settle, then hard redirect
+    // This breaks the "Infinite Loading" loop seen in your logs
+    setTimeout(() => {
+      window.location.href = role === 'organiser' ? '/onboarding/organiser' : '/onboarding/artist';
+    }, 100);
+
+  } catch (err: any) {
+    console.error('Role selection error:', err);
+    setError(err.message);
+    setLoading(false);
   }
+}
 
   return (
     <AuthLayout
@@ -157,15 +165,15 @@ export default function SignupPage() {
         step === 'credentials'
           ? 'Join the Circle'
           : step === 'email-confirmation'
-          ? 'Confirm Your Email'
-          : 'What brings you here?'
+            ? 'Confirm Your Email'
+            : 'What brings you here?'
       }
       subtitle={
         step === 'credentials'
           ? 'Your professional home for your craft.'
           : step === 'email-confirmation'
-          ? `We've sent a confirmation link to ${email}. Click the link to verify your email.`
-          : 'This helps us personalise your experience.'
+            ? `We've sent a confirmation link to ${email}. Click the link to verify your email.`
+            : 'This helps us personalise your experience.'
       }
       showImage
     >

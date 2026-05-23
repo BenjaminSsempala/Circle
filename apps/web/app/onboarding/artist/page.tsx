@@ -8,7 +8,8 @@ import '../../auth/auth.css';
 
 export default function ArtistOnboardingPage() {
   const router = useRouter();
-  const { user, loading, session, refetchProfile } = useAuth();
+  const { user, loading, session } = useAuth();
+  
   const [formData, setFormData] = useState({
     fullName: '',
     tags: '',
@@ -18,68 +19,64 @@ export default function ArtistOnboardingPage() {
   });
   const [wordCount, setWordCount] = useState(0);
 
-  // Redirect if not authenticated, already onboarded, or wrong role
+  /**
+   * NAVIGATION & AUTH GUARD
+   * Only runs when 'loading' is false to ensure we have the final Auth state.
+   */
   useEffect(() => {
-    console.log('ArtistOnboarding check:', { user, session: !!session, loading });
-    
-    if (loading) return; // Wait for auth state to load
-    
-    // If no user but session exists, wait for subscription to load profile
-    if (!user && session) {
-      console.log('Session exists but profile not loaded yet, waiting...');
-      return;
-    }
+    if (loading) return;
 
-    // No user AND no session = not authenticated
-    if (!user && !session) {
-      console.log('Not authenticated, redirecting to signup');
+    console.log('ArtistOnboarding: State Check', { 
+      hasUser: !!user, 
+      hasSession: !!session, 
+      role: user?.role 
+    });
+
+    // 1. Not Authenticated
+    if (!session && !user) {
+      console.log('ArtistOnboarding: Not authenticated, redirecting to signup');
       router.push('/auth/signup');
       return;
     }
 
-    // User exists but no role = not finished role selection
-    if (user && !user.role) {
-      console.log('User has no role, redirecting to role selection');
+    // 2. Authenticated but Role not set yet
+    if (session && user && !user.role) {
+      console.log('ArtistOnboarding: User has no role, redirecting to role selection');
       router.push('/auth/signup?step=role');
       return;
     }
 
-    // User completed onboarding already
-    if (user && user.onboarding_complete) {
-      console.log('Onboarding already complete, redirecting to dashboard');
-      router.push('/dashboard');
-      return;
-    }
-
-    // User is organiser, not artist
-    if (user && user.role === 'organiser') {
-      console.log('User is organiser, redirecting to organiser onboarding');
+    // 3. Wrong Role (Organiser trying to access Artist onboarding)
+    if (user?.role === 'organiser') {
+      console.log('ArtistOnboarding: User is organiser, redirecting to correct path');
       router.push('/onboarding/organiser');
       return;
     }
 
-    console.log('Allowing access to artist onboarding page');
+    if (!user.role) {
+    router.push('/auth/signup?step=role');
+    return;
+  }
+
+    // 4. Already finished
+    if (user?.onboarding_complete) {
+      console.log('ArtistOnboarding: Complete, moving to dashboard');
+      router.push('/dashboard');
+      return;
+    }
+
+    // Pre-fill name if it exists in the profile
+    if (user?.full_name && !formData.fullName) {
+      setFormData(prev => ({ ...prev, fullName: user.full_name }));
+    }
+
+    
+
   }, [user, session, loading, router]);
 
-
-// Show loading state while auth is initializing
-if (loading) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-body-lg font-body-lg text-on-surface-variant">Loading...</div>
-    </div>
-  );
-}
-
-// Show nothing while waiting for profile to load (session exists but user not yet populated)
-if (!user && session) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-body-lg font-body-lg text-on-surface-variant">Authenticating...</div>
-    </div>
-  );
-}
-
+  /**
+   * FORM HANDLERS
+   */
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -90,7 +87,8 @@ if (!user && session) {
     }));
 
     if (name === 'bio') {
-      setWordCount(value.split(/\s+/).filter((w) => w.length > 0).length);
+      // Simple word counter
+      setWordCount(value.trim().split(/\s+/).filter((w) => w.length > 0).length);
     }
   };
 
@@ -102,24 +100,39 @@ if (!user && session) {
       return;
     }
 
-    // Store in session
+    // Store in session storage to persist through the multi-step flow
     sessionStorage.setItem(
-      'onboarding_artist',
-      JSON.stringify({
-        ...formData,
-        step: 1,
-      })
+      'onboarding_artist_data',
+      JSON.stringify({ ...formData, step: 1 })
     );
 
-    // Frontend flag - skip API wait
-    if (true) {
-      router.push('/onboarding/package');
-    }
+    // Proceed to the next step (e.g., packages, gallery, or pricing)
+    router.push('/onboarding/package');
   };
+
+  /**
+   * LOADING STATE
+   */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-body-lg font-body-lg text-on-surface-variant animate-pulse">
+            Authenticating...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Final safety check: if we are here but don't have a user, 
+  // don't render the form to prevent "undefined" errors
+  // if (!user) return null;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Navigation Header */}
       <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center border-b border-primary-container/10">
         <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
         <div className="hidden md:flex items-center gap-base">
@@ -129,7 +142,8 @@ if (!user && session) {
         </div>
         <button
           onClick={() => router.push('/auth/signup')}
-          className="text-on-surface-variant hover:text-primary transition-colors"
+          className="text-on-surface-variant hover:text-primary transition-colors text-2xl"
+          aria-label="Close onboarding"
         >
           ✕
         </button>
@@ -144,14 +158,13 @@ if (!user && session) {
             </span>
           </div>
 
-          {/* Onboarding Card */}
           <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-primary-container/10 p-md md:p-lg">
             <div className="mb-lg text-center md:text-left">
               <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface mb-2">
                 Claim your space
               </h1>
               <p className="text-body-md font-body-md text-on-surface-variant">
-                Tell us who you are. This information will help us build your profile
+                Tell us who you are. This information will help us build your professional profile.
               </p>
             </div>
 
@@ -159,10 +172,7 @@ if (!user && session) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
                 {/* Full Name */}
                 <div className="flex flex-col gap-xs">
-                  <label
-                    htmlFor="fullName"
-                    className="text-label-mono font-label-mono text-on-surface-variant"
-                  >
+                  <label htmlFor="fullName" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
                     Full Name *
                   </label>
                   <input
@@ -179,10 +189,7 @@ if (!user && session) {
 
                 {/* Profile Tags */}
                 <div className="flex flex-col gap-xs">
-                  <label
-                    htmlFor="tags"
-                    className="text-label-mono font-label-mono text-on-surface-variant"
-                  >
+                  <label htmlFor="tags" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
                     Profile Tags
                   </label>
                   <input
@@ -200,10 +207,7 @@ if (!user && session) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
                 {/* Primary Art Form */}
                 <div className="flex flex-col gap-xs">
-                  <label
-                    htmlFor="artForm"
-                    className="text-label-mono font-label-mono text-on-surface-variant"
-                  >
+                  <label htmlFor="artForm" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
                     Primary Art Form *
                   </label>
                   <select
@@ -226,10 +230,7 @@ if (!user && session) {
 
                 {/* City */}
                 <div className="flex flex-col gap-xs">
-                  <label
-                    htmlFor="city"
-                    className="text-label-mono font-label-mono text-on-surface-variant"
-                  >
+                  <label htmlFor="city" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
                     City *
                   </label>
                   <input
@@ -245,17 +246,14 @@ if (!user && session) {
                 </div>
               </div>
 
-              {/* Bio */}
+              {/* Bio Section */}
               <div className="flex flex-col gap-xs">
                 <div className="flex justify-between items-center">
-                  <label
-                    htmlFor="bio"
-                    className="text-label-mono font-label-mono text-on-surface-variant"
-                  >
-                    Your story, Bio or description
+                  <label htmlFor="bio" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                    Your Story
                   </label>
-                  <span className="text-label-mono font-label-mono text-caption text-on-surface-variant">
-                    {wordCount}/12 words
+                  <span className={`text-label-mono font-label-mono text-[10px] ${wordCount > 12 ? 'text-error' : 'text-on-surface-variant'}`}>
+                    {wordCount}/12 words recommended
                   </span>
                 </div>
                 <textarea
@@ -263,18 +261,18 @@ if (!user && session) {
                   name="bio"
                   value={formData.bio}
                   onChange={handleInputChange}
-                  maxLength={150}
+                  maxLength={250}
                   placeholder="Bridging ancestral rhythms with modern jazz through the strings of an nyatiti."
-                  className="w-full resize-none"
-                  rows={2}
+                  className="w-full resize-none min-h-[100px]"
+                  rows={3}
                 ></textarea>
-                <p className="text-caption font-caption text-on-surface-variant italic mt-1">
-                  Make it resonant. This will be your primary greeting to the community.
+                <p className="text-caption font-caption text-on-surface-variant italic">
+                  Keep it resonant. This is your primary greeting to the community.
                 </p>
               </div>
 
               {/* Navigation Actions */}
-              <div className="pt-base flex justify-between gap-sm">
+              <div className="pt-8 flex justify-between gap-sm">
                 <button
                   type="button"
                   onClick={() => router.back()}
@@ -284,21 +282,20 @@ if (!user && session) {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-primary text-on-primary text-body-md font-body-md px-lg py-3 rounded-lg shadow-sm hover:shadow-md transition-all"
+                  className="flex items-center justify-center gap-2 bg-primary text-white text-body-md font-semibold px-12 py-3 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all"
                 >
                   <span>Continue</span>
-                  <span>→</span>
+                  <span className="text-xl">→</span>
                 </button>
               </div>
             </form>
           </div>
 
-          {/* Trust Indicator */}
-          <div className="mt-gutter flex flex-col md:flex-row items-center justify-between gap-base opacity-60">
-            <div className="flex items-center gap-2">
-              <span className="text-[20px]">✓</span>
-              <span className="text-caption font-caption">Your data stays within the Circle.</span>
-            </div>
+          {/* Privacy Note */}
+          <div className="mt-gutter flex items-center justify-center gap-2 opacity-50">
+            <span className="text-xs font-caption text-on-surface-variant">
+              ✓ Your profile data is secured within the Circle ecosystem.
+            </span>
           </div>
         </div>
       </main>

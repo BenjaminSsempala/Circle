@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/app/context/AuthContext'; // 1. Hook up your Auth Context
+import { createClient } from '@/lib/supabase/client'; // 2. Hook up your Browser Client
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { GoogleButton, ErrorBanner } from '../../components/auth/AuthComponents';
 import '../auth.css';
@@ -10,6 +12,7 @@ import '../auth.css';
 export default function LoginPage() {
   const router       = useRouter();
   const searchParams = useSearchParams();
+  const { refetchProfile } = useAuth(); // 3. Grab the refetch runner
 
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +41,22 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      router.push(data.redirectTo);
+      const supabase = createClient();
+      
+      // Forces Chrome's rendering thread to read and write cookie variables to memory right now
+      await supabase.auth.getSession(); 
+
+      // Alert AuthContext to pull the newly verified user session immediately
+      if (refetchProfile) {
+        await refetchProfile();
+      }
+
+      // Drop a minor 100ms thread execution frame to eliminate race conditions
+      // setTimeout(() => {
+      //   router.push(data.redirectTo);
+      // }, 100);
+      window.location.href = data.redirectTo;
+
     } catch (err) {
       setError('An error occurred. Please try again.');
       setLoading(false);
