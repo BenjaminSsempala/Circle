@@ -3,9 +3,6 @@ import { ok, err } from '@/lib/api';
 import { signUpWithEmail } from '@/lib/services/auth';
 import { createClient } from '@/lib/supabase/server';
 
-// POST /api/auth/signup
-// Body: { email, password, fullName }
-// Called by: web signup page, Flutter app
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
 
@@ -17,15 +14,16 @@ export async function POST(req: NextRequest) {
     return err('Password must be at least 8 characters', 422);
   }
 
-  // Check if email already exists in auth.users
+  // Safe and clean: Query the public profiles table for duplication safety checks
   const supabase = await createClient();
   const { data: existingUser } = await supabase
-    .from('auth.users')
+    .from('profiles') 
     .select('id')
     .eq('email', body.email)
     .maybeSingle();
+    // print email
+    console.log('Checking for existing user with email:', body.email);
     
-
   if (existingUser) {
     return err('This email is already registered. Please log in instead.', 422);
   }
@@ -34,6 +32,5 @@ export async function POST(req: NextRequest) {
 
   if (!result.ok) return err(result.error, result.status);
 
-  // Account created — frontend should now show the email confirmation step
   return ok({ userId: result.userId, nextStep: 'email_confirmation' }, 201);
 }

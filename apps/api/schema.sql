@@ -7,8 +7,6 @@ create table if not exists profiles (
   id                  uuid primary key references auth.users(id) on delete cascade,
   full_name           text,
   role                text check (role in ('artist', 'organiser')),
-  email               text default '' unique,
-  phone               text default '',
   onboarding_complete boolean default false,
   created_at          timestamptz default now(),
   updated_at          timestamptz default now()

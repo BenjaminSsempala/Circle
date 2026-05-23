@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
   }
 
   const cookieStore = await cookies();
+  const cookiesToSetList: { name: string; value: string; options: any }[] = [];
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -32,9 +34,10 @@ export async function GET(request: NextRequest) {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+            cookiesToSetList.push({ name, value, options });
+          });
         },
       },
     },
@@ -74,18 +77,9 @@ export async function GET(request: NextRequest) {
   // Create response and ensure session cookies are included
   const response = NextResponse.redirect(`${origin}${redirectPath}`);
 
-  // Manually set session cookies in response to ensure browser receives them
-  cookieStore.getAll().forEach(({ name, value }) => {
-    // Set both auth cookies if they start with 'sb-'
-    if (name.startsWith('sb-')) {
-      response.cookies.set(name, value, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 365, // 1 year
-        path: '/',
-      });
-    }
+  // Set cookies with their original options (preserving httpOnly: false for the client SDK)
+  cookiesToSetList.forEach(({ name, value, options }) => {
+    response.cookies.set(name, value, options);
   });
 
   return response;
