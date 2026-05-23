@@ -41,21 +41,10 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      const supabase = createClient();
-      
-      // 1. FORCE CLIENT SYNC: This forces the SDK to read the cookies immediately
-      const { data: { session }, error: syncError } = await supabase.auth.setSession({
-        access_token: '', // Leave empty if your API only sets cookies
-        refresh_token: '',
-      }).catch(() => supabase.auth.refreshSession());
 
-      // 2. WAIT FOR CONTEXT: Ensure the AuthContext actually has the profile in memory
-      if (refetchProfile) {
-        await refetchProfile();
-      }
-
-      // 3. FINAL PUSH: If router.push still fails, window.location.href is the only way 
-      // to guarantee the dashboard sees the user without a manual refresh.
+      // Perform a hard redirect. The browser's new page request will transmit the cookies 
+      // set by the login API route, allowing the client-side AuthContext on the target page
+      // to initialize cleanly from the start.
       window.location.href = data.redirectTo || '/dashboard';
 
     } catch (err) {
