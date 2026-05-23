@@ -10,14 +10,14 @@ import { GoogleButton, ErrorBanner } from '../../components/auth/AuthComponents'
 import '../auth.css';
 
 export default function LoginPage() {
-  const router       = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { refetchProfile } = useAuth(); // 3. Grab the refetch runner
 
-  const [email, setEmail]       = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState<string | null>(
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(
     searchParams.get('error') ? 'There was a problem signing in. Please try again.' : null,
   );
 
@@ -43,19 +43,20 @@ export default function LoginPage() {
       const data = await res.json();
       const supabase = createClient();
       
-      // Forces Chrome's rendering thread to read and write cookie variables to memory right now
-      await supabase.auth.getSession(); 
+      // 1. FORCE CLIENT SYNC: This forces the SDK to read the cookies immediately
+      const { data: { session }, error: syncError } = await supabase.auth.setSession({
+        access_token: '', // Leave empty if your API only sets cookies
+        refresh_token: '',
+      }).catch(() => supabase.auth.refreshSession());
 
-      // Alert AuthContext to pull the newly verified user session immediately
+      // 2. WAIT FOR CONTEXT: Ensure the AuthContext actually has the profile in memory
       if (refetchProfile) {
         await refetchProfile();
       }
 
-      // Drop a minor 100ms thread execution frame to eliminate race conditions
-      // setTimeout(() => {
-      //   router.push(data.redirectTo);
-      // }, 100);
-      window.location.href = data.redirectTo;
+      // 3. FINAL PUSH: If router.push still fails, window.location.href is the only way 
+      // to guarantee the dashboard sees the user without a manual refresh.
+      window.location.href = data.redirectTo || '/dashboard';
 
     } catch (err) {
       setError('An error occurred. Please try again.');

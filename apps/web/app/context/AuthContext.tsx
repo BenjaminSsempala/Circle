@@ -109,12 +109,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log(`AuthContext: [${event}] triggered.`);
         
         if (!isMounted) return;
-
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          await loadUserData(newSession);
-        } else if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+        if (newSession) await loadUserData(newSession);
+      }
+      else if (event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
+          setLoading(false);
+        }
+        else{
           setLoading(false);
         }
       }
@@ -129,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
+      window.location.href = '/auth/login'; 
     } catch (err) {
       console.error('AuthContext: Error during signOut:', err);
     } finally {
@@ -142,13 +146,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Manual refetch method (e.g., call this after updating a user's role)
    */
+
   const refetchProfile = async () => {
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
-    if (currentSession) {
-      console.log('AuthContext: Manually refetching profile...');
-      await loadUserData(currentSession);
-    }
-  };
+  setLoading(true); // Ensure UI knows we are working
+  const { data: { session: currentSession } } = await supabase.auth.getSession();
+  
+  if (currentSession) {
+    console.log('AuthContext: Manually refetching profile...');
+    await loadUserData(currentSession);
+  } else {
+    // If we get here and there's no session, we must stop loading
+    setLoading(false);
+    setSession(null);
+    setUser(null);
+  }
+};
+
+
 
   return (
     <AuthContext.Provider
