@@ -14,10 +14,17 @@ export default function ArtistOnboardingPage() {
     fullName: '',
     tags: '',
     artForm: '',
+    otherArtForm: '',
     city: '',
+    country: '',
     bio: '',
   });
   const [wordCount, setWordCount] = useState(0);
+
+  const tags = formData.tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0);
 
   /**
    * NAVIGATION & AUTH GUARD
@@ -84,6 +91,7 @@ export default function ArtistOnboardingPage() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+      ...(name === 'artForm' && value !== 'other' ? { otherArtForm: '' } : {}),
     }));
 
     if (name === 'bio') {
@@ -95,8 +103,13 @@ export default function ArtistOnboardingPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.artForm || !formData.city) {
+    if (!formData.fullName || !formData.artForm || !formData.city || !formData.country) {
       alert('Please fill all required fields');
+      return;
+    }
+
+    if (formData.artForm === 'other' && !formData.otherArtForm.trim()) {
+      alert('Please describe your art form when selecting Other.');
       return;
     }
 
@@ -161,10 +174,10 @@ export default function ArtistOnboardingPage() {
           <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-primary-container/10 p-md md:p-lg">
             <div className="mb-lg text-center md:text-left">
               <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface mb-2">
-                Claim your space
+                Artist Profile
               </h1>
               <p className="text-body-md font-body-md text-on-surface-variant">
-                Tell us who you are. This information will help us build your professional profile.
+                Tell us who you are. This information will help us build your professional protfolio and personal webpage.
               </p>
             </div>
 
@@ -192,6 +205,18 @@ export default function ArtistOnboardingPage() {
                   <label htmlFor="tags" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
                     Profile Tags
                   </label>
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {tags.map((tag, index) => (
+                        <span
+                          key={`${tag}-${index}`}
+                          className="inline-flex items-center rounded-full border border-primary-container/20 bg-primary-container/10 px-3 py-1 text-xs font-medium text-primary"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <input
                     type="text"
                     id="tags"
@@ -204,7 +229,7 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
                 {/* Primary Art Form */}
                 <div className="flex flex-col gap-xs">
                   <label htmlFor="artForm" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
@@ -223,9 +248,31 @@ export default function ArtistOnboardingPage() {
                     <option value="musician">Musician</option>
                     <option value="visual">Visual Artist</option>
                     <option value="dancer">Dancer</option>
-                    <option value="digital">Digital Media</option>
-                    <option value="theater">Theater</option>
+                    <option value="digital">Videographer</option>
+                    <option value="theater">Actor</option>
+                    <option value="spoken-word">Spoken Word Artist</option>
+                    <option value="author">Author</option>
+                    <option value="cinematographer">Cinematographer</option>
+                    <option value="story-teller">Story Teller</option>
+                    <option value="other">Other</option>
                   </select>
+                  {formData.artForm === 'other' && (
+                    <div className="flex flex-col gap-xs pt-4">
+                      <label htmlFor="otherArtForm" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                        Other art form *
+                      </label>
+                      <input
+                        type="text"
+                        id="otherArtForm"
+                        name="otherArtForm"
+                        value={formData.otherArtForm}
+                        onChange={handleInputChange}
+                        placeholder="Tell us your craft"
+                        className="w-full"
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* City */}
@@ -244,16 +291,33 @@ export default function ArtistOnboardingPage() {
                     required
                   />
                 </div>
+
+                {/* Country */}
+                <div className="flex flex-col gap-xs">
+                  <label htmlFor="country" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                    Country *
+                  </label>
+                  <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    placeholder="Kenya"
+                    className="w-full"
+                    required
+                  />
+                </div>
               </div>
 
               {/* Bio Section */}
               <div className="flex flex-col gap-xs">
                 <div className="flex justify-between items-center">
                   <label htmlFor="bio" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
-                    Your Story
+                    Your Bio
                   </label>
-                  <span className={`text-label-mono font-label-mono text-[10px] ${wordCount > 12 ? 'text-error' : 'text-on-surface-variant'}`}>
-                    {wordCount}/12 words recommended
+                  <span className={`text-label-mono font-label-mono text-[10px] ${wordCount > 300 ? 'text-error' : 'text-on-surface-variant'}`}>
+                    {wordCount}/300 words recommended
                   </span>
                 </div>
                 <textarea
@@ -261,8 +325,8 @@ export default function ArtistOnboardingPage() {
                   name="bio"
                   value={formData.bio}
                   onChange={handleInputChange}
-                  maxLength={250}
-                  placeholder="Bridging ancestral rhythms with modern jazz through the strings of an nyatiti."
+                  maxLength={300}
+                  placeholder="A brief introduction to who you are and your artistic journey. This will be showcased on your profile, so make it resonate with your audience."
                   className="w-full resize-none min-h-[100px]"
                   rows={3}
                 ></textarea>
