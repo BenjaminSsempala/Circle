@@ -9,37 +9,8 @@ export default function PackageOnboardingPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    if (loading) return; // Wait for auth state to load
-    
-    if (!user) {
-      // Not authenticated - need to sign up
-      router.push('/auth/signup');
-      return;
-    }
-
-    if (user.onboarding_complete) {
-      // Already completed onboarding - go to dashboard
-      router.push('/dashboard');
-      return;
-    }
-
-    // Allow access if:
-    // 1. Role is 'artist' (already selected)
-    // 2. Role is null/undefined but not yet onboarded (in process of selecting role)
-    // 3. Role is 'organiser' - reject to their onboarding page
-    if (user.role === 'organiser') {
-      router.push('/onboarding/organiser');
-      return;
-    }
-
-    // Otherwise allow (role === 'artist' or role === null/undefined)
-  }, [user, loading, router]);
-
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="text-body-lg font-body-lg text-on-surface-variant">Loading...</div></div>;
-  if (!user || user.onboarding_complete || (user.role && user.role !== 'artist')) return null;
+  // ── All hooks declared unconditionally at the top ─────────────────────────
   const [formData, setFormData] = useState({
-    artFormCategory: '',
     packageName: '',
     description: '',
     price: '',
@@ -48,7 +19,18 @@ export default function PackageOnboardingPage() {
     logisticsChoice: 'inclusive',
     logisticsNote: '',
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [apiError, setApiError] = useState('');
 
+  // ── Auth guard ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (loading) return;
+    if (!user) { router.push('/auth/signup'); return; }
+    if (user.onboarding_complete) { router.push('/dashboard'); return; }
+    if (user.role === 'organiser') { router.push('/onboarding/organiser'); return; }
+  }, [user, loading, router]);
+
+  // ── Form helpers ──────────────────────────────────────────────────────────
   const setFormValue = (name: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -59,63 +41,87 @@ export default function PackageOnboardingPage() {
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormValue(name, value);
-  };
+  ) => setFormValue(e.target.name, e.target.value);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setApiError('');
 
-    if (!formData.artFormCategory || !formData.packageName || !formData.price || !formData.description) {
-      alert('Please fill all required fields');
+    if (!formData.packageName || !formData.price || !formData.description) {
+      setApiError('Please fill all required fields.');
       return;
     }
-
     if (formData.logisticsChoice === 'other' && !formData.logisticsNote.trim()) {
-      alert('Please provide logistics details when selecting Other.');
+      setApiError('Please provide logistics details when selecting Other.');
       return;
     }
 
-    // Store in session
-    sessionStorage.setItem(
-      'onboarding_package',
-      JSON.stringify({
-        ...formData,
-        logisticsInclusive: formData.logisticsChoice === 'inclusive',
-        step: 2,
-      })
-    );
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/onboarding/package', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          packageName: formData.packageName,
+          description: formData.description,
+          price: formData.price,
+          currency: formData.currency,
+          duration: formData.duration,
+          logisticsInclusive: formData.logisticsChoice === 'inclusive',
+        }),
+      });
 
-    // Frontend flag - skip API wait
-    if (true) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        setApiError(data.error || 'Something went wrong. Please try again.');
+        return;
+      }
+
       router.push('/onboarding/socials');
+    } catch {
+      setApiError('Network error. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const handleSkip = () => {
+    // Artist chose to add packages later — skip to socials
+    router.push('/onboarding/socials');
+  };
+
+  // ── Render guards ─────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-body-lg font-body-lg text-on-surface-variant">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user || user.onboarding_complete || (user.role && user.role !== 'artist')) return null;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center border-b border-primary-container/10">
         <div className="flex items-center gap-xs">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
-            🔥
-          </div>
           <span className="text-headline-md font-headline-md tracking-tight text-primary">Circle</span>
         </div>
         <div className="hidden md:flex items-center gap-sm">
-          <span className="text-label-mono font-label-mono text-on-surface-variant">Step 2 of 4</span>
+          <span className="text-label-mono font-label-mono text-on-surface-variant">Step 2 of 3</span>
           <div className="flex gap-1">
-            <div className="h-1.5 w-6 rounded-full bg-primary-container"></div>
-            <div className="h-1.5 w-6 rounded-full bg-primary-container"></div>
-            <div className="h-1.5 w-6 rounded-full bg-surface-variant"></div>
-            <div className="h-1.5 w-6 rounded-full bg-surface-variant"></div>
+            <div className="h-1.5 w-6 rounded-full bg-primary-container" />
+            <div className="h-1.5 w-6 rounded-full bg-primary-container" />
+            <div className="h-1.5 w-6 rounded-full bg-surface-variant" />
           </div>
         </div>
       </header>
 
       <main className="flex-grow flex items-center justify-center px-margin-mobile py-lg md:py-xl mt-20">
         <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-[0.95fr_1.05fr] gap-gutter">
+
           {/* Visual Side */}
           <div className="hidden md:flex flex-col gap-md pr-md items-center">
             <div className="relative w-full max-w-[480px] aspect-[4/5] rounded-xl overflow-hidden shadow-lg">
@@ -143,7 +149,7 @@ export default function PackageOnboardingPage() {
             {/* Mobile Step */}
             <div className="md:hidden mb-gutter">
               <span className="text-label-mono font-label-mono text-primary bg-primary-container/10 px-3 py-1 rounded-full">
-                Step 2 of 4
+                Step 2 of 3
               </span>
             </div>
 
@@ -153,59 +159,37 @@ export default function PackageOnboardingPage() {
                   Your Signature Product
                 </p>
                 <p className="text-body-md font-body-md text-on-surface-variant max-w-xl">
-                  Define your core service. This single, comprehensive package will be your primary feature on ArtHearth.
+                  Define your core service. This single, comprehensive package will be the first
+                  thing clients see on your profile.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-gutter">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                  {/* Art Form Category */}
-                  <div className="flex flex-col gap-xs">
-                    <label
-                      htmlFor="artFormCategory"
-                      className="text-label-mono font-label-mono text-on-surface-variant"
-                    >
-                      Art Form Category
-                    </label>
-                    <select
-                      id="artFormCategory"
-                      name="artFormCategory"
-                      value={formData.artFormCategory}
-                      onChange={handleInputChange}
-                      className="w-full"
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      <option value="poet">Poet</option>
-                      <option value="musician">Musician</option>
-                      <option value="visual">Visual Artist</option>
-                      <option value="dancer">Dancer</option>
-                      <option value="digital">Digital Media</option>
-                      <option value="theater">Theater</option>
-                      <option value="spoken-word">Spoken Word Artist</option>
-                      <option value="author">Author</option>
-                      <option value="cinematographer">Cinematographer</option>
-                      <option value="story-teller">Story Teller</option>
-                    </select>
+                {/* Error banner */}
+                {apiError && (
+                  <div className="rounded-lg bg-error/10 border border-error/20 px-4 py-3 text-sm text-error">
+                    {apiError}
                   </div>
-                  <div className="flex flex-col gap-xs">
-                    <label
-                      htmlFor="packageName"
-                      className="text-label-mono font-label-mono text-on-surface-variant"
-                    >
-                      Package Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="packageName"
-                      name="packageName"
-                      value={formData.packageName}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Signature Performance"
-                      className="w-full"
-                      required
-                    />
-                  </div>
+                )}
+
+                {/* Package Name */}
+                <div className="flex flex-col gap-xs">
+                  <label
+                    htmlFor="packageName"
+                    className="text-label-mono font-label-mono text-on-surface-variant"
+                  >
+                    Package Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="packageName"
+                    name="packageName"
+                    value={formData.packageName}
+                    onChange={handleInputChange}
+                    placeholder="e.g. Signature Performance"
+                    className="w-full"
+                    required
+                  />
                 </div>
 
                 {/* Price + Duration */}
@@ -223,7 +207,8 @@ export default function PackageOnboardingPage() {
                       name="price"
                       value={formData.price}
                       onChange={handleInputChange}
-                      placeholder="0.00"
+                      placeholder="0"
+                      min="0"
                       className="w-full"
                       required
                     />
@@ -261,7 +246,7 @@ export default function PackageOnboardingPage() {
                         Logistics
                       </label>
                       <span className="text-[10px] uppercase tracking-wider text-on-surface-variant">
-                        Transport & Accommodation
+                        Transport &amp; Accommodation
                       </span>
                     </div>
                     <p className="text-xs text-on-surface-variant mt-1">
@@ -278,7 +263,11 @@ export default function PackageOnboardingPage() {
                         key={option.value}
                         type="button"
                         onClick={() => setFormValue('logisticsChoice', option.value)}
-                        className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${formData.logisticsChoice === option.value ? 'border-primary bg-primary text-white' : 'border-outline-variant bg-surface text-on-surface'}`}
+                        className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                          formData.logisticsChoice === option.value
+                            ? 'border-primary bg-primary text-white'
+                            : 'border-outline-variant bg-surface text-on-surface'
+                        }`}
                       >
                         {option.label}
                       </button>
@@ -298,7 +287,7 @@ export default function PackageOnboardingPage() {
                         name="logisticsNote"
                         value={formData.logisticsNote}
                         onChange={handleInputChange}
-                        placeholder="Describe any other requirements or coordination"
+                        placeholder="Describe any other transport or accommodation requirements"
                         className="w-full"
                         required
                       />
@@ -306,40 +295,48 @@ export default function PackageOnboardingPage() {
                   )}
                 </div>
 
-                {/* Description */}
+                {/* Description / Inclusions */}
                 <div className="flex flex-col gap-xs">
                   <label
                     htmlFor="description"
                     className="text-label-mono font-label-mono text-on-surface-variant"
                   >
-                    Package Inclusions
+                    What&apos;s included *
                   </label>
                   <textarea
                     id="description"
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder="e.g. Sound system, Setup, Post-processing, 2 Revisions (comma separated)"
+                    placeholder="e.g. Sound system, Stage setup, Post-processing, 2 Revisions"
                     className="w-full resize-none min-h-[140px]"
                     rows={4}
                     required
-                  ></textarea>
+                  />
                 </div>
 
                 {/* Navigation */}
                 <div className="pt-base flex flex-col gap-3">
                   <button
                     type="submit"
-                    className="w-full rounded-xl bg-primary text-white text-body-md font-semibold px-6 py-4 shadow-lg hover:shadow-primary/30 transition-all"
+                    disabled={submitting}
+                    className="w-full rounded-xl bg-primary text-white text-body-md font-semibold px-6 py-4 shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    Continue to Gallery
+                    {submitting ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      'Continue to Socials'
+                    )}
                   </button>
                   <button
                     type="button"
-                    onClick={() => router.push('/onboarding/socials')}
+                    onClick={handleSkip}
                     className="text-sm text-on-surface-variant hover:text-primary transition-colors"
                   >
-                    I'll complete this later
+                    I&apos;ll complete this later
                   </button>
                 </div>
               </form>

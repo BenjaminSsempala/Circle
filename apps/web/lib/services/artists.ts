@@ -1,0 +1,375 @@
+import { createClient } from '@/lib/supabase/server';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export type Work = {
+  id: string;
+  order?: number;
+  title: string;
+  category: string;
+  type: 'video' | 'audio' | 'image' | 'document';
+  provider: 'youtube' | 'tiktok' | 'spotify' | 'soundcloud' | 'instagram' | 'cloudinary';
+  media_url: string;
+  thumbnail_url: string;
+  metadata: { year?: number; description?: string };
+};
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function generateSlug(name: string): string {
+  const base = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return base || `artist-${Date.now()}`;
+}
+
+// ─── Read ────────────────────────────────────────────────────────────────────
+
+export async function getArtistBySlug(slug: string) {
+  const supabase = await createClient();
+
+  const { data: artist, error } = await supabase
+    .from('artists')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (error) return { ok: false as const, error: error.message };
+  if (!artist) return { ok: false as const, error: 'Not found' };
+
+  const { data: packages } = await supabase
+    .from('packages')
+    .select('*')
+    .eq('artist_id', artist.id)
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
+
+  return { ok: true as const, artist, packages: packages ?? [] };
+}
+
+export async function getArtistByUserId(userId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('artists')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, artist: data };
+}
+
+// ─── Upsert artist profile (Step 1) ─────────────────────────────────────────
+
+export async function upsertArtistProfile(
+  userId: string,
+  data: {
+    name: string;
+    artForm: string;
+    otherArtForm?: string;
+    tags?: string[];
+    city: string;
+    country: string;
+    bio?: string;
+    profilePhotoUrl?: string;
+  }
+) {
+  const supabase = await createClient();
+
+  const primaryArtForm =
+    data.artForm === 'other' ? (data.otherArtForm || '').trim() : data.artForm;
+
+  // Check if artist row already exists for this user
+  const { data: existing } = await supabase
+    .from('artists')
+    .select('id, slug')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  const payload: Record<string, unknown> = {
+    name: data.name,
+    art_forms: primaryArtForm ? [primaryArtForm] : [],
+    tags: data.tags ?? [],
+    city: data.city,
+    country: data.country,
+    bio: data.bio ?? '',
+  };
+
+  if (data.profilePhotoUrl) {
+    payload.profile_photo = data.profilePhotoUrl;
+  }
+
+  if (existing) {
+    // UPDATE existing row
+    const { data: updated, error } = await supabase
+      .from('artists')
+      .update(payload)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const, artist: updated };
+  }
+
+  // INSERT — generate a unique slug
+  let slug = generateSlug(data.name);
+
+  const { data: slugConflict } = await supabase
+    .from('artists')
+    .select('slug')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (slugConflict) {
+    slug = `${slug}-${Math.floor(Math.random() * 9000) + 1000}`;
+  }
+
+  const { data: created, error } = await supabase
+    .from('artists')
+    .insert({ user_id: userId, slug, ...payload })
+    .select()
+    .single();
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, artist: created };
+}
+
+// ─── Create package (Step 2) ─────────────────────────────────────────────────
+
+export async function createPackage(
+  artistId: string,
+  data: {
+    name: string;
+    description: string;
+    price: number;
+    currency: string;
+    duration: string;
+    logisticsInclusive: boolean;
+  }
+) {
+  const supabase = await createClient();
+
+  const { data: pkg, error } = await supabase
+    .from('packages')
+    .insert({
+      artist_id: artistId,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      currency: data.currency || 'UGX',
+      duration: data.duration,
+      logistics_inclusive: data.logisticsInclusive,
+      tier: 'standard',
+    })
+    .select()
+    .single();
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, package: pkg };
+}
+
+// ─── Patch artist profile (dashboard edits) ──────────────────────────────────
+
+export async function patchArtistProfile(
+  userId: string,
+  fields: Partial<{
+    name: string;
+    bio: string;
+    tags: string[];
+    city: string;
+    country: string;
+    profile_photo: string;
+    art_forms: string[];
+  }>
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('artists')
+    .update(fields)
+    .eq('user_id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+// ─── Upsert package (add or edit) ────────────────────────────────────────────
+
+export async function upsertPackage(
+  artistId: string,
+  data: {
+    id?: string;
+    name: string;
+    description: string;
+    price: number;
+    currency: string;
+    duration: string;
+    logisticsInclusive: boolean;
+  }
+) {
+  const supabase = await createClient();
+
+  const payload = {
+    name: data.name,
+    description: data.description,
+    price: data.price,
+    currency: data.currency,
+    duration: data.duration,
+    logistics_inclusive: data.logisticsInclusive,
+  };
+
+  if (data.id) {
+    const { data: pkg, error } = await supabase
+      .from('packages')
+      .update(payload)
+      .eq('id', data.id)
+      .eq('artist_id', artistId)
+      .select()
+      .single();
+
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const, package: pkg };
+  }
+
+  const { data: pkg, error } = await supabase
+    .from('packages')
+    .insert({ artist_id: artistId, tier: 'standard', is_active: true, ...payload })
+    .select()
+    .single();
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, package: pkg };
+}
+
+// ─── Selected Works ───────────────────────────────────────────────────────────
+
+async function getWorks(userId: string): Promise<{ artistId: string; works: Work[] } | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('artists')
+    .select('id, selected_works')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (!data) return null;
+  return {
+    artistId: data.id,
+    works: Array.isArray(data.selected_works) ? (data.selected_works as Work[]) : [],
+  };
+}
+
+export async function addWork(userId: string, work: Omit<Work, 'id'>) {
+  const supabase = await createClient();
+  const ctx = await getWorks(userId);
+  if (!ctx) return { ok: false as const, error: 'Artist not found' };
+  if (ctx.works.length >= 6) return { ok: false as const, error: 'Maximum of 6 works allowed' };
+
+  const newWork: Work = { ...work, id: crypto.randomUUID(), order: ctx.works.length };
+  const { error } = await supabase
+    .from('artists')
+    .update({ selected_works: [...ctx.works, newWork] })
+    .eq('user_id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, work: newWork };
+}
+
+export async function updateWork(userId: string, workId: string, updates: Partial<Omit<Work, 'id'>>) {
+  const supabase = await createClient();
+  const ctx = await getWorks(userId);
+  if (!ctx) return { ok: false as const, error: 'Artist not found' };
+
+  const updated = ctx.works.map((w) => (w.id === workId ? { ...w, ...updates } : w));
+  const { error } = await supabase
+    .from('artists')
+    .update({ selected_works: updated })
+    .eq('user_id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function deleteWork(userId: string, workId: string) {
+  const supabase = await createClient();
+  const ctx = await getWorks(userId);
+  if (!ctx) return { ok: false as const, error: 'Artist not found' };
+
+  const filtered = ctx.works.filter((w) => w.id !== workId);
+  const { error } = await supabase
+    .from('artists')
+    .update({ selected_works: filtered })
+    .eq('user_id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function reorderWorks(userId: string, orderedIds: string[]) {
+  const supabase = await createClient();
+  const ctx = await getWorks(userId);
+  if (!ctx) return { ok: false as const, error: 'Artist not found' };
+
+  const workMap = new Map(ctx.works.map((w) => [w.id, w]));
+  const reordered = orderedIds
+    .filter((id) => workMap.has(id))
+    .map((id, i) => ({ ...workMap.get(id)!, order: i }));
+  const remaining = ctx.works
+    .filter((w) => !orderedIds.includes(w.id))
+    .map((w, i) => ({ ...w, order: reordered.length + i }));
+
+  const { error } = await supabase
+    .from('artists')
+    .update({ selected_works: [...reordered, ...remaining] })
+    .eq('user_id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+// ─── Delete package ───────────────────────────────────────────────────────────
+
+export async function deletePackage(packageId: string, artistId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('packages')
+    .delete()
+    .eq('id', packageId)
+    .eq('artist_id', artistId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+// ─── Update social links (Step 3) ────────────────────────────────────────────
+
+export async function updateSocialLinks(
+  userId: string,
+  socialLinks: Record<string, string>
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('artists')
+    .update({ social_links: socialLinks })
+    .eq('user_id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+// ─── Complete onboarding (Step 4) ────────────────────────────────────────────
+
+export async function completeOnboarding(userId: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ onboarding_complete: true })
+    .eq('id', userId);
+
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}

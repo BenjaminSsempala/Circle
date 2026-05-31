@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
-import Link from 'next/link';
 import '../../auth/auth.css';
 
 export default function ArtistOnboardingPage() {
   const router = useRouter();
   const { user, loading, session } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     fullName: '',
     tags: '',
@@ -19,71 +18,119 @@ export default function ArtistOnboardingPage() {
     country: '',
     bio: '',
   });
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
+  const [photoPreview, setPhotoPreview] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [apiError, setApiError] = useState('');
 
+  // Derived tag chips from the comma-separated input
   const tags = formData.tags
     .split(',')
-    .map((tag) => tag.trim())
-    .filter((tag) => tag.length > 0);
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
 
-  /**
-   * NAVIGATION & AUTH GUARD
-   * Only runs when 'loading' is false to ensure we have the final Auth state.
-   */
+  // ── Auth guard ────────────────────────────────────────────────────────────
   useEffect(() => {
     if (loading) return;
 
-    console.log('ArtistOnboarding: State Check', { 
-      hasUser: !!user, 
-      hasSession: !!session, 
-      role: user?.role 
-    });
-
-    // 1. Not Authenticated
     if (!session && !user) {
-      console.log('ArtistOnboarding: Not authenticated, redirecting to signup');
       router.push('/auth/signup');
       return;
     }
-
-    // 2. Authenticated but Role not set yet
     if (session && user && !user.role) {
-      console.log('ArtistOnboarding: User has no role, redirecting to role selection');
       router.push('/auth/signup?step=role');
       return;
     }
-
-    // 3. Wrong Role (Organiser trying to access Artist onboarding)
     if (user?.role === 'organiser') {
-      console.log('ArtistOnboarding: User is organiser, redirecting to correct path');
       router.push('/onboarding/organiser');
       return;
     }
-
-    if (!user.role) {
-    router.push('/auth/signup?step=role');
-    return;
-  }
-
-    // 4. Already finished
     if (user?.onboarding_complete) {
-      console.log('ArtistOnboarding: Complete, moving to dashboard');
       router.push('/dashboard');
       return;
     }
-
-    // Pre-fill name if it exists in the profile
-    if (user?.full_name && !formData.fullName) {
-      setFormData(prev => ({ ...prev, fullName: user.full_name }));
-    }
-
-    
-
   }, [user, session, loading, router]);
 
-  /**
-   * FORM HANDLERS
-   */
+  // ── Resume: pre-fill form from DB if artist row already exists ────────────
+  useEffect(() => {
+    if (loading || !user) return;
+    if (user.role && user.role !== 'artist') return;
+
+    fetch('/api/onboarding/artist')
+      .then((r) => r.json())
+      .then(({ artist }) => {
+        if (!artist) {
+          // No artist row yet — pre-fill name from profile only
+          if (user.full_name) {
+            setFormData((prev) => ({ ...prev, fullName: user.full_name }));
+          }
+          return;
+        }
+        setFormData((prev) => ({
+          ...prev,
+          fullName: artist.name || user.full_name || '',
+          artForm: artist.art_forms?.[0] || '',
+          tags: Array.isArray(artist.tags) ? artist.tags.join(', ') : '',
+          city: artist.city || '',
+          country: artist.country || '',
+          bio: artist.bio || '',
+        }));
+        if (artist.profile_photo) {
+          setProfilePhotoUrl(artist.profile_photo);
+          setPhotoPreview(artist.profile_photo);
+        }
+        if (artist.bio) {
+          setWordCount(
+            artist.bio.trim().split(/\s+/).filter((w: string) => w.length > 0).length
+          );
+        }
+      })
+      .catch(() => {
+        // Silent — just don't pre-fill
+      });
+  }, [loading, user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Photo upload ──────────────────────────────────────────────────────────
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Local preview immediately
+    setPhotoPreview(URL.createObjectURL(file));
+
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    if (!cloudName || !uploadPreset) {
+      setApiError('Image upload is not configured yet. Continue without a photo or add Cloudinary env vars.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', uploadPreset);
+      fd.append('folder', 'circle/profiles');
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.secure_url) {
+        setProfilePhotoUrl(data.secure_url);
+      } else {
+        setApiError('Upload failed. You can continue and add a photo later.');
+      }
+    } catch {
+      setApiError('Upload failed. You can continue and add a photo later.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // ── Form handlers ─────────────────────────────────────────────────────────
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -93,44 +140,68 @@ export default function ArtistOnboardingPage() {
       [name]: value,
       ...(name === 'artForm' && value !== 'other' ? { otherArtForm: '' } : {}),
     }));
-
     if (name === 'bio') {
-      // Simple word counter
       setWordCount(value.trim().split(/\s+/).filter((w) => w.length > 0).length);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setApiError('');
 
     if (!formData.fullName || !formData.artForm || !formData.city || !formData.country) {
-      alert('Please fill all required fields');
+      setApiError('Please fill all required fields.');
       return;
     }
-
     if (formData.artForm === 'other' && !formData.otherArtForm.trim()) {
-      alert('Please describe your art form when selecting Other.');
+      setApiError('Please describe your art form when selecting Other.');
       return;
     }
 
-    // Store in session storage to persist through the multi-step flow
-    sessionStorage.setItem(
-      'onboarding_artist_data',
-      JSON.stringify({ ...formData, step: 1 })
-    );
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/onboarding/artist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          artForm: formData.artForm,
+          otherArtForm: formData.otherArtForm,
+          tags: tags,
+          city: formData.city,
+          country: formData.country,
+          bio: formData.bio,
+          profilePhotoUrl: profilePhotoUrl || undefined,
+        }),
+      });
 
-    // Proceed to the next step (e.g., packages, gallery, or pricing)
-    router.push('/onboarding/package');
+      const data = await res.json();
+
+      if (!res.ok) {
+        setApiError(data.error || 'Something went wrong. Please try again.');
+        return;
+      }
+
+      // Also keep sessionStorage for the package page to reference artForm
+      sessionStorage.setItem(
+        'onboarding_artist_data',
+        JSON.stringify({ ...formData, step: 1, artistId: data.artist?.id })
+      );
+
+      router.push('/onboarding/package');
+    } catch {
+      setApiError('Network error. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  /**
-   * LOADING STATE
-   */
+  // ── Loading state ─────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-body-lg font-body-lg text-on-surface-variant animate-pulse">
             Authenticating...
           </p>
@@ -139,9 +210,7 @@ export default function ArtistOnboardingPage() {
     );
   }
 
-  // Final safety check: if we are here but don't have a user, 
-  // don't render the form to prevent "undefined" errors
-  // if (!user) return null;
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -150,7 +219,7 @@ export default function ArtistOnboardingPage() {
         <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
         <div className="hidden md:flex items-center gap-base">
           <span className="text-label-mono font-label-mono text-primary bg-primary-container/10 px-3 py-1 rounded-full">
-            Step 1 of 4
+            Step 1 of 3
           </span>
         </div>
         <button
@@ -167,7 +236,7 @@ export default function ArtistOnboardingPage() {
           {/* Mobile Step Indicator */}
           <div className="md:hidden mb-gutter text-center">
             <span className="text-label-mono font-label-mono text-primary bg-primary-container/10 px-3 py-1 rounded-full">
-              Step 1 of 4
+              Step 1 of 3
             </span>
           </div>
 
@@ -177,15 +246,67 @@ export default function ArtistOnboardingPage() {
                 Artist Profile
               </h1>
               <p className="text-body-md font-body-md text-on-surface-variant">
-                Tell us who you are. This information will help us build your professional protfolio and personal webpage.
+                Tell us who you are. This information will help us build your professional portfolio
+                and personal webpage.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-gutter">
+              {/* Error banner */}
+              {apiError && (
+                <div className="rounded-lg bg-error/10 border border-error/20 px-4 py-3 text-sm text-error">
+                  {apiError}
+                </div>
+              )}
+
+              {/* Profile photo */}
+              <div className="flex flex-col items-center gap-3 pb-2">
+                <label htmlFor="photo-upload" className="cursor-pointer group relative">
+                  <div className="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant group-hover:border-primary transition-colors overflow-hidden flex items-center justify-center bg-surface-container">
+                    {photoPreview ? (
+                      <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-on-surface-variant group-hover:text-primary transition-colors">
+                        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                      </div>
+                    )}
+                    {/* Overlay on hover */}
+                    {photoPreview && (
+                      <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  {uploading && (
+                    <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                </label>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handlePhotoChange}
+                  disabled={uploading}
+                />
+                <span className="text-xs text-on-surface-variant">
+                  {uploading ? 'Uploading...' : photoPreview ? 'Click photo to change' : 'Add profile photo'}
+                </span>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
                 {/* Full Name */}
                 <div className="flex flex-col gap-xs">
-                  <label htmlFor="fullName" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                  <label
+                    htmlFor="fullName"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
                     Full Name *
                   </label>
                   <input
@@ -202,7 +323,10 @@ export default function ArtistOnboardingPage() {
 
                 {/* Profile Tags */}
                 <div className="flex flex-col gap-xs">
-                  <label htmlFor="tags" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                  <label
+                    htmlFor="tags"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
                     Profile Tags
                   </label>
                   {tags.length > 0 && (
@@ -232,7 +356,10 @@ export default function ArtistOnboardingPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
                 {/* Primary Art Form */}
                 <div className="flex flex-col gap-xs">
-                  <label htmlFor="artForm" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                  <label
+                    htmlFor="artForm"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
                     Primary Art Form *
                   </label>
                   <select
@@ -258,7 +385,10 @@ export default function ArtistOnboardingPage() {
                   </select>
                   {formData.artForm === 'other' && (
                     <div className="flex flex-col gap-xs pt-4">
-                      <label htmlFor="otherArtForm" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                      <label
+                        htmlFor="otherArtForm"
+                        className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                      >
                         Other art form *
                       </label>
                       <input
@@ -277,7 +407,10 @@ export default function ArtistOnboardingPage() {
 
                 {/* City */}
                 <div className="flex flex-col gap-xs">
-                  <label htmlFor="city" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                  <label
+                    htmlFor="city"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
                     City *
                   </label>
                   <input
@@ -286,7 +419,7 @@ export default function ArtistOnboardingPage() {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="Nairobi"
+                    placeholder="Kampala"
                     className="w-full"
                     required
                   />
@@ -294,7 +427,10 @@ export default function ArtistOnboardingPage() {
 
                 {/* Country */}
                 <div className="flex flex-col gap-xs">
-                  <label htmlFor="country" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                  <label
+                    htmlFor="country"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
                     Country *
                   </label>
                   <input
@@ -303,7 +439,7 @@ export default function ArtistOnboardingPage() {
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
-                    placeholder="Kenya"
+                    placeholder="Uganda"
                     className="w-full"
                     required
                   />
@@ -313,10 +449,17 @@ export default function ArtistOnboardingPage() {
               {/* Bio Section */}
               <div className="flex flex-col gap-xs">
                 <div className="flex justify-between items-center">
-                  <label htmlFor="bio" className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs">
+                  <label
+                    htmlFor="bio"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
                     Your Bio
                   </label>
-                  <span className={`text-label-mono font-label-mono text-[10px] ${wordCount > 300 ? 'text-error' : 'text-on-surface-variant'}`}>
+                  <span
+                    className={`text-label-mono font-label-mono text-[10px] ${
+                      wordCount > 300 ? 'text-error' : 'text-on-surface-variant'
+                    }`}
+                  >
                     {wordCount}/300 words recommended
                   </span>
                 </div>
@@ -325,11 +468,10 @@ export default function ArtistOnboardingPage() {
                   name="bio"
                   value={formData.bio}
                   onChange={handleInputChange}
-                  maxLength={300}
                   placeholder="A brief introduction to who you are and your artistic journey. This will be showcased on your profile, so make it resonate with your audience."
                   className="w-full resize-none min-h-[100px]"
                   rows={3}
-                ></textarea>
+                />
                 <p className="text-caption font-caption text-on-surface-variant italic">
                   Keep it resonant. This is your primary greeting to the community.
                 </p>
@@ -346,10 +488,20 @@ export default function ArtistOnboardingPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 bg-primary text-white text-body-md font-semibold px-12 py-3 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all"
+                  disabled={submitting}
+                  className="flex items-center justify-center gap-2 bg-primary text-white text-body-md font-semibold px-12 py-3 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <span>Continue</span>
-                  <span className="text-xl">→</span>
+                  {submitting ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Continue</span>
+                      <span className="text-xl">→</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

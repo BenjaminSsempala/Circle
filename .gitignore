@@ -9,3 +9,6 @@ npm-debug.log
 *.log
 *.sqlite
 /.turbo/
+.claude/settings.json
+.claude/
+apps/web/tsconfig.tsbuildinfo
