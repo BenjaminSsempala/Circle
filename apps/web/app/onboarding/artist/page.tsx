@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import '../../auth/auth.css';
@@ -24,6 +24,9 @@ export default function ArtistOnboardingPage() {
   const [wordCount, setWordCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const slugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Derived tag chips from the comma-separated input
   const tags = formData.tags
@@ -131,6 +134,29 @@ export default function ArtistOnboardingPage() {
   };
 
   // ── Form handlers ─────────────────────────────────────────────────────────
+  function toSlug(name: string) {
+    return name.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
+  function checkSlug(value: string) {
+    if (!value) { setSlugStatus('idle'); return; }
+    setSlugStatus('checking');
+    if (slugTimer.current) clearTimeout(slugTimer.current);
+    slugTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/artists/check-slug?slug=${encodeURIComponent(value)}`);
+        const data = await res.json();
+        setSlugStatus(data.available ? 'available' : 'taken');
+      } catch { setSlugStatus('idle'); }
+    }, 400);
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    setSlug(val);
+    checkSlug(val);
+  }
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -142,6 +168,12 @@ export default function ArtistOnboardingPage() {
     }));
     if (name === 'bio') {
       setWordCount(value.trim().split(/\s+/).filter((w) => w.length > 0).length);
+    }
+    // Auto-generate slug from name if the user hasn't manually edited it
+    if (name === 'fullName') {
+      const generated = toSlug(value);
+      setSlug(generated);
+      checkSlug(generated);
     }
   };
 
@@ -172,6 +204,7 @@ export default function ArtistOnboardingPage() {
           country: formData.country,
           bio: formData.bio,
           profilePhotoUrl: profilePhotoUrl || undefined,
+          customSlug: slug || undefined,
         }),
       });
 
@@ -319,6 +352,47 @@ export default function ArtistOnboardingPage() {
                     className="w-full"
                     required
                   />
+                </div>
+
+                {/* Profile link / slug */}
+                <div className="flex flex-col gap-xs">
+                  <label
+                    htmlFor="slug"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                  >
+                    Your Circle link
+                  </label>
+                  <div className="flex items-center border border-outline-variant/40 rounded-lg overflow-hidden focus-within:border-primary bg-surface">
+                    <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant text-sm border-r border-outline-variant/30 whitespace-nowrap">
+                      circle.co/
+                    </span>
+                    <input
+                      type="text"
+                      id="slug"
+                      value={slug}
+                      onChange={handleSlugChange}
+                      placeholder="your-name"
+                      className="flex-1 px-3 py-2.5 text-sm text-on-surface bg-surface focus:outline-none"
+                    />
+                    <span className="px-3 py-2.5 shrink-0">
+                      {slugStatus === 'checking' && (
+                        <span className="text-on-surface-variant text-xs">…</span>
+                      )}
+                      {slugStatus === 'available' && (
+                        <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
+                          ✓ Available
+                        </span>
+                      )}
+                      {slugStatus === 'taken' && (
+                        <span className="inline-flex items-center gap-1 bg-error/10 text-error text-xs font-semibold px-2 py-0.5 rounded-full">
+                          ✗ Taken
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <p className="text-caption font-caption text-on-surface-variant">
+                    This is your permanent booking link — you can change it later.
+                  </p>
                 </div>
 
                 {/* Profile Tags */}

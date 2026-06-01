@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Hearth | Audience Bookings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#84d6b9",
+                    "surface": "#fcf9f8",
+                    "tertiary": "#00543f",
+                    "on-tertiary-fixed-variant": "#00513d",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#ffb870",
+                    "on-background": "#1c1b1b",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#a0f3d4",
+                    "primary-container": "#0f6e56",
+                    "secondary-fixed": "#ffdcbe",
+                    "surface-container": "#f0eded",
+                    "outline-variant": "#bec9c3",
+                    "outline": "#6f7a74",
+                    "secondary": "#88520e",
+                    "on-tertiary-container": "#85f1ca",
+                    "surface-tint": "#086b53",
+                    "on-primary-fixed-variant": "#00513e",
+                    "on-primary-container": "#9aedcf",
+                    "inverse-primary": "#84d6b9",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "on-secondary-container": "#774400",
+                    "surface-dim": "#dcd9d9",
+                    "primary": "#005440",
+                    "surface-container-high": "#eae7e7",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#2d1600",
+                    "tertiary-fixed-dim": "#6edab4",
+                    "tertiary-container": "#006f54",
+                    "on-surface": "#1c1b1b",
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#feb56b",
+                    "surface-container-highest": "#e5e2e1",
+                    "tertiary-fixed": "#8af7cf",
+                    "on-tertiary-fixed": "#002117",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf9f8",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#3f4944",
+                    "on-primary-fixed": "#002117",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-variant": "#e5e2e1",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#fcf9f8",
+                    "inverse-surface": "#313030",
+                    "inverse-on-surface": "#f3f0ef"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "24px",
+                    "margin-mobile": "16px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "sm": "12px",
+                    "gutter": "24px",
+                    "lg": "48px",
+                    "margin-desktop": "64px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-mono": ["JetBrains Mono"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "caption": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "label-mono": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { background-color: #F5F3EF; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(225, 245, 238, 0.5);
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
+<div class="flex items-center gap-lg">
+<span class="text-headline-md font-headline-md font-bold text-primary">Digital Hearth</span>
+<div class="hidden md:flex gap-md">
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Explore</a>
+<a class="text-primary font-bold border-b-2 border-primary hover:text-secondary transition-colors duration-200" href="#">My Gigs</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Messages</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Portfolio</a>
+</div>
+</div>
+<div class="flex items-center gap-base">
+<button class="p-2 text-on-surface-variant active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<img alt="Artist profile avatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed shadow-sm" data-alt="A professional studio portrait of a young East African woman with a creative, confident expression. She has natural hair and is wearing a modern, minimalist linen garment. The lighting is warm and cinematic, suggesting a high-end creative professional. The background is a soft, neutral studio tone that emphasizes her features and professional demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgvC-u2Y85OggfA9VI4ORUeNq0GMJ-rbxTlps3mQ5pAjAHOijv9_jdIORkV-3gg4jznNTXD-tYhuAoNjEMu-N5u6MGj9qrUvxz92YuexTgMKWPkbW1FHK2V_DCOCCuobZ79eiqMf_bXkf--gBbvGTkFDKS5bvg_8PjqRhmAb8kGtrsibsQg0uUCDnbtITNx1WOfAvENTDqyl7k_FrxiSbZ5BlFQ0n23PMfdiebmSpToMVl7Ou_trQmjKGVNR7thlCa7nJks_hvgAI"/>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="max-w-5xl mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+<!-- Header & Tabs Section -->
+<header class="mb-lg space-y-md">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-primary tracking-tight">Booking Management</h1>
+<p class="text-body-md text-on-surface-variant max-w-2xl">Manage your upcoming performances, track past engagements, and handle cancellations within the Digital Hearth ecosystem.</p>
+</div>
+<!-- Custom Tabs -->
+<div class="flex items-center gap-base border-b border-outline-variant overflow-x-auto pb-px">
+<button class="px-md py-3 text-body-md font-bold text-primary border-b-2 border-primary transition-all whitespace-nowrap">Upcoming</button>
+<button class="px-md py-3 text-body-md font-medium text-on-surface-variant hover:text-primary transition-all whitespace-nowrap">Past</button>
+<button class="px-md py-3 text-body-md font-medium text-on-surface-variant hover:text-primary transition-all whitespace-nowrap">Cancelled</button>
+</div>
+</header>
+<!-- Booking Rows Container -->
+<div class="space-y-md">
+<!-- Row 1: Upcoming (Active) -->
+<div class="glass-card rounded-xl p-md flex flex-col md:flex-row items-center gap-md hover:shadow-md transition-all group">
+<!-- Date Block -->
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg min-w-[80px] h-20 shadow-inner">
+<span class="text-headline-md font-headline-md leading-none">12</span>
+<span class="text-caption font-label-mono uppercase tracking-widest">Oct</span>
+</div>
+<!-- Artist & Info -->
+<div class="flex flex-1 items-center gap-md w-full">
+<img alt="Artist Profile" class="w-14 h-14 rounded-full object-cover border-2 border-primary-fixed shadow-sm" data-alt="A close-up portrait of a Tanzanian male artist with thoughtful eyes, wearing traditional beaded accessories subtly blended with a modern dark polo shirt. The lighting is low-key with golden hour warmth, casting soft shadows. The setting is an intimate, warmly lit creative studio with hints of traditional East African textiles in the blurred background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgces1BOEXTGp6p_AfGxwRqRY3trxn86GUzfF8NXy293l6EExhur8tgYtx3enQ3qC2QlLdLxuRiU16t2tL9E6p0h_TfJRozvBM56-nlF3TxSUDNrer-XygSBQlLmtnxGK6j0qBs6tJHiP-5Q9VSBpc3ZQY7PD3czcLlgoBSU9M_kBZH0_64FkP_ax3ftthUxo8tixCi1GCj6fsdu0cd2UKijW6TaQbnjXsAVdPRmFjLIYsLAy1pA5SGc_RV2GZihIaESpVxd3h714"/>
+<div class="flex-1">
+<h3 class="text-body-lg font-bold text-primary">Kibali Mwanzo</h3>
+<p class="text-body-md text-on-surface-variant">Traditional Fusion Performance</p>
+</div>
+</div>
+<!-- Package & Price -->
+<div class="hidden lg:flex flex-col items-end px-lg">
+<span class="text-label-mono text-on-surface-variant">FULL SESSION</span>
+<span class="text-body-lg font-bold text-secondary">KES 45,000</span>
+</div>
+<!-- Status & Action -->
+<div class="flex items-center gap-md w-full md:w-auto justify-between md:justify-end">
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-caption font-label-mono">CONFIRMED</span>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-medium hover:bg-tertiary transition-colors active:scale-95 duration-150">View details</button>
+</div>
+</div>
+<!-- Row 2: Upcoming (Soon) -->
+<div class="glass-card rounded-xl p-md flex flex-col md:flex-row items-center gap-md hover:shadow-md transition-all group">
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg min-w-[80px] h-20 shadow-inner">
+<span class="text-headline-md font-headline-md leading-none">18</span>
+<span class="text-caption font-label-mono uppercase tracking-widest">Oct</span>
+</div>
+<div class="flex flex-1 items-center gap-md w-full">
+<img alt="Artist Profile" class="w-14 h-14 rounded-full object-cover border-2 border-primary-fixed shadow-sm" data-alt="A portrait of an Ethiopian female poet and performer in a bright, sun-drenched cafe. She is laughing naturally, wearing a vibrant yellow scarf. The image captures a candid, authentic moment of creative energy. The background is softly blurred with warm wooden textures and natural light filtering through leaves." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzk-GJkiG96OfgxOYUgYoqrwyvwJPOAaoZ4VYxXHMcrg2QQNffGZTyv3zPVPY_rH13D4VN_LUHLS4SMKgpwKWwWJJkz8-P-osAzTzhvKH_4felbUbAl8qXoFiNgPExnmmyOXrg3bYPs9Cj9Bcm2CiOilFgOcSHSi29ZaXX9Y2hSto8ub15CIlPH8pmDdSrqsGUn1Zx7hpGc1NKUoxuXhBkuLFC4Kzu6hPu84zB3gBfHLjUQiM1z_sFc2qII2H3FjDfb3olP5OtimQ"/>
+<div class="flex-1">
+<h3 class="text-body-lg font-bold text-primary">Zala Tefera</h3>
+<p class="text-body-md text-on-surface-variant">Poetry &amp; Spoken Word</p>
+</div>
+</div>
+<div class="hidden lg:flex flex-col items-end px-lg">
+<span class="text-label-mono text-on-surface-variant">SOLO PERFORMANCE</span>
+<span class="text-body-lg font-bold text-secondary">KES 28,000</span>
+</div>
+<div class="flex items-center gap-md w-full md:w-auto justify-between md:justify-end">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-caption font-label-mono">PENDING</span>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-medium hover:bg-tertiary transition-colors active:scale-95 duration-150">View details</button>
+</div>
+</div>
+<!-- Row 3: Past (Demonstrating conditional styles) -->
+<div class="glass-card rounded-xl p-md flex flex-col md:flex-row items-center gap-md opacity-75 hover:opacity-100 transition-all group">
+<div class="flex flex-col items-center justify-center bg-outline-variant text-on-surface-variant rounded-lg min-w-[80px] h-20">
+<span class="text-headline-md font-headline-md leading-none">05</span>
+<span class="text-caption font-label-mono uppercase tracking-widest">Sep</span>
+</div>
+<div class="flex flex-1 items-center gap-md w-full">
+<img alt="Artist Profile" class="w-14 h-14 rounded-full object-cover border-2 border-outline-variant shadow-sm" data-alt="A dignified Kenyan musician sitting with a traditional stringed instrument in a high-end, modern lounge. The lighting is sophisticated and moody, focusing on the texture of the instrument and the concentrated expression on his face. The color palette is rich with earth tones, deep greens, and amber highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO5hSkNnbg7s6DGd4SOF--0etbO6UUDhIpPgKYtkbWCeaLdcEZ9FD1pZCtuQz7V6rQd2-XtngFi01DGXxyTZQ6RFNExYGRGbdfA8T5OkwhkRataO6QElV3tk_vUY5N3ycwZXWQA31Z_WVk8WG-XO1GkcMhVyRbnXKj49x-tl1M3NvfIpfseaWXACOsz_vu7MKwcoH4g0XD9IEt_BpKnjGybyxIpHRrB960B6_Rsh8-mors0C85Qra6P21sSjl-jbCsu1xugqSmYAQ"/>
+<div class="flex-1">
+<h3 class="text-body-lg font-bold text-primary">Baraka Juma</h3>
+<p class="text-body-md text-on-surface-variant">Evening Acoustic Set</p>
+</div>
+</div>
+<div class="hidden lg:flex flex-col items-end px-lg">
+<span class="text-label-mono text-on-surface-variant">PREMIUM BUNDLE</span>
+<span class="text-body-lg font-bold text-secondary">KES 52,000</span>
+</div>
+<div class="flex items-center gap-md w-full md:w-auto justify-between md:justify-end">
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant text-caption font-label-mono">PAST</span>
+<button class="border border-primary text-primary px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-on-primary transition-all active:scale-95 duration-150">Confirm complete</button>
+</div>
+</div>
+</div>
+<!-- Asymmetric Layout Benefit Section -->
+<section class="mt-xl grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="md:col-span-2 glass-card rounded-xl p-lg bg-primary-container text-on-primary-container relative overflow-hidden">
+<div class="relative z-10">
+<h2 class="text-headline-md font-headline-md mb-base">Booking Analytics</h2>
+<p class="text-body-md opacity-90 mb-md">You've reached 85% of your engagement goal for the quarter. Great job supporting the community!</p>
+<button class="bg-secondary-container text-on-secondary-container px-md py-base rounded-lg font-bold active:scale-95 transition-transform">View Insights</button>
+</div>
+<div class="absolute -right-12 -bottom-12 opacity-10">
+<span class="material-symbols-outlined text-[160px]" data-icon="auto_graph">auto_graph</span>
+</div>
+</div>
+<div class="glass-card rounded-xl p-lg border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-center gap-base">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="add_circle">add_circle</span>
+<p class="text-body-md font-bold text-primary">Book a new artist</p>
+<p class="text-caption text-on-surface-variant px-md">Find the perfect talent for your next intimate gathering.</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-base bg-surface-container border-t border-outline-variant">
+<div class="flex flex-col items-center md:items-start">
+<span class="text-headline-md font-headline-md text-primary mb-2">Digital Hearth</span>
+<p class="text-caption text-on-surface-variant">© 2024 Digital Hearth. Connecting African Artistry.</p>
+</div>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Contact</a>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface border-t border-outline-variant rounded-t-xl shadow-lg">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-caption font-caption">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined" data-icon="event_note" data-weight="fill" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="text-caption font-caption">Gigs</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-caption font-caption">Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-caption font-caption">Profile</span>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for tabs
+        const tabs = document.querySelectorAll('.flex.items-center.gap-base button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('text-primary', 'font-bold', 'border-b-2', 'border-primary');
+                    t.classList.add('text-on-surface-variant', 'font-medium');
+                });
+                tab.classList.remove('text-on-surface-variant', 'font-medium');
+                tab.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary');
+            });
+        });
+    </script>
+</body></html>

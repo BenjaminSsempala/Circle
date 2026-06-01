@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { renderToBuffer, Document, Page, View, Text, Image, Link, StyleSheet, Font } from '@react-pdf/renderer';
+import { renderToBuffer, Document, Page, View, Text, Image, Link, StyleSheet } from '@react-pdf/renderer';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -194,7 +194,7 @@ function formatPrice(price: number, currency: string) {
 
 const SOCIAL_LABELS: Record<string, string> = {
   youtube: 'YouTube', spotify: 'Spotify', tiktok: 'TikTok',
-  instagram: 'Instagram', soundcloud: 'SoundCloud', linkedin: 'LinkedIn', twitter: 'X / Twitter',
+  instagram: 'Instagram', soundcloud: 'SoundCloud', linkedin: 'LinkedIn', twitter: 'X / Twitter', website: 'Website',
 };
 
 // ─── Document ─────────────────────────────────────────────────────────────────

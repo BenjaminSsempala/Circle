@@ -113,7 +113,7 @@ export default function SignupPage() {
   }
 
   // Step 3 — write role to profiles table, then route to onboarding
-  async function handleRoleSelect(role: 'artist' | 'organiser') {
+  async function handleRoleSelect(role: 'artist' | 'audience') {
     setLoading(true);
     setError(null);
     console.log('Role selection started for role:', role);
@@ -149,7 +149,7 @@ export default function SignupPage() {
     // 3. Use a small delay to allow state to settle, then hard redirect
     // This breaks the "Infinite Loading" loop seen in your logs
     setTimeout(() => {
-      window.location.href = role === 'organiser' ? '/onboarding/organiser' : '/onboarding/artist';
+      window.location.href = role === 'audience' ? '/discover' : '/onboarding/artist';
     }, 100);
 
   } catch (err: any) {
@@ -288,13 +288,13 @@ export default function SignupPage() {
           </button>
 
           <button
-            onClick={() => handleRoleSelect('organiser')} disabled={loading}
+            onClick={() => handleRoleSelect('audience')} disabled={loading}
             className="w-full p-6 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all text-left disabled:opacity-50"
           >
             <div className="text-2xl mb-2">🎪</div>
-            <h3 className="text-headline-md font-headline-md text-primary mb-1">I'm an Organiser</h3>
+            <h3 className="text-headline-md font-headline-md text-primary mb-1">I'm in the Audience</h3>
             <p className="text-body-md font-body-md text-on-surface-variant">
-              Find and book vetted talent for my events
+              Find and book artists for your events or occasions
             </p>
           </button>
 

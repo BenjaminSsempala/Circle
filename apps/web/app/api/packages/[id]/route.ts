@@ -19,9 +19,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return err('Invalid JSON'); }
 
-  const { name, description, price, currency, duration, logisticsInclusive } = body as {
+  const { name, description, price, currency, duration, logisticsInclusive, is_active } = body as {
     name?: string; description?: string; price?: number;
     currency?: string; duration?: string; logisticsInclusive?: boolean;
+    is_active?: boolean;
   };
 
   if (!name || price === undefined || !description) return err('name, price, and description are required');
@@ -31,6 +32,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     name, description: description ?? '', price: Number(price),
     currency: currency ?? 'UGX', duration: duration ?? '1 hour',
     logisticsInclusive: logisticsInclusive ?? false,
+    isActive: is_active,
   });
 
   if (!result.ok) return err(result.error, 500);

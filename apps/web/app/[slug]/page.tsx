@@ -1,12 +1,14 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { getArtistBySlug } from '@/lib/services/artists';
+import { getArtistBySlug, getRedirectSlug } from '@/lib/services/artists';
+import { getArtistEvents } from '@/lib/services/events';
 import { OwnerBar } from './_components/OwnerBar';
 import { EditableProfileHeader } from './_components/EditableProfileHeader';
 import { EditableBio } from './_components/EditableBio';
 import { PackagesSection } from './_components/PackagesSection';
 import { SelectedWorksGrid } from './_components/SelectedWorksGrid';
+import { EventsSection } from './_components/EventsSection';
 import type { Work } from '@/lib/services/artists';
 
 export default async function ArtistProfilePage({ params }: { params: { slug: string } }) {
@@ -15,10 +17,17 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
     createClient(),
   ]);
 
-  if (!result.ok) return notFound();
+  if (!result.ok) {
+    const currentSlug = await getRedirectSlug(params.slug);
+    if (currentSlug) permanentRedirect(`/${currentSlug}`);
+    return notFound();
+  }
 
   const { artist, packages } = result;
-  const { data: { user } } = await supabase.auth.getUser();
+  const [{ data: { user } }, events] = await Promise.all([
+    supabase.auth.getUser(),
+    getArtistEvents(artist.id),
+  ]);
   const isOwner = !!user && user.id === artist.user_id;
 
   return (
@@ -57,10 +66,21 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
       )}
 
       {/* Main */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
+      <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-10 py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
 
-        {/* Left column */}
-        <div className="md:col-span-8 flex flex-col gap-lg">
+        {/* Left column — events */}
+        <div className="md:col-span-3 relative order-last md:order-first">
+          <div className="sticky top-24">
+            <EventsSection
+              initialEvents={events}
+              isOwner={isOwner}
+              artistSlug={artist.slug}
+            />
+          </div>
+        </div>
+
+        {/* Centre column — main content */}
+        <div className="md:col-span-6 flex flex-col gap-lg">
           <EditableProfileHeader
             artist={{
               name: artist.name,
@@ -82,8 +102,8 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
           />
         </div>
 
-        {/* Right column — sticky packages */}
-        <div className="md:col-span-4 relative">
+        {/* Right column — packages */}
+        <div className="md:col-span-3 relative">
           <div className="sticky top-24">
             <PackagesSection packages={packages} isOwner={isOwner} />
           </div>

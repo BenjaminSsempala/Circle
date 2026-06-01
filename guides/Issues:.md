@@ -3,6 +3,7 @@ Signup Issues:
 
 Onboarding:
 - Onboarding organiser
+- After user signup, add welcome emails
 - Allow choosing slug, allow editing slug?
 
 Profile page
@@ -11,4 +12,6 @@ Profile page
 - Spotify in player is really slow on the Selected works section
 - Design exported rate cards and profile images and pdf structure
 
+
 Dashboard:
+- 

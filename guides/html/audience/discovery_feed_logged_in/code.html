@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#84d6b9",
+                        "surface": "#fcf9f8",
+                        "tertiary": "#00543f",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#ffb870",
+                        "on-background": "#1c1b1b",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#a0f3d4",
+                        "primary-container": "#0f6e56",
+                        "secondary-fixed": "#ffdcbe",
+                        "surface-container": "#f0eded",
+                        "outline-variant": "#bec9c3",
+                        "outline": "#6f7a74",
+                        "secondary": "#88520e",
+                        "on-tertiary-container": "#85f1ca",
+                        "surface-tint": "#086b53",
+                        "on-primary-fixed-variant": "#00513e",
+                        "on-primary-container": "#9aedcf",
+                        "inverse-primary": "#84d6b9",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "on-secondary-container": "#774400",
+                        "surface-dim": "#dcd9d9",
+                        "primary": "#005440",
+                        "surface-container-high": "#eae7e7",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#2d1600",
+                        "tertiary-fixed-dim": "#6edab4",
+                        "tertiary-container": "#006f54",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#feb56b",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-fixed": "#8af7cf",
+                        "on-tertiary-fixed": "#002117",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#3f4944",
+                        "on-primary-fixed": "#002117",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-variant": "#e5e2e1",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#fcf9f8",
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f3f0ef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "margin-desktop": "64px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "label-mono": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #F5F3EF;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-surface sticky top-0 z-50 shadow-sm">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
+<div class="flex items-center gap-base">
+<div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<span class="text-headline-md font-headline-md font-bold text-primary">Digital Hearth</span>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary hover:text-secondary transition-colors duration-200 py-1" href="#">Explore</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">My Gigs</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Messages</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Portfolio</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary active:scale-90 transition-transform" data-icon="notifications">notifications</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed cursor-pointer active:scale-95 transition-transform">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a creative individual in a modern, sunlit East African studio environment. The person has a friendly expression, wearing contemporary fashion that blends traditional patterns with modern tailoring. The lighting is soft and golden, echoing the warmth of a digital hearth aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh1hkHcVCzaOKZOEG0LCymJyuvAgYe6LnG7Uvs97nWwZaxP8a4EpSkf7eQlv1i-6USwjYRIRk5XUOMY8XnstP9j9KycOjTysbWQoh8kaqRFrAK0YqAcUdxKTsN5t8aJbX9lI7KRpVBkphw1gY8Z7Z2CL3G7ULmysndWrwxJMNqe5dMq2-s8tf_mVtW2nmOJ096G8OZwhczxfNHkhWzUmj9xDn_AoW6audZwy5rn6VXM4z8bdeLCDfWpOwRRRruNvAOg4nQuM8JXsg"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop pt-md pb-xl">
+<!-- Filter & Search Section -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-lg">
+<div class="flex flex-wrap items-center gap-base">
+<button class="bg-primary-container text-on-primary-container px-md py-xs rounded-full font-label-mono text-label-mono hover:opacity-90 transition-opacity flex items-center gap-xs">
+                    Poet
+                    <span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+<button class="bg-primary-light text-primary px-md py-xs rounded-full font-label-mono text-label-mono hover:bg-primary-fixed transition-colors">Dancer</button>
+<button class="bg-primary-light text-primary px-md py-xs rounded-full font-label-mono text-label-mono hover:bg-primary-fixed transition-colors">Visual Artist</button>
+<button class="bg-primary-light text-primary px-md py-xs rounded-full font-label-mono text-label-mono hover:bg-primary-fixed transition-colors">Musician</button>
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+<div class="relative w-full md:w-80">
+<div class="absolute left-md top-1/2 -translate-y-1/2 text-primary-mid">
+<span class="material-symbols-outlined text-[20px]" data-icon="location_on">location_on</span>
+</div>
+<input class="w-full pl-xl pr-md py-base bg-surface-container-lowest border-outline-variant border rounded-xl font-body-md focus:border-primary-container focus:ring-0 transition-all outline-none" type="text" value="Kampala, Uganda"/>
+</div>
+</section>
+<!-- Discovery Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Artist Card 1: Benjamin -->
+<div class="group bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-primary-light/30">
+<div class="relative aspect-[4/5]">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A cinematic portrait of a charismatic East African performance poet named Benjamin, performing on a warm-lit stage in Kampala. He is wearing a minimalist dark green linen shirt, gesturing expressively with his hands. The background is a soft-focus intimate café setting with golden string lights and a rich, creative atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKnOF80kYKHnPQELYgQU0-9llxMDObuGT39voeSkYmWLE2pV5RIiLRghQFqpOBh6CjAThg42aqtG5lhilyJjJ-cQP6MnPE7EUBu1m2tWeDI1tW54LamKfFBcxQKzs9930-780AkKDG2y-fTKEW1EXT5UdqT4Kmisyhibby8zwLT8qENqEcVxL1JjYYa69NIwV5cmsypuTH1aiQfvKxWtgZ4_QkEVGWBXkvfPouSxkg6FKo3aKhiWsswhg2tdehAqXzLusLSBZnTzY"/>
+<button class="absolute top-md right-md w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<div class="absolute bottom-md left-md">
+<span class="bg-secondary-container text-on-secondary-container font-label-mono text-caption px-base py-xs rounded-lg uppercase tracking-wider">Top Rated</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Benjamin M.</h3>
+<div class="flex items-center gap-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono text-caption">4.9</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md line-clamp-2 mb-md">Spoken word artist weaving contemporary Ugandan narratives with ancestral rhythms.</p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Poetry</span>
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Kampala</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-base rounded-lg font-bold hover:bg-tertiary transition-colors active:scale-95">Book Now</button>
+</div>
+</div>
+<!-- Artist Card 2: Jaytham -->
+<div class="group bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-primary-light/30">
+<div class="relative aspect-[4/5]">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant shot of a talented young woman named Jaytham, a visual poet and muralist. She is captured in a sun-drenched Kampala studio surrounded by canvas and paint jars. The lighting is natural and high-contrast, highlighting the textures of her workspace. The mood is professional, creative, and focused, with a palette of deep teal and soft earth tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGa9Ab-yK3nU4jGPE6K-CTmzJjffcZZuT0hj4Domns1U-IIjNI8j0MH9hHWA1zZNKkWK4Dwbv_V3tdqyDFMhm5qWm7LqdbcXs2CXhmgowXf3vMKFjyjh2ArCc84vDwoPD1kf_jr8ESd7r9oq2Xl480P6sBQ5PxH7xucUONEYyjIok2O7ILfL3CPgbDv7mARlrCBk5amxHUCACP7LPAQiQVW4ws8r9NMefPpqChI_hk7ft-oljSDp6OZo9CWIvxEDsnoYNgvLipxBY"/>
+<button class="absolute top-md right-md w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Jaytham K.</h3>
+<div class="flex items-center gap-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono text-caption">5.0</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md line-clamp-2 mb-md">Multimedia storyteller focusing on the intersection of digital art and oral tradition.</p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#VisualArts</span>
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Digital</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-base rounded-lg font-bold hover:bg-tertiary transition-colors active:scale-95">Book Now</button>
+</div>
+</div>
+<!-- Artist Card 3: Generic Poet 1 -->
+<div class="group bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-primary-light/30">
+<div class="relative aspect-[4/5]">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A portrait of a male poet performing in an open-air amphitheater at dusk. The lighting is dramatic, with warm artificial lights clashing against the deep blue twilight sky. He is wearing a modern patterned blazer, holding a single sheet of paper. The composition is dynamic and full of rhythmic energy, emphasizing the cultural heartbeat of East Africa." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMNaINJBL5NI4iD1pzUl3xJvslDRBDZ9Agv7eJ-WOauc7RUgaLY8H-iA59F8UfNe_aECUORBo2St4dsQsesL8f521WmpDT-24VmUGhzj7KQicekdLhyBcpp69htoQKPy91mWH8rhOXlYfiW_1G-PqL3CWqMsrDBudNS8A_zaIs4x9i_GhAyGFVFvX4H9k-333zTUzhWN6S6nUSDVyrLBSv3_lIwkO7iIfDRVQTCe5xNOJzk9cq3fweDXwTI6IWtsV-sS7f7qOytec"/>
+<button class="absolute top-md right-md w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Otim Daniel</h3>
+<div class="flex items-center gap-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono text-caption">4.7</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md line-clamp-2 mb-md">Classical Luganda poetry specialist bringing ancient forms to modern corporate events.</p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Traditional</span>
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Ganda</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-base rounded-lg font-bold hover:bg-tertiary transition-colors active:scale-95">Book Now</button>
+</div>
+</div>
+<!-- Artist Card 4: Generic Poet 2 -->
+<div class="group bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-primary-light/30">
+<div class="relative aspect-[4/5]">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A creative professional photo of a female spoken word artist standing against a textured, earthy-red wall in an urban Kampala setting. She wears bold copper jewelry and a confident expression. The midday sun creates sharp, interesting shadows, lending a modern, high-fashion editorial feel to the portrait. Professional and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaomAdtyqv9nhat2wulOgpSJnFfjSUrXur7Sv9ms2jNrZKChDTUT6DpF3H5VViHcxKciuMHgx2744HsXGLbhoquX7QeOGqxr5-fI1cbqHRhx4gqTIaX54TB0IqLyapIGds2F5TQlox1fm2GU1F2ZNK7S2pHp9CDSf7HlyXLWQ0OmOYWGUO5Wf2Vh3Vhzf208lZr0YpRnRu5R6gfLRK70_OJAwvafPZvCZ0JYq5Yf5JFi4yKcST5i1e7hNU-WawghkcMpBlM2hil88"/>
+<button class="absolute top-md right-md w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<div class="absolute bottom-md left-md">
+<span class="bg-primary-container text-on-primary-container font-label-mono text-caption px-base py-xs rounded-lg uppercase tracking-wider">New Voice</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Zahara S.</h3>
+<div class="flex items-center gap-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono text-caption">4.8</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md line-clamp-2 mb-md">Exploring themes of identity and urban resilience through rhythmic wordplay.</p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Modern</span>
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Urban</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-base rounded-lg font-bold hover:bg-tertiary transition-colors active:scale-95">Book Now</button>
+</div>
+</div>
+<!-- Repeated Grid Items for 'Infinite' feel -->
+<!-- Item 5 -->
+<div class="group bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-primary-light/30">
+<div class="relative aspect-[4/5]">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A portrait of an East African performance artist in a minimalist gallery. The space is flooded with soft natural light, highlighting the organic textures of wooden stools and linen fabrics. The artist is holding a leather-bound journal, looking thoughtfully off-camera. The overall aesthetic is clean, professional, and intimate, perfectly capturing the digital hearth spirit." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRrr3T_U7wenBLA7oeMHO07A5fDuQH4nyILIGMWj-1crvR1WyyMw_adkK35dd-RFLysnERtNxYTEGcoRVuuZPbr6CJWCxMYrcamL7aXQsjLR4X1icxuQnjV6FSsER3niiLdirzgpmzws3qB0tTFCL4q41s3a8VmmzvYF_sDh_FCXJsKqw__xRKPKrvZoeUqUj8utVvcLJ2Cu2un0uqEa_rB_mJInU9WV3nRHv0HF-zluEtaJ8k42MmLg0FVcsFeHsqd-PgjpD7aYQ"/>
+<button class="absolute top-md right-md w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Mark Akot</h3>
+<div class="flex items-center gap-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono text-caption">4.6</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md line-clamp-2 mb-md">Award-winning writer and performer known for deep emotional resonance.</p>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Writer</span>
+<span class="bg-primary-light/50 text-primary text-caption font-medium px-base py-xs rounded-full">#Stage</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-base rounded-lg font-bold hover:bg-tertiary transition-colors active:scale-95">Book Now</button>
+</div>
+</div>
+</div>
+<!-- Loading State for Infinite Scroll -->
+<div class="flex justify-center items-center py-lg mt-lg">
+<div class="w-8 h-8 border-4 border-primary-light border-t-primary rounded-full animate-spin"></div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface dark:bg-surface-container-low border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-caption font-caption">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="text-caption font-caption">Gigs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-caption font-caption">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-caption font-caption">Profile</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="w-full py-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-base bg-surface-container border-t border-outline-variant mt-xl hidden md:flex">
+<div class="flex flex-col items-start gap-xs">
+<span class="text-headline-md font-headline-md text-primary">Digital Hearth</span>
+<p class="text-body-md font-body-md text-on-surface-variant">© 2024 Digital Hearth. Connecting African Artistry.</p>
+</div>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for the heart icons
+        document.querySelectorAll('button .material-symbols-outlined').forEach(icon => {
+            if (icon.textContent === 'favorite') {
+                icon.parentElement.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const isFilled = this.querySelector('span').getAttribute('data-weight') === 'fill';
+                    if (isFilled) {
+                        this.querySelector('span').setAttribute('data-weight', '');
+                        this.querySelector('span').style.fontVariationSettings = "'FILL' 0";
+                    } else {
+                        this.querySelector('span').setAttribute('data-weight', 'fill');
+                        this.querySelector('span').style.fontVariationSettings = "'FILL' 1";
+                    }
+                });
+            }
+        });
+
+        // Simulate infinite scroll check
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                // In a real app, logic to fetch more artists would go here
+            }
+        });
+    </script>
+</body></html>

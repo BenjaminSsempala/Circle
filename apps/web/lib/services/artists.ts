@@ -1,4 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
+import { cache } from 'react';
+
+// Deduplicate across layout + page in the same server render
+export const getArtistByUserIdCached = cache(async (userId: string) => {
+  return getArtistByUserId(userId);
+});
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -76,6 +82,7 @@ export async function upsertArtistProfile(
     country: string;
     bio?: string;
     profilePhotoUrl?: string;
+    customSlug?: string;
   }
 ) {
   const supabase = await createClient();
@@ -116,8 +123,8 @@ export async function upsertArtistProfile(
     return { ok: true as const, artist: updated };
   }
 
-  // INSERT — generate a unique slug
-  let slug = generateSlug(data.name);
+  // INSERT — use custom slug if provided and valid, otherwise auto-generate
+  let slug = data.customSlug?.trim() || generateSlug(data.name);
 
   const { data: slugConflict } = await supabase
     .from('artists')
@@ -185,6 +192,7 @@ export async function patchArtistProfile(
     country: string;
     profile_photo: string;
     art_forms: string[];
+    social_links: Record<string, string>;
   }>
 ) {
   const supabase = await createClient();
@@ -209,11 +217,12 @@ export async function upsertPackage(
     currency: string;
     duration: string;
     logisticsInclusive: boolean;
+    isActive?: boolean;
   }
 ) {
   const supabase = await createClient();
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     name: data.name,
     description: data.description,
     price: data.price,
@@ -221,6 +230,7 @@ export async function upsertPackage(
     duration: data.duration,
     logistics_inclusive: data.logisticsInclusive,
   };
+  if (data.isActive !== undefined) payload.is_active = data.isActive;
 
   if (data.id) {
     const { data: pkg, error } = await supabase
@@ -372,4 +382,61 @@ export async function completeOnboarding(userId: string) {
 
   if (error) return { ok: false as const, error: error.message };
   return { ok: true as const };
+}
+
+// ─── Update slug + record old slug in history ─────────────────────────────────
+
+export async function updateArtistSlug(userId: string, newSlug: string) {
+  const supabase = await createClient();
+
+  const { data: artist, error: fetchError } = await supabase
+    .from('artists')
+    .select('id, slug')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (fetchError || !artist) return { ok: false as const, error: 'Artist not found' };
+  if (artist.slug === newSlug) return { ok: true as const };
+
+  const { data: conflict } = await supabase
+    .from('artists')
+    .select('id')
+    .eq('slug', newSlug)
+    .maybeSingle();
+
+  if (conflict) return { ok: false as const, error: 'Slug already taken' };
+
+  await supabase
+    .from('slug_history')
+    .upsert({ artist_id: artist.id, old_slug: artist.slug }, { onConflict: 'old_slug' });
+
+  const { error: updateError } = await supabase
+    .from('artists')
+    .update({ slug: newSlug })
+    .eq('id', artist.id);
+
+  if (updateError) return { ok: false as const, error: updateError.message };
+  return { ok: true as const };
+}
+
+// ─── Look up slug history for 301 redirects ───────────────────────────────────
+
+export async function getRedirectSlug(oldSlug: string): Promise<string | null> {
+  const supabase = await createClient();
+
+  const { data: history } = await supabase
+    .from('slug_history')
+    .select('artist_id')
+    .eq('old_slug', oldSlug)
+    .maybeSingle();
+
+  if (!history) return null;
+
+  const { data: artist } = await supabase
+    .from('artists')
+    .select('slug')
+    .eq('id', history.artist_id)
+    .maybeSingle();
+
+  return artist?.slug ?? null;
 }
