@@ -65,13 +65,9 @@ export async function GET(request: NextRequest) {
 
   if (profile?.role && profile?.onboarding_complete) {
     // Already fully onboarded
-    redirectPath = profile.role === 'organiser' ? '/discover' : '/dashboard';
+    redirectPath = profile.role === 'audience' ? '/discover' : '/dashboard';
   } else if (profile?.role && !profile?.onboarding_complete) {
-    // Has role but not onboarded yet
-    redirectPath =
-      profile.role === 'organiser'
-        ? '/onboarding/organiser'
-        : '/onboarding/artist';
+    redirectPath = profile.role === 'audience' ? '/discover' : '/onboarding/artist';
   }
 
   // Create response and ensure session cookies are included

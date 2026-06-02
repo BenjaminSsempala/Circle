@@ -87,7 +87,7 @@ export function GuestBlurOverlay() {
             </button>
 
             <Link href="/auth/signup?type=artist" className="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors mt-2">
-              I'm an artist — set up my profile instead
+              I'm an artist. Set up my profile instead
             </Link>
           </div>
         ) : (

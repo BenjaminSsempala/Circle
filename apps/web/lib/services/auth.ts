@@ -9,7 +9,7 @@ export async function signUpWithEmail(email: string, password: string, fullName:
     password,
     options: {
       data: { full_name: fullName },
-      emailRedirectTo: `${siteUrl}/api/auth/confirm`,
+      emailRedirectTo: `${siteUrl}/auth/confirm`,
     },
   });
 
@@ -25,6 +25,16 @@ export async function signInWithEmail(email: string, password: string) {
 
   const userId = data.user?.id;
   if (!userId) return { ok: false, error: 'User not found', status: 400 };
+
+  // Block login if email not yet confirmed
+  if (!data.user.email_confirmed_at) {
+    await supabase.auth.signOut();
+    return {
+      ok: false,
+      error: 'Please confirm your email address before logging in. Check your inbox for the confirmation link.',
+      status: 401,
+    };
+  }
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -60,6 +70,7 @@ export async function signOut() {
 }
 
 function resolveRedirectPath(role: string | null | undefined, onboardingComplete: boolean | null | undefined): string {
+  if (!role) return '/auth/signup?step=role'; // no role yet — pick one first
   if (!onboardingComplete) {
     return role === 'audience' ? '/discover' : '/onboarding/artist';
   }
@@ -87,7 +98,7 @@ export async function sendPasswordReset(email: string, siteUrl: string) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/reset-password`,
+    redirectTo: `${siteUrl}/auth/reset-password`,  // client page handles hash token
   });
 
   if (error) return { ok: false, error: error.message, status: 400 };

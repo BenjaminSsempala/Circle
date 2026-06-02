@@ -14,21 +14,28 @@ export async function POST(req: NextRequest) {
     return err('Password must be at least 8 characters', 422);
   }
 
-  // Safe and clean: Query the public profiles table for duplication safety checks
-  const supabase = await createClient();
-  const { data: existingUser } = await supabase
-    .from('profiles') 
-    .select('id')
-    .eq('email', body.email)
-    .maybeSingle();
-    // print email
-    console.log('Checking for existing user with email:', body.email);
-    
-  if (existingUser) {
-    return err('This email is already registered. Please log in instead.', 422);
-  }
-
   const result = await signUpWithEmail(body.email, body.password, body.fullName);
+
+  // Email already exists in auth
+  if (!result.ok && /already registered|already exists|user already/i.test(result.error ?? '')) {
+    const supabase = await createClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+
+    // Try to resend the confirmation email — only works for unconfirmed accounts
+    const { error: resendError } = await supabase.auth.resend({
+      type: 'signup',
+      email: body.email,
+      options: { emailRedirectTo: `${siteUrl}/auth/confirm` },
+    });
+
+    if (!resendError) {
+      // Unconfirmed account — confirmation email resent successfully
+      return ok({ userId: null, nextStep: 'email_confirmation' }, 200);
+    }
+
+    // Resend rejected → account is already confirmed → ask them to log in
+    return err('An account with this email already exists. Please log in instead.', 422);
+  }
 
   if (!result.ok) return err(result.error, result.status);
 

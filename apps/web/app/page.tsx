@@ -209,7 +209,7 @@ export default function Home() {
           <h2 className="cta-h reveal" ref={addRef}>Your art<br />deserves a<br /><em>proper home.</em></h2>
           <p className="cta-sub reveal" ref={addRef}>Join the first 50 artists on The Circle. Build your profile, set your prices, and start getting booked: safely.</p>
           <div className="hero-ctas reveal" ref={addRef}>
-            <a href="/auth/signup" className="btn btn-primary">Join as an artist — it's free</a>
+            <a href="/auth/signup" className="btn btn-primary">Join as an artist; it's free</a>
             <a href="/auth/login" className="btn btn-secondary">Log in</a>
           </div>
           <p className="cta-note">Get Professional. Get Paid!</p>
