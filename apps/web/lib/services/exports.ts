@@ -1,10 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
 import { createClient as createAnonClient } from '@supabase/supabase-js';
 
-const anon = createAnonClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+function getAnon() {
+  return createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
 
 export type ExportPackage = {
   id: string;
@@ -34,7 +35,7 @@ export type ExportData = {
 };
 
 export async function getExportData(slug: string): Promise<ExportData | null> {
-  const { data: artist } = await anon
+  const { data: artist } = await getAnon()
     .from('artists')
     .select('*')
     .eq('slug', slug)
@@ -42,7 +43,7 @@ export async function getExportData(slug: string): Promise<ExportData | null> {
 
   if (!artist) return null;
 
-  const { data: packages } = await anon
+  const { data: packages } = await getAnon()
     .from('packages')
     .select('*')
     .eq('artist_id', artist.id)
