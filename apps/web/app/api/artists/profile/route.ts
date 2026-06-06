@@ -18,7 +18,7 @@ export async function PATCH(request: Request) {
     if (!slugResult.ok) return err(slugResult.error, 400);
   }
 
-  const allowed = ['name', 'bio', 'tags', 'city', 'country', 'profile_photo', 'art_forms', 'social_links'];
+  const allowed = ['name', 'tagline', 'bio', 'tags', 'city', 'country', 'profile_photo', 'art_forms', 'social_links', 'epk_data', 'rate_card_data'];
   const fields: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in body) fields[key] = body[key];

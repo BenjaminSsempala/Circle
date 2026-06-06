@@ -34,6 +34,7 @@ const SOCIAL_META: Record<SocialKey, { label: string; fill: string; path: string
 
 type Artist = {
   name: string;
+  tagline: string | null;
   art_forms: string[] | null;
   tags: string[] | null;
   city: string | null;
@@ -55,6 +56,7 @@ export function EditableProfileHeader({
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [draft, setDraft] = useState({
     name: initial.name,
+    tagline: initial.tagline ?? '',
     artForm: initial.art_forms?.[0] ?? '',
     tagsRaw: (initial.tags ?? []).join(', '),
     city: initial.city ?? '',
@@ -103,6 +105,7 @@ export function EditableProfileHeader({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: draft.name,
+        tagline: draft.tagline,
         art_forms: draft.artForm ? [draft.artForm] : [],
         tags,
         city: draft.city,
@@ -112,6 +115,7 @@ export function EditableProfileHeader({
     setArtist((prev) => ({
       ...prev,
       name: draft.name,
+      tagline: draft.tagline,
       art_forms: draft.artForm ? [draft.artForm] : [],
       tags,
       city: draft.city,
@@ -155,6 +159,17 @@ export function EditableProfileHeader({
         {editing ? (
           /* ── Edit form ── */
           <div className="w-full flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tagline <span className="text-on-surface-variant/50 normal-case font-normal">· one line, optional</span></label>
+              <input
+                value={draft.tagline}
+                onChange={(e) => setDraft((p) => ({ ...p, tagline: e.target.value }))}
+                placeholder="e.g. Spoken word poet blending tradition and technology"
+                className="w-full"
+                maxLength={120}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Name</label>
@@ -207,6 +222,12 @@ export function EditableProfileHeader({
               <div className="text-body-lg font-body-lg text-on-surface-variant font-medium">
                 {[artFormLabel, artist.city && artist.country ? `${artist.city}, ${artist.country}` : artist.city].filter(Boolean).join(' · ')}
               </div>
+            )}
+
+            {artist.tagline && (
+              <p className="text-body-md font-body-md text-on-surface-variant italic mt-1">
+                {artist.tagline}
+              </p>
             )}
 
             {Array.isArray(artist.tags) && artist.tags.length > 0 && (

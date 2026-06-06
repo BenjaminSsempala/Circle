@@ -27,8 +27,9 @@ export async function POST(request: Request) {
     return err('Invalid JSON body');
   }
 
-  const { fullName, artForm, otherArtForm, tags, city, country, bio, profilePhotoUrl, customSlug } = body as {
+  const { fullName, tagline, artForm, otherArtForm, tags, city, country, bio, profilePhotoUrl, customSlug } = body as {
     fullName?: string;
+    tagline?: string;
     artForm?: string;
     otherArtForm?: string;
     tags?: string[];
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
 
   const result = await upsertArtistProfile(user.id, {
     name: fullName,
+    tagline,
     artForm,
     otherArtForm,
     tags,

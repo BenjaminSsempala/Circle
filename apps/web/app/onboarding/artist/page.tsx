@@ -11,6 +11,7 @@ export default function ArtistOnboardingPage() {
 
   const [formData, setFormData] = useState({
     fullName: '',
+    tagline: '',
     tags: '',
     artForm: '',
     otherArtForm: '',
@@ -74,6 +75,7 @@ export default function ArtistOnboardingPage() {
         setFormData((prev) => ({
           ...prev,
           fullName: artist.name || user.full_name || '',
+          tagline: artist.tagline || '',
           artForm: artist.art_forms?.[0] || '',
           tags: Array.isArray(artist.tags) ? artist.tags.join(', ') : '',
           city: artist.city || '',
@@ -197,6 +199,7 @@ export default function ArtistOnboardingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: formData.fullName,
+          tagline: formData.tagline || undefined,
           artForm: formData.artForm,
           otherArtForm: formData.otherArtForm,
           tags: tags,
@@ -518,6 +521,29 @@ export default function ArtistOnboardingPage() {
                     required
                   />
                 </div>
+              </div>
+
+              {/* Tagline */}
+              <div className="flex flex-col gap-xs">
+                <label
+                  htmlFor="tagline"
+                  className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
+                >
+                  Tagline <span className="normal-case font-normal opacity-60">— one line, optional</span>
+                </label>
+                <input
+                  type="text"
+                  id="tagline"
+                  name="tagline"
+                  value={formData.tagline}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Spoken word poet blending tradition and technology"
+                  className="w-full"
+                  maxLength={120}
+                />
+                <p className="text-caption font-caption text-on-surface-variant">
+                  Shown under your name on your profile.
+                </p>
               </div>
 
               {/* Bio Section */}

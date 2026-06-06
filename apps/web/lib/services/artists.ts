@@ -75,6 +75,7 @@ export async function upsertArtistProfile(
   userId: string,
   data: {
     name: string;
+    tagline?: string;
     artForm: string;
     otherArtForm?: string;
     tags?: string[];
@@ -105,6 +106,7 @@ export async function upsertArtistProfile(
     country: data.country,
     bio: data.bio ?? '',
   };
+  if (data.tagline !== undefined) payload.tagline = data.tagline;
 
   if (data.profilePhotoUrl) {
     payload.profile_photo = data.profilePhotoUrl;
@@ -186,6 +188,7 @@ export async function patchArtistProfile(
   userId: string,
   fields: Partial<{
     name: string;
+    tagline: string;
     bio: string;
     tags: string[];
     city: string;

@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { ExportModal, type ExportModalMode } from './ExportModal';
+import type { EPKFillable, RateCardFillable } from '@/lib/exports/exportTypes';
 
 type Panel = 'share' | 'export' | null;
 
@@ -86,35 +88,48 @@ function SharePanel({ slug, onClose }: { slug: string; onClose: () => void }) {
 
 function ExportPanel({
   slug,
-  hasPhoto,
-  hasBio,
+  onOpenModal,
   onClose,
 }: {
   slug: string;
-  hasPhoto: boolean;
-  hasBio: boolean;
+  onOpenModal: (mode: ExportModalMode) => void;
   onClose: () => void;
 }) {
-  const epkIncomplete = !hasPhoto || !hasBio;
+  const [loadingShareCard, setLoadingShareCard] = useState(false);
 
-  const handleEPK = () => {
-    triggerDownload(`/api/artists/${slug}/export/epk`, `${slug}-epk.pdf`);
-    onClose();
-  };
-  const handleRateCard = () => {
-    triggerDownload(`/api/artists/${slug}/export/rate-card`, `${slug}-rate-card.pdf`);
-    onClose();
-  };
-  const handleProfileCard = () => {
-    triggerDownload(`/api/artists/${slug}/share-card`, `${slug}-profile-card.png`);
-    onClose();
-  };
+  async function handleShareCard() {
+    setLoadingShareCard(true);
+    try {
+      const res = await fetch(`/api/artists/${slug}/share-card`);
+      if (!res.ok) throw new Error('Generation failed');
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = `${slug}-profile-card.png`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+      onClose();
+    } catch (e) {
+      console.error('[share-card] failed:', e);
+    } finally {
+      setLoadingShareCard(false);
+    }
+  }
+
+  const Spinner = () => (
+    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+    </svg>
+  );
 
   return (
     <div className="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/30 py-1.5 z-50">
-      {/* EPK */}
+
+      {/* EPK → opens modal */}
       <button
-        onClick={handleEPK}
+        onClick={() => { onOpenModal('epk'); onClose(); }}
         className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left"
       >
         <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0 text-on-surface-variant mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -123,44 +138,40 @@ function ExportPanel({
         <span>
           <span className="block text-sm text-on-surface font-semibold">EPK (PDF)</span>
           <span className="block text-xs text-on-surface-variant font-normal">Electronic Press Kit</span>
-          {epkIncomplete && (
-            <Link
-              href="/dashboard"
-              onClick={(e) => e.stopPropagation()}
-              className="block text-xs text-amber-600 mt-1 hover:underline"
-            >
-              ⚠ Add a {!hasPhoto ? 'photo' : ''}{!hasPhoto && !hasBio ? ' and ' : ''}{!hasBio ? 'bio' : ''} for a stronger EPK
-            </Link>
-          )}
         </span>
       </button>
 
-      {/* Rate Card */}
+      {/* Rate Card → opens modal */}
       <button
-        onClick={handleRateCard}
+        onClick={() => { onOpenModal('rate-card'); onClose(); }}
         className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left"
       >
         <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0 text-on-surface-variant mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
         </svg>
         <span>
-          <span className="block text-sm text-on-surface font-semibold">Rate Card (PDF)</span>
-          <span className="block text-xs text-on-surface-variant font-normal">Packages menu with QR code</span>
+          <span className="block text-sm text-on-surface font-semibold">Rate Card</span>
+          <span className="block text-xs text-on-surface-variant font-normal">PDF or 1080×1080 PNG</span>
         </span>
       </button>
 
       <div className="my-1 border-t border-outline-variant/20" />
 
-      {/* Profile Card image */}
+      {/* Profile Card → direct download (no fillable data needed) */}
       <button
-        onClick={handleProfileCard}
-        className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left"
+        onClick={handleShareCard}
+        disabled={loadingShareCard}
+        className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left disabled:opacity-60"
       >
-        <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0 text-on-surface-variant mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-        </svg>
+        {loadingShareCard ? <Spinner /> : (
+          <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0 text-on-surface-variant mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+          </svg>
+        )}
         <span>
-          <span className="block text-sm text-on-surface font-semibold">Profile Card (Image)</span>
+          <span className="block text-sm text-on-surface font-semibold">
+            {loadingShareCard ? 'Generating…' : 'Profile Card (Image)'}
+          </span>
           <span className="block text-xs text-on-surface-variant font-normal">9:16 story card PNG</span>
         </span>
       </button>
@@ -171,21 +182,39 @@ function ExportPanel({
 // ─── Owner bar ────────────────────────────────────────────────────────────────
 
 export function OwnerBar({
-  slug,
-  hasPhoto,
-  hasBio,
+  slug, hasPhoto, hasBio, hasTagline,
+  artistName, artistPhoto, artistTagline, artistBio,
+  artistCity, artistCountry, artForms, artistTags,
+  socialLinks, selectedWorks, packages,
+  savedEPK, savedRC,
 }: {
   slug: string;
   hasPhoto: boolean;
   hasBio: boolean;
+  hasTagline: boolean;
+  artistName: string;
+  artistPhoto: string | null;
+  artistTagline: string | null;
+  artistBio: string | null;
+  artistCity: string | null;
+  artistCountry: string | null;
+  artForms: string[];
+  artistTags: string[] | null;
+  socialLinks: Record<string, string>;
+  selectedWorks: import('@/app/[slug]/_components/ExportModal').ExportWork[];
+  packages: import('@/app/[slug]/_components/ExportModal').ExportPackage[];
+  savedEPK: EPKFillable | null;
+  savedRC: RateCardFillable | null;
 }) {
   const [open, setOpen] = useState<Panel>(null);
+  const [exportModal, setExportModal] = useState<ExportModalMode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   useClickOutside(containerRef, () => setOpen(null));
 
   const toggle = (panel: Panel) => setOpen((prev) => (prev === panel ? null : panel));
 
   return (
+    <>
     <div className="w-full bg-primary/5 border-b border-primary/10 relative z-40">
       <div className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-2.5 flex items-center justify-between gap-4">
         {/* Label */}
@@ -241,8 +270,7 @@ export function OwnerBar({
             {open === 'export' && (
               <ExportPanel
                 slug={slug}
-                hasPhoto={hasPhoto}
-                hasBio={hasBio}
+                onOpenModal={setExportModal}
                 onClose={() => setOpen(null)}
               />
             )}
@@ -258,5 +286,31 @@ export function OwnerBar({
         </div>
       </div>
     </div>
+
+    {/* Export modal — centred overlay, rendered outside the bar so it's full-viewport */}
+    {exportModal && (
+      <ExportModal
+        mode={exportModal}
+        slug={slug}
+        artistName={artistName}
+        hasPhoto={hasPhoto}
+        hasBio={hasBio}
+        hasTagline={hasTagline}
+        artistPhoto={artistPhoto}
+        artistTagline={artistTagline}
+        artistBio={artistBio}
+        artistCity={artistCity}
+        artistCountry={artistCountry}
+        artForms={artForms}
+        artistTags={artistTags}
+        socialLinks={socialLinks}
+        selectedWorks={selectedWorks}
+        packages={packages}
+        savedEPK={savedEPK}
+        savedRC={savedRC}
+        onClose={() => setExportModal(null)}
+      />
+    )}
+    </>
   );
 }

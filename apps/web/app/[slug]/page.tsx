@@ -62,6 +62,20 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
           slug={params.slug}
           hasPhoto={!!artist.profile_photo}
           hasBio={!!artist.bio}
+          hasTagline={!!artist.tagline}
+          artistName={artist.name}
+          artistPhoto={artist.profile_photo ?? null}
+          artistTagline={(artist as Record<string, unknown>).tagline as string | null ?? null}
+          artistBio={artist.bio ?? null}
+          artistCity={(artist as Record<string, unknown>).city as string | null ?? null}
+          artistCountry={(artist as Record<string, unknown>).country as string | null ?? null}
+          artForms={Array.isArray(artist.art_forms) ? artist.art_forms as string[] : []}
+          artistTags={Array.isArray(artist.tags) ? artist.tags as string[] : null}
+          socialLinks={(artist.social_links as Record<string, string>) ?? {}}
+          selectedWorks={(Array.isArray(artist.selected_works) ? artist.selected_works : []) as import('@/app/[slug]/_components/ExportModal').ExportWork[]}
+          packages={packages.map((p) => ({ id: p.id, name: p.name, price: p.price, currency: p.currency, duration: p.duration ?? null, description: p.description ?? null, logistics_inclusive: p.logistics_inclusive }))}
+          savedEPK={(artist as Record<string, unknown>).epk_data as import('@/lib/exports/exportTypes').EPKFillable | null ?? null}
+          savedRC={(artist as Record<string, unknown>).rate_card_data as import('@/lib/exports/exportTypes').RateCardFillable | null ?? null}
         />
       )}
 
@@ -84,6 +98,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
           <EditableProfileHeader
             artist={{
               name: artist.name,
+              tagline: artist.tagline,
               art_forms: artist.art_forms,
               tags: artist.tags,
               city: artist.city,

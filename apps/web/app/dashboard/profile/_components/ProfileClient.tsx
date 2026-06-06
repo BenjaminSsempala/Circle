@@ -21,6 +21,7 @@ type Artist = {
 
 type FormState = {
   name: string;
+  tagline: string;
   bio: string;
   art_forms: string;
   tags: string;
@@ -42,6 +43,7 @@ function artistToForm(a: Artist): FormState {
   const sl = a.social_links ?? {};
   return {
     name: a.name,
+    tagline: a.tagline ?? '',
     bio: a.bio ?? '',
     art_forms: (a.art_forms ?? []).join(', '),
     tags: (a.tags ?? []).join(', '),
@@ -131,6 +133,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
 
       const body: Record<string, unknown> = {
         name: form.name,
+        tagline: form.tagline,
         bio: form.bio,
         art_forms: artForms,
         tags,
@@ -225,6 +228,17 @@ export function ProfileClient({ artist }: { artist: Artist }) {
             <div>
               <label className={labelClass}>Artist Name</label>
               <input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Your full name" />
+            </div>
+
+            <div>
+              <label className={labelClass}>Tagline <span className="text-on-surface-variant/50 normal-case font-normal">— one line, optional</span></label>
+              <input
+                value={form.tagline}
+                onChange={(e) => update('tagline', e.target.value)}
+                className={inputClass}
+                placeholder="e.g. Spoken word poet blending tradition and technology"
+                maxLength={120}
+              />
             </div>
 
             <div className="mt-4">
