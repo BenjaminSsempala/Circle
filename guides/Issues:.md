@@ -13,10 +13,7 @@ Tech-Debt
 3. Welcome emails need domain
 
 
-Profile page
-- IG doesn't show previews correctly
-- Tiktok doesnt show the video preview
-- Spotify in player is really slow on the Selected works section. Spotify only works if user is logged in on browser
+Profile page    
 - Reintroduce QR codes, on profile as sharable, on epk and rate card too.
 
 Export
@@ -24,10 +21,10 @@ Export
 
 
 Deployment
-- Vercel setup
-- Name cheap setup
-- Workflows
+- Vercel setup 
+- Name cheap setup - domain
 - Need staging and production
+
 
 Booking and Contract
 - When I book, Send a booking request to artist, send email and whatsapp(premium) notifications. Show artist contact card
