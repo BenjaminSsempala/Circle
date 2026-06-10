@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { ok, err } from '@/lib/api';
 import { updateWork, deleteWork } from '@/lib/services/artists';

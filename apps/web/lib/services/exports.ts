@@ -35,7 +35,10 @@ export type ExportData = {
 };
 
 export async function getExportData(slug: string): Promise<ExportData | null> {
-  const { data: artist } = await getAnon()
+  const anon = getAnon();
+
+  // Fetch artist first (packages need artist.id)
+  const { data: artist } = await anon
     .from('artists')
     .select('*')
     .eq('slug', slug)
@@ -43,9 +46,10 @@ export async function getExportData(slug: string): Promise<ExportData | null> {
 
   if (!artist) return null;
 
-  const { data: packages } = await getAnon()
+  // Now fetch packages in parallel with nothing else blocking
+  const { data: packages } = await anon
     .from('packages')
-    .select('*')
+    .select('id, name, description, duration, price, currency, tier, logistics_inclusive')
     .eq('artist_id', artist.id)
     .eq('is_active', true)
     .order('tier', { ascending: true })

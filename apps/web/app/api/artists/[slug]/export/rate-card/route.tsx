@@ -11,15 +11,7 @@ import { DEFAULT_RATE_CARD, type RateCardFillable } from '@/lib/exports/exportTy
 
 // ─── Rate Card Image (1080×1080) inline JSX ──────────────────────────────────
 
-async function loadFont(family: string, weight: 400 | 700): Promise<ArrayBuffer> {
-  const css = await fetch(
-    `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&display=swap`,
-    { headers: { 'User-Agent': 'Mozilla/5.0' } },
-  ).then((r) => r.text());
-  const match = css.match(/src: url\((.+?)\) format/);
-  if (!match) throw new Error('Font not found');
-  return fetch(match[1]).then((r) => r.arrayBuffer());
-}
+import { loadFontCached } from '@/lib/utils/fontCache';
 
 function RateCardImage({
   name, tagline, artForms, city, profileUrl, packages, stats, socialLinks, bgData,
@@ -207,7 +199,7 @@ export async function POST(
   // ── PNG Image ──────────────────────────────────────────────────────────────
   if (format === 'image') {
     let fontPlayfair: ArrayBuffer = new ArrayBuffer(0);
-    try { fontPlayfair = await loadFont('Playfair Display', 700); } catch { /* fallback */ }
+    fontPlayfair = await loadFontCached('Playfair Display', 700) ?? new ArrayBuffer(0);
 
     let imgBuf: ArrayBuffer;
     try {

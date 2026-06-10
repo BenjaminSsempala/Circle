@@ -43,13 +43,22 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
+    // Cache the role in a short-lived cookie to avoid a DB query on every request
+    const ROLE_COOKIE = '__circle_role';
+    const ROLE_TTL    = 120; // seconds
+    let role: string | undefined = request.cookies.get(ROLE_COOKIE)?.value;
 
-    const role = profile?.role;
+    if (!role) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+      role = profile?.role ?? undefined;
+      if (role) supabaseResponse.cookies.set(ROLE_COOKIE, role, {
+        maxAge: ROLE_TTL, httpOnly: true, sameSite: 'strict', path: '/',
+      });
+    }
 
     // Logged-in user hitting auth pages
     if (isAuthPage) {

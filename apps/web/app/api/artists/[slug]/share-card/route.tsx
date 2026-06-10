@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { ImageResponse } from 'next/server';
 import { requireArtistOwnership } from '@/lib/supabase/server';
 import { getExportData } from '@/lib/services/exports';
@@ -9,20 +10,7 @@ const H = 1920;
 // Scale factor from the 390×760 design prototype to 1080×1920
 const S = W / 390;
 
-async function loadFont(family: string, weight: number): Promise<ArrayBuffer | null> {
-  try {
-    const css = await fetch(
-      `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&display=swap`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } },
-    ).then((r) => r.text());
-    const match = css.match(/src: url\((.+?)\) format/);
-    if (!match) return null;
-    const buf = await fetch(match[1]).then((r) => r.arrayBuffer());
-    return buf.byteLength ? buf : null;
-  } catch {
-    return null;
-  }
-}
+import { loadFontCached as loadFont } from '@/lib/utils/fontCache';
 
 async function fetchImageAsDataUrl(url: string): Promise<string | null> {
   try {

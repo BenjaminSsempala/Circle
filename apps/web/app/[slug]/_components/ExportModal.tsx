@@ -880,8 +880,19 @@ export function ExportModal({
   const [status, setStatus] = useState<'idle' | 'saving' | 'generating' | 'done' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [format, setFormat] = useState<'pdf' | 'image'>('pdf');
+  const [genStep, setGenStep] = useState(0);
 
   const busy = status === 'saving' || status === 'generating';
+
+  const EPK_STEPS  = ['Saving preferences…', 'Fetching your photos…', 'Laying out your EPK…', 'Rendering PDF…'];
+  const RC_STEPS   = ['Saving preferences…', 'Building your rate card…', 'Rendering…'];
+  const genSteps   = tab === 'epk' ? EPK_STEPS : RC_STEPS;
+
+  useEffect(() => {
+    if (status !== 'generating') { setGenStep(0); return; }
+    const interval = setInterval(() => setGenStep((s) => Math.min(s + 1, genSteps.length - 1)), 2200);
+    return () => clearInterval(interval);
+  }, [status, genSteps.length]);
   const location = [artistCity, artistCountry].filter(Boolean).join(', ');
 
   async function handleGenerate() {
@@ -968,7 +979,7 @@ export function ExportModal({
               className="flex items-center gap-2 bg-secondary-container text-on-secondary-container font-semibold text-sm px-4 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {busy && <svg className="w-3.5 h-3.5 animate-spin shrink-0" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
-              {status === 'saving' ? 'Saving…' : status === 'generating' ? 'Generating…' : status === 'done' ? '✓ Downloaded' : `Download ${tab === 'epk' ? 'EPK' : format === 'image' ? 'Image' : 'PDF'}`}
+              {status === 'saving' ? 'Saving…' : status === 'generating' ? genSteps[genStep] : status === 'done' ? '✓ Downloaded' : `Download ${tab === 'epk' ? 'EPK' : format === 'image' ? 'Image' : 'PDF'}`}
             </button>
             <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors p-1 text-xl">✕</button>
           </div>

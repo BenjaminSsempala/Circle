@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { ok } from '@/lib/api';
 
 export async function POST(

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest } from 'next/server';
 import { ok, err } from '@/lib/api';
 import { signOut } from '@/lib/services/auth';

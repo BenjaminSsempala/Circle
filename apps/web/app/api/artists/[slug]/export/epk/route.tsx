@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { requireArtistOwnership } from '@/lib/supabase/server';
 import { err } from '@/lib/api';
 import { getExportData } from '@/lib/services/exports';
