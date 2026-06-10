@@ -2,8 +2,9 @@ import { Resend } from 'resend';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-// Use RESEND_API_KEY (no NEXT_PUBLIC_ prefix — server-only, never exposed to the browser)
-const resend = new Resend(process.env.RESEND_API_KEY ?? process.env.NEXT_PUBLIC_RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY ?? process.env.NEXT_PUBLIC_RESEND_API_KEY);
+}
 
 function renderTemplate(template: string, vars: Record<string, string>): string {
   return Object.entries(vars).reduce(
@@ -36,7 +37,7 @@ export async function sendArtistWelcomeEmail({
     dashboard_url: `${siteUrl}/dashboard`,
   });
 
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from:    'The Circle <onboarding@resend.dev>', // swap to welcome@yourdomain.co once domain is verified
     to,
     subject: `Welcome to The Circle, ${firstName} 🎭`,
