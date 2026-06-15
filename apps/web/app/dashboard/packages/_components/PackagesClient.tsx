@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+type ProductType = 'service' | 'digital' | 'merchandise';
+
 type Package = {
   id: string;
   name: string;
@@ -14,6 +16,7 @@ type Package = {
   logistics_inclusive: boolean;
   is_active: boolean;
   created_at: string;
+  product_type: ProductType;
 };
 
 type FormState = {
@@ -23,6 +26,7 @@ type FormState = {
   currency: string;
   duration: string;
   logisticsInclusive: boolean;
+  productType: ProductType;
 };
 
 const EMPTY_FORM: FormState = {
@@ -32,6 +36,13 @@ const EMPTY_FORM: FormState = {
   currency: 'UGX',
   duration: '',
   logisticsInclusive: false,
+  productType: 'service',
+};
+
+const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
+  service: 'Service',
+  digital: 'Digital',
+  merchandise: 'Merchandise',
 };
 
 function formatPrice(price: number, currency: string) {
@@ -111,7 +122,12 @@ function PackageCard({
       </div>
 
       {/* Content */}
-      <h3 className="text-label-mono font-label-mono text-on-surface font-semibold mb-1">{pkg.name}</h3>
+      <div className="flex items-center gap-2 mb-1">
+        <h3 className="text-label-mono font-label-mono text-on-surface font-semibold">{pkg.name}</h3>
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+          {PRODUCT_TYPE_LABELS[pkg.product_type ?? 'service']}
+        </span>
+      </div>
       {pkg.description && (
         <p className="text-caption font-caption text-on-surface-variant mb-3 line-clamp-2">{pkg.description}</p>
       )}
@@ -160,6 +176,7 @@ function PackageDrawer({
           currency: editing.currency,
           duration: editing.duration ?? '',
           logisticsInclusive: editing.logistics_inclusive,
+          productType: editing.product_type ?? 'service',
         }
       : EMPTY_FORM,
   );
@@ -185,6 +202,7 @@ function PackageDrawer({
         currency: form.currency || 'UGX',
         duration: form.duration,
         logisticsInclusive: form.logisticsInclusive,
+        productType: form.productType,
       };
 
       const res = editing
@@ -230,6 +248,32 @@ function PackageDrawer({
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5">
+          {/* Product type */}
+          <div>
+            <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Booking type</label>
+            <div className="grid grid-cols-3 gap-2">
+              {(['service', 'digital', 'merchandise'] as ProductType[]).map((pt) => (
+                <button
+                  key={pt}
+                  type="button"
+                  onClick={() => update('productType', pt)}
+                  className={`text-sm font-semibold rounded-lg border px-3 py-2.5 transition-colors ${
+                    form.productType === pt
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-outline-variant/40 text-on-surface-variant hover:border-primary/40'
+                  }`}
+                >
+                  {PRODUCT_TYPE_LABELS[pt]}
+                </button>
+              ))}
+            </div>
+            <p className="text-caption font-caption text-on-surface-variant mt-1.5">
+              {form.productType === 'service' && 'Audience books a date, time and venue — full contract + escrow.'}
+              {form.productType === 'digital' && 'Audience picks a delivery date — lightweight contract.'}
+              {form.productType === 'merchandise' && 'No contract — audience sees your contact card.'}
+            </p>
+          </div>
+
           {/* Name */}
           <div>
             <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">

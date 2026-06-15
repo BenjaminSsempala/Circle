@@ -12,7 +12,7 @@ export async function POST(
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return err('Unauthorized', 401);
 
-  const result = await transitionBooking(params.id, 'ACCEPTED', user.id);
+  const result = await transitionBooking(params.id, 'CHECKED_IN', user.id);
   if (!result.ok) return err(result.error, 400);
   return ok({ booking: result.booking });
 }

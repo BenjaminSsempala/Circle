@@ -46,14 +46,21 @@ export async function getArtistBySlug(slug: string) {
   if (error) return { ok: false as const, error: error.message };
   if (!artist) return { ok: false as const, error: 'Not found' };
 
-  const { data: packages } = await supabase
-    .from('packages')
-    .select('*')
-    .eq('artist_id', artist.id)
-    .eq('is_active', true)
-    .order('created_at', { ascending: true });
+  const [{ data: packages }, { data: profile }] = await Promise.all([
+    (await createClient())
+      .from('packages')
+      .select('*')
+      .eq('artist_id', artist.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: true }),
+    (await createClient())
+      .from('profiles')
+      .select('email')
+      .eq('id', artist.user_id)
+      .maybeSingle(),
+  ]);
 
-  return { ok: true as const, artist, packages: packages ?? [] };
+  return { ok: true as const, artist: { ...artist, account_email: profile?.email ?? null }, packages: packages ?? [] };
 }
 
 export async function getArtistByUserId(userId: string) {
@@ -221,6 +228,7 @@ export async function upsertPackage(
     duration: string;
     logisticsInclusive: boolean;
     isActive?: boolean;
+    productType?: 'service' | 'digital' | 'merchandise';
   }
 ) {
   const supabase = await createClient();
@@ -234,6 +242,7 @@ export async function upsertPackage(
     logistics_inclusive: data.logisticsInclusive,
   };
   if (data.isActive !== undefined) payload.is_active = data.isActive;
+  if (data.productType !== undefined) payload.product_type = data.productType;
 
   if (data.id) {
     const { data: pkg, error } = await supabase

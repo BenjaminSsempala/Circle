@@ -4,7 +4,7 @@ import { getArtistByUserIdCached } from '@/lib/services/artists';
 import { BookingsClient } from './_components/BookingsClient';
 
 const TAB_STATES: Record<string, string[]> = {
-  upcoming: ['CONTRACT_SIGNED', 'PAYMENT_HELD', 'GIG_ACTIVE', 'CHECKED_IN', 'CONFIRMING'],
+  upcoming: ['ACCEPTED', 'CONTRACT_DRAFT', 'CONTRACT_SENT', 'AUDIENCE_UPLOADED', 'CONTRACT_SIGNED', 'PAYMENT_HELD', 'GIG_ACTIVE', 'CHECKED_IN', 'CONFIRMING'],
   requests: ['REQUESTED'],
   completed: ['COMPLETED', 'AUTO_RELEASED'],
   cancelled: ['CANCELLED', 'REFUNDED', 'DECLINED'],
@@ -27,15 +27,13 @@ export default async function BookingsPage({
 
   let bookings: Record<string, unknown>[] = [];
   if (artist) {
-    try {
-      const { data } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('artist_id', artist.id)
-        .in('state', states)
-        .order('event_date', { ascending: true });
-      bookings = data ?? [];
-    } catch { /* table not yet created */ }
+    const { data } = await (await createClient())
+      .from('bookings')
+      .select('*, packages(name, duration)')
+      .eq('artist_id', artist.id)
+      .in('state', states)
+      .order('created_at', { ascending: false });
+    bookings = data ?? [];
   }
 
   return (

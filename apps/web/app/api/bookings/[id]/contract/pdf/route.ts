@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { createClient } from '@/lib/supabase/server';
-import { ok, err } from '@/lib/api';
+import { err } from '@/lib/api';
 import { getBooking } from '@/lib/services/bookings';
 
 export async function GET(
@@ -14,11 +14,15 @@ export async function GET(
 
   const result = await getBooking(params.id, user.id);
   if (!result.ok) return err(result.error, result.error === 'Forbidden' ? 403 : 404);
+  if (!result.contract?.generated_pdf_url) return err('Contract PDF not found', 404);
 
-  return ok({
-    booking: result.booking,
-    events: result.events,
-    contract: result.contract,
-    role: result.role,
+  const upstream = await fetch(result.contract.generated_pdf_url);
+  if (!upstream.ok || !upstream.body) return err('Failed to fetch contract PDF', 502);
+
+  return new Response(upstream.body, {
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename="contract-${result.contract.reference_number}.pdf"`,
+    },
   });
 }

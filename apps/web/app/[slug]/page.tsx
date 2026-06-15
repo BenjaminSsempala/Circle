@@ -120,7 +120,18 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
         {/* Right column — packages */}
         <div className="md:col-span-3 relative">
           <div className="sticky top-24">
-            <PackagesSection packages={packages} isOwner={isOwner} />
+            <PackagesSection
+              packages={packages}
+              isOwner={isOwner}
+              isLoggedIn={!!user}
+              artist={{
+                slug: artist.slug,
+                name: artist.name,
+                profile_photo: artist.profile_photo ?? null,
+                social_links: (artist.social_links as Record<string, string>) ?? {},
+                account_email: artist.account_email,
+              }}
+            />
           </div>
         </div>
       </main>

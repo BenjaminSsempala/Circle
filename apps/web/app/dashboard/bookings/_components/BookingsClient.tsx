@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const TABS = [
   { key: 'upcoming', label: 'Upcoming' },
@@ -15,6 +16,10 @@ type Booking = Record<string, unknown>;
 function stateLabel(state: string) {
   const map: Record<string, string> = {
     REQUESTED: 'Pending',
+    ACCEPTED: 'Accepted',
+    CONTRACT_DRAFT: 'Preparing contract',
+    CONTRACT_SENT: 'Contract sent',
+    AUDIENCE_UPLOADED: 'Awaiting countersignature',
     CONTRACT_SIGNED: 'Confirmed',
     PAYMENT_HELD: 'In Escrow',
     GIG_ACTIVE: 'Active',
@@ -49,8 +54,7 @@ function actionForState(state: string): { label: string; endpoint: string } | nu
 function formatDate(d: string | unknown) {
   if (!d) return '—';
   const date = new Date(String(d));
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
-    ', ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function formatPrice(amount: unknown, currency: unknown) {
@@ -58,23 +62,44 @@ function formatPrice(amount: unknown, currency: unknown) {
   return `${currency ?? 'UGX'} ${Number(amount).toLocaleString()}`;
 }
 
+function packageName(b: Booking) {
+  return (b.packages as { name?: string } | null)?.name ?? 'Booking';
+}
+
+function eventDate(b: Booking) {
+  return (b.gig_date ?? b.delivery_date) as string | null;
+}
+
 function BookingDetailPanel({
   booking,
   onClose,
+  onUpdated,
 }: {
   booking: Booking;
   onClose: () => void;
+  onUpdated: () => void;
 }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const action = actionForState(String(booking.state ?? ''));
+  const canDecline = booking.state === 'REQUESTED';
+  const inContractFlow = ['ACCEPTED', 'CONTRACT_DRAFT', 'CONTRACT_SENT', 'AUDIENCE_UPLOADED'].includes(String(booking.state ?? ''));
 
-  async function handleAction() {
-    if (!action) return;
-    setLoading(true);
+  async function handleAction(endpoint: string) {
+    setLoading(endpoint);
+    setError(null);
     try {
-      await fetch(`/api/bookings/${booking.id}/${action.endpoint}`, { method: 'POST' });
+      const res = await fetch(`/api/bookings/${booking.id}/${endpoint}`, { method: 'POST' });
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        setError(json?.error ?? 'Something went wrong.');
+        return;
+      }
+      onUpdated();
+    } catch {
+      setError('Something went wrong. Please try again.');
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   }
 
@@ -98,9 +123,9 @@ function BookingDetailPanel({
         </div>
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5">
           <div>
-            <p className="text-caption font-caption text-on-surface-variant uppercase tracking-wider mb-1">Event</p>
+            <p className="text-caption font-caption text-on-surface-variant uppercase tracking-wider mb-1">Package</p>
             <p className="text-label-mono font-label-mono text-on-surface font-semibold">
-              {String(booking.event_name ?? 'Untitled')}
+              {packageName(booking)}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -113,42 +138,75 @@ function BookingDetailPanel({
             <div>
               <p className="text-caption font-caption text-on-surface-variant mb-1">Amount</p>
               <p className="text-label-mono font-label-mono text-on-surface">
-                {formatPrice(booking.amount, booking.currency)}
+                {formatPrice(booking.price, booking.currency)}
               </p>
             </div>
           </div>
           <div>
-            <p className="text-caption font-caption text-on-surface-variant mb-1">Date & Time</p>
-            <p className="text-body-md font-body-md text-on-surface">{formatDate(booking.event_date)}</p>
+            <p className="text-caption font-caption text-on-surface-variant mb-1">Date</p>
+            <p className="text-body-md font-body-md text-on-surface">
+              {formatDate(eventDate(booking))}{booking.gig_time ? ` · ${String(booking.gig_time)}` : ''}
+            </p>
           </div>
-          {booking.duration && (
+          {booking.venue && (
+            <div>
+              <p className="text-caption font-caption text-on-surface-variant mb-1">Venue</p>
+              <p className="text-body-md font-body-md text-on-surface">{String(booking.venue)}</p>
+            </div>
+          )}
+          {(booking.packages as { duration?: string } | null)?.duration && (
             <div>
               <p className="text-caption font-caption text-on-surface-variant mb-1">Duration</p>
-              <p className="text-body-md font-body-md text-on-surface">{String(booking.duration)}</p>
+              <p className="text-body-md font-body-md text-on-surface">{String((booking.packages as { duration?: string }).duration)}</p>
             </div>
           )}
-          {booking.organiser_name && (
+          {booking.audience_name && (
             <div>
               <p className="text-caption font-caption text-on-surface-variant mb-1">Client</p>
-              <p className="text-body-md font-body-md text-on-surface">{String(booking.organiser_name)}</p>
+              <p className="text-body-md font-body-md text-on-surface">{String(booking.audience_name)}</p>
+              {booking.audience_email && <p className="text-caption font-caption text-on-surface-variant">{String(booking.audience_email)}</p>}
             </div>
           )}
-          {booking.event_description && (
+          {(booking.special_requirements || booking.audience_notes) && (
             <div>
-              <p className="text-caption font-caption text-on-surface-variant mb-1">Description</p>
-              <p className="text-body-md font-body-md text-on-surface">{String(booking.event_description)}</p>
+              <p className="text-caption font-caption text-on-surface-variant mb-1">
+                {booking.product_type === 'digital' ? 'Brief' : 'Special requirements'}
+              </p>
+              <p className="text-body-md font-body-md text-on-surface whitespace-pre-wrap">{String(booking.special_requirements || booking.audience_notes)}</p>
             </div>
           )}
         </div>
-        {action && (
-          <div className="p-6 border-t border-outline-variant/30">
-            <button
-              onClick={handleAction}
-              disabled={loading}
-              className="w-full bg-primary text-on-primary font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {loading ? 'Processing…' : action.label}
-            </button>
+        {(action || canDecline || inContractFlow) && (
+          <div className="p-6 border-t border-outline-variant/30 flex flex-col gap-2">
+            {error && (
+              <div className="text-sm text-[#c0392b] bg-[#c0392b]/5 border border-[#c0392b]/20 rounded-lg px-3 py-2">{error}</div>
+            )}
+            {inContractFlow && (
+              <Link
+                href={`/booking/${booking.id}`}
+                className="w-full text-center bg-primary text-on-primary font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
+              >
+                View booking &amp; contract
+              </Link>
+            )}
+            {action && (
+              <button
+                onClick={() => handleAction(action.endpoint)}
+                disabled={loading !== null}
+                className="w-full bg-primary text-on-primary font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading === action.endpoint ? 'Processing…' : action.label}
+              </button>
+            )}
+            {canDecline && (
+              <button
+                onClick={() => handleAction('decline')}
+                disabled={loading !== null}
+                className="w-full border border-outline-variant text-on-surface-variant font-semibold py-3 rounded-xl hover:bg-surface-container transition-colors disabled:opacity-50"
+              >
+                {loading === 'decline' ? 'Declining…' : 'Decline'}
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -209,28 +267,22 @@ export function BookingsClient({
 
               <div className="flex-1 min-w-0">
                 <p className="text-label-mono font-label-mono text-on-surface font-semibold truncate">
-                  {String(b.organiser_name ?? 'Client')}
+                  {String(b.audience_name ?? 'Client')}
                 </p>
                 <p className="text-caption font-caption text-on-surface-variant truncate">
-                  {String(b.event_name ?? 'Booking')}
+                  {packageName(b)}
                 </p>
               </div>
 
               <div className="hidden sm:flex items-center gap-8 shrink-0">
                 <div className="text-right">
-                  <p className="text-caption font-caption text-on-surface-variant uppercase tracking-wider">Date & Time</p>
-                  <p className="text-label-mono font-label-mono text-on-surface text-sm">{formatDate(b.event_date)}</p>
+                  <p className="text-caption font-caption text-on-surface-variant uppercase tracking-wider">Date</p>
+                  <p className="text-label-mono font-label-mono text-on-surface text-sm">{formatDate(eventDate(b))}</p>
                 </div>
-                {b.duration && (
-                  <div className="text-right">
-                    <p className="text-caption font-caption text-on-surface-variant uppercase tracking-wider">Duration</p>
-                    <p className="text-label-mono font-label-mono text-on-surface text-sm">{String(b.duration)}</p>
-                  </div>
-                )}
                 <div className="text-right">
                   <p className="text-caption font-caption text-on-surface-variant uppercase tracking-wider">Amount</p>
                   <p className="text-label-mono font-label-mono text-on-surface font-bold text-sm">
-                    {formatPrice(b.amount, b.currency)}
+                    {formatPrice(b.price, b.currency)}
                   </p>
                 </div>
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${stateColor(String(b.state ?? ''))}`}>
@@ -247,6 +299,10 @@ export function BookingsClient({
         <BookingDetailPanel
           booking={selected}
           onClose={() => setSelected(null)}
+          onUpdated={() => {
+            setSelected(null);
+            router.refresh();
+          }}
         />
       )}
     </>

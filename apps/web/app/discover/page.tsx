@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAnonClient } from '@supabase/supabase-js';
 import { DiscoverClient } from './_components/DiscoverClient';
+import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import type { DiscoverArtist } from '@/app/components/discover/ArtistCard';
 
 // Anon client for public ranking query (no RLS needed for public data)
@@ -122,9 +123,7 @@ export default async function DiscoverPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </Link>
-                <Link href="/profile" className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors" title="Profile">
-                  <span className="text-primary text-xs font-bold">●</span>
-                </Link>
+                <AccountMenu />
               </div>
             )}
           </div>

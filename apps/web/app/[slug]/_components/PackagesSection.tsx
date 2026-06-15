@@ -1,6 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { BookingPanel } from '../../components/booking/BookingPanel';
+
+type ProductType = 'service' | 'digital' | 'merchandise';
+
+type CancellationTerms = {
+  within_48_hours_refund_pct: number;
+  within_7_days_refund_pct: number;
+  more_than_7_days_refund_pct: number;
+};
 
 type Package = {
   id: string;
@@ -10,6 +19,16 @@ type Package = {
   currency: string;
   duration: string | null;
   logistics_inclusive: boolean;
+  product_type?: ProductType;
+  cancellation_terms?: CancellationTerms | null;
+};
+
+type ArtistInfo = {
+  slug: string;
+  name: string;
+  profile_photo: string | null;
+  social_links: Record<string, string>;
+  account_email: string | null;
 };
 
 type PackageFormData = {
@@ -109,9 +128,9 @@ function PackageForm({
   );
 }
 
-function ReadonlyCard({ pkg, featured, isOwner, onEdit, onDelete }: {
+function ReadonlyCard({ pkg, featured, isOwner, onEdit, onDelete, onBook }: {
   pkg: Package; featured: boolean; isOwner: boolean;
-  onEdit: () => void; onDelete: () => void;
+  onEdit: () => void; onDelete: () => void; onBook: () => void;
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -177,20 +196,31 @@ function ReadonlyCard({ pkg, featured, isOwner, onEdit, onDelete }: {
         </div>
       </div>
 
-      <button className={`mt-auto w-full py-2 px-4 rounded-lg text-label-mono font-label-mono transition-colors flex justify-center items-center gap-xs ${featured ? 'bg-secondary text-white hover:bg-on-secondary-container shadow-sm' : 'bg-transparent border border-primary text-primary hover:bg-primary/5'}`}>
-        Book Now
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-        </svg>
-      </button>
+      {!isOwner && (
+        <button
+          onClick={onBook}
+          className={`mt-auto w-full py-2 px-4 rounded-lg text-label-mono font-label-mono transition-colors flex justify-center items-center gap-xs ${featured ? 'bg-secondary text-white hover:bg-on-secondary-container shadow-sm' : 'bg-transparent border border-primary text-primary hover:bg-primary/5'}`}
+        >
+          Book Now
+          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
 
-export function PackagesSection({ packages: initial, isOwner }: { packages: Package[]; isOwner: boolean }) {
+export function PackagesSection({ packages: initial, isOwner, isLoggedIn, artist }: {
+  packages: Package[];
+  isOwner: boolean;
+  isLoggedIn: boolean;
+  artist: ArtistInfo;
+}) {
   const [packages, setPackages] = useState(initial);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [addingNew, setAddingNew] = useState(false);
+  const [bookingPkg, setBookingPkg] = useState<Package | null>(null);
 
   const handleAdd = async (form: PackageFormData) => {
     const res = await fetch('/api/artists/packages', {
@@ -266,6 +296,7 @@ export function PackagesSection({ packages: initial, isOwner }: { packages: Pack
               isOwner={isOwner}
               onEdit={() => setEditingId(pkg.id)}
               onDelete={() => handleDelete(pkg.id)}
+              onBook={() => setBookingPkg(pkg)}
             />
           )
         )}
@@ -289,6 +320,15 @@ export function PackagesSection({ packages: initial, isOwner }: { packages: Pack
           </button>
         )}
       </div>
+
+      {bookingPkg && (
+        <BookingPanel
+          pkg={bookingPkg}
+          artist={artist}
+          isLoggedIn={isLoggedIn}
+          onClose={() => setBookingPkg(null)}
+        />
+      )}
     </div>
   );
 }

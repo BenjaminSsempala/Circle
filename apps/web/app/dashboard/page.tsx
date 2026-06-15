@@ -39,41 +39,39 @@ export default async function DashboardPage() {
   let completedCount = 0;
 
   if (artist) {
-    try {
-      const { data: upcoming } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('artist_id', artist.id)
-        .in('state', ['CONTRACT_SIGNED', 'PAYMENT_HELD', 'GIG_ACTIVE', 'CHECKED_IN', 'CONFIRMING'])
-        .order('event_date', { ascending: true })
-        .limit(5);
-      upcomingBookings = upcoming ?? [];
+    const { data: upcoming } = await (await createClient())
+      .from('bookings')
+      .select('*, packages(name)')
+      .eq('artist_id', artist.id)
+      .in('state', ['ACCEPTED', 'CONTRACT_DRAFT', 'CONTRACT_SENT', 'AUDIENCE_UPLOADED', 'CONTRACT_SIGNED', 'PAYMENT_HELD', 'GIG_ACTIVE', 'CHECKED_IN', 'CONFIRMING'])
+      .order('gig_date', { ascending: true })
+      .limit(5);
+    upcomingBookings = upcoming ?? [];
 
-      const { data: requests } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('artist_id', artist.id)
-        .eq('state', 'REQUESTED');
-      pendingRequests = requests ?? [];
+    const { data: requests } = await (await createClient())
+      .from('bookings')
+      .select('*, packages(name)')
+      .eq('artist_id', artist.id)
+      .eq('state', 'REQUESTED');
+    pendingRequests = requests ?? [];
 
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const { data: monthTxns } = await supabase
-        .from('bookings')
-        .select('amount')
-        .eq('artist_id', artist.id)
-        .in('state', ['COMPLETED', 'AUTO_RELEASED'])
-        .gte('updated_at', monthStart);
-      earningsMonth = (monthTxns ?? []).reduce((s, b) => s + Number(b.amount ?? 0), 0);
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const { data: monthTxns } = await (await createClient())
+      .from('bookings')
+      .select('price')
+      .eq('artist_id', artist.id)
+      .in('state', ['COMPLETED', 'AUTO_RELEASED'])
+      .gte('updated_at', monthStart);
+    earningsMonth = (monthTxns ?? []).reduce((s, b) => s + Number(b.price ?? 0), 0);
 
-      const { data: allTxns } = await supabase
-        .from('bookings')
-        .select('amount')
-        .eq('artist_id', artist.id)
-        .in('state', ['COMPLETED', 'AUTO_RELEASED']);
-      earningsAllTime = (allTxns ?? []).reduce((s, b) => s + Number(b.amount ?? 0), 0);
-      completedCount = (allTxns ?? []).length;
-    } catch { /* bookings table not yet created */ }
+    const { data: allTxns } = await (await createClient())
+      .from('bookings')
+      .select('price')
+      .eq('artist_id', artist.id)
+      .in('state', ['COMPLETED', 'AUTO_RELEASED']);
+    earningsAllTime = (allTxns ?? []).reduce((s, b) => s + Number(b.price ?? 0), 0);
+    completedCount = (allTxns ?? []).length;
   }
 
   // Profile completeness
@@ -116,10 +114,10 @@ export default async function DashboardPage() {
                     className="min-w-[220px] bg-surface border-l-4 border-secondary-container rounded-lg p-4 shadow-sm"
                   >
                     <p className="text-label-mono font-label-mono text-on-surface font-semibold text-sm mb-1">
-                      New booking from {String(b.organiser_name ?? 'Client')}
+                      New booking from {String(b.audience_name ?? 'Client')}
                     </p>
                     <p className="text-caption font-caption text-on-surface-variant mb-3">
-                      {String(b.event_description ?? 'Performance inquiry')}
+                      {(b.packages as { name?: string } | null)?.name ?? 'Performance inquiry'}
                     </p>
                     <Link
                       href={`/dashboard/bookings?tab=requests`}
@@ -148,7 +146,8 @@ export default async function DashboardPage() {
             ) : (
               <div className="flex flex-col gap-3">
                 {upcomingBookings.map((b) => {
-                  const date = b.event_date ? new Date(String(b.event_date)) : null;
+                  const gigDate = (b.gig_date ?? b.delivery_date) as string | null;
+                  const date = gigDate ? new Date(`${gigDate}T00:00:00Z`) : null;
                   return (
                     <div
                       key={String(b.id)}
@@ -159,21 +158,21 @@ export default async function DashboardPage() {
                           <p className="text-[10px] text-on-primary/70 uppercase tracking-wider">
                             {date.toLocaleString('default', { month: 'short' })}
                           </p>
-                          <p className="text-xl font-bold text-on-primary leading-none">{date.getDate()}</p>
+                          <p className="text-xl font-bold text-on-primary leading-none">{date.getUTCDate()}</p>
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-label-mono font-label-mono text-on-surface truncate">
-                          {String(b.event_name ?? 'Booking')}
+                          {(b.packages as { name?: string } | null)?.name ?? 'Booking'}
                         </p>
                         <p className="text-caption font-caption text-on-surface-variant">
-                          Client: {String(b.organiser_name ?? '—')}
+                          Client: {String(b.audience_name ?? '—')}
                         </p>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
-                        {b.amount && (
+                        {b.price && (
                           <span className="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-1 rounded-full">
-                            {formatPrice(Number(b.amount), String(b.currency ?? 'UGX'))} IN ESCROW
+                            {formatPrice(Number(b.price), String(b.currency ?? 'UGX'))}
                           </span>
                         )}
                         <Link

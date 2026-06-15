@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAnonClient } from '@supabase/supabase-js';
 import { SavedClient } from './_components/SavedClient';
+import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import type { DiscoverArtist } from '@/app/components/discover/ArtistCard';
 
 const anonSupabase = createAnonClient(
@@ -59,6 +60,7 @@ export default async function SavedPage() {
             <Link href="/saved" className="text-on-surface font-semibold text-sm border-b-2 border-primary pb-0.5">Saved</Link>
             <Link href="/bookings" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My bookings</Link>
           </div>
+          <AccountMenu />
         </div>
       </nav>
 
