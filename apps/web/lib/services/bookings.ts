@@ -7,6 +7,18 @@ import { generateContract } from '@/lib/services/contracts';
 
 export type ProductType = 'service' | 'digital' | 'merchandise';
 
+export interface BrandTerms {
+  deliverables: string;
+  usage_purpose: string;
+  usage_territory: string;
+  usage_duration: string;
+  usage_channels: string;
+  exclusivity: boolean;
+  exclusivity_period: string | null;
+  exclusivity_exclusions: string | null;
+  credit_line: string;
+}
+
 export type BookingState =
   | 'REQUESTED' | 'ACCEPTED' | 'DECLINED'
   | 'CONTRACT_DRAFT' | 'CONTRACT_SENT'
@@ -35,6 +47,7 @@ export interface Booking {
   audience_email: string | null;
   artist_confirmed_at: string | null;
   audience_confirmed_at: string | null;
+  brand_terms: BrandTerms | null;
   created_at: string;
   updated_at: string;
 }
@@ -65,18 +78,19 @@ export interface CreateBookingInput {
   deliveryDate?: string;
   specialRequirements?: string;
   audienceNotes?: string;
+  brandTerms?: BrandTerms;
 }
 
 type Actor = 'artist' | 'audience' | 'either' | 'system';
 
 const TRANSITIONS: Record<BookingState, { to: BookingState; actor: Actor }[]> = {
   REQUESTED:         [{ to: 'ACCEPTED', actor: 'artist' }, { to: 'DECLINED', actor: 'artist' }, { to: 'CANCELLED', actor: 'audience' }],
-  ACCEPTED:          [{ to: 'CONTRACT_DRAFT', actor: 'system' }],
+  ACCEPTED:          [{ to: 'CONTRACT_DRAFT', actor: 'system' }, { to: 'CONTRACT_SIGNED', actor: 'system' }],
   DECLINED:          [],
   CONTRACT_DRAFT:    [{ to: 'CONTRACT_SENT', actor: 'artist' }],
   CONTRACT_SENT:     [{ to: 'AUDIENCE_UPLOADED', actor: 'system' }],
   AUDIENCE_UPLOADED: [{ to: 'CONTRACT_SIGNED', actor: 'system' }],
-  CONTRACT_SIGNED:   [{ to: 'PAYMENT_PENDING', actor: 'system' }, { to: 'CANCELLED', actor: 'either' }],
+  CONTRACT_SIGNED:   [{ to: 'PAYMENT_PENDING', actor: 'system' }, { to: 'CANCELLED', actor: 'either' }, { to: 'CONFIRMING', actor: 'either' }],
   PAYMENT_PENDING:   [{ to: 'PAYMENT_HELD', actor: 'system' }],
   PAYMENT_HELD:      [{ to: 'GIG_ACTIVE', actor: 'system' }, { to: 'CANCELLED', actor: 'either' }],
   GIG_ACTIVE:        [{ to: 'CHECKED_IN', actor: 'artist' }, { to: 'CONFIRMING', actor: 'system' }],
@@ -99,7 +113,7 @@ export async function transitionBooking(
 ) {
   const { data: booking } = await createServiceClient()
     .from('bookings')
-    .select('*, artists!inner(user_id)')
+    .select('*, artists!inner(user_id), packages(contract_required)')
     .eq('id', bookingId)
     .maybeSingle();
 
@@ -148,11 +162,16 @@ export async function transitionBooking(
   }
 
   if (toState === 'ACCEPTED') {
-    // Auto-generate the contract draft on acceptance
-    const draftResult = await transitionBooking(bookingId, 'CONTRACT_DRAFT', 'system');
-    if (draftResult.ok) {
-      await generateContract(bookingId);
-      return draftResult;
+    const contractRequired = (booking as unknown as { packages: { contract_required: boolean } | null }).packages?.contract_required ?? true;
+    if (contractRequired) {
+      const draftResult = await transitionBooking(bookingId, 'CONTRACT_DRAFT', 'system');
+      if (draftResult.ok) {
+        await generateContract(bookingId);
+        return draftResult;
+      }
+    } else {
+      // No contract needed — lock in immediately
+      return transitionBooking(bookingId, 'CONTRACT_SIGNED', 'system');
     }
   }
 
@@ -172,12 +191,20 @@ export async function confirmCompletion(
     .maybeSingle();
 
   if (!booking) return { ok: false, error: 'Booking not found' };
-  if (booking.state !== 'CONFIRMING') return { ok: false, error: `Cannot confirm completion from ${booking.state}` };
+  if (booking.state !== 'CONFIRMING' && booking.state !== 'CONTRACT_SIGNED') {
+    return { ok: false, error: `Cannot confirm completion from ${booking.state}` };
+  }
 
   const artistUserId = (booking as unknown as { artists: { user_id: string } }).artists.user_id;
   const isArtist = actorId === artistUserId;
   const isAudience = actorId === booking.audience_id;
   if (!isArtist && !isAudience) return { ok: false, error: 'Not authorised for this booking' };
+
+  // First party to confirm triggers the CONFIRMING transition
+  if (booking.state === 'CONTRACT_SIGNED') {
+    const transition = await transitionBooking(bookingId, 'CONFIRMING', actorId);
+    if (!transition.ok) return transition;
+  }
 
   const field = isArtist ? 'artist_confirmed_at' : 'audience_confirmed_at';
   const { data: updated, error } = await createServiceClient()
@@ -289,6 +316,7 @@ export async function createBooking(
       currency: pkg.currency,
       audience_name: audience.name,
       audience_email: audience.email,
+      brand_terms: input.brandTerms ?? null,
     })
     .select()
     .single();
@@ -313,6 +341,11 @@ export async function createBooking(
     { id: '', booking_id: booking.id, from_state: null, to_state: 'REQUESTED', actor_id: audienceId, note: null, created_at: new Date().toISOString() },
     booking as Booking,
   );
+
+  // Auto-accept: immediately transition on behalf of the artist
+  if ((pkg as unknown as { auto_accept?: boolean }).auto_accept) {
+    await transitionBooking(booking.id, 'ACCEPTED', artist.user_id);
+  }
 
   const artistContact: ArtistContact = {
     name: artist.name,

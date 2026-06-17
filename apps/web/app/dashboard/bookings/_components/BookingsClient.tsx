@@ -83,7 +83,7 @@ function BookingDetailPanel({
   const [error, setError] = useState<string | null>(null);
   const action = actionForState(String(booking.state ?? ''));
   const canDecline = booking.state === 'REQUESTED';
-  const inContractFlow = ['ACCEPTED', 'CONTRACT_DRAFT', 'CONTRACT_SENT', 'AUDIENCE_UPLOADED'].includes(String(booking.state ?? ''));
+  const hasContractLink = ['CONTRACT_DRAFT', 'CONTRACT_SENT', 'AUDIENCE_UPLOADED', 'CONTRACT_SIGNED', 'CONFIRMING', 'COMPLETED', 'AUTO_RELEASED'].includes(String(booking.state ?? ''));
 
   async function handleAction(endpoint: string) {
     setLoading(endpoint);
@@ -176,19 +176,16 @@ function BookingDetailPanel({
             </div>
           )}
         </div>
-        {(action || canDecline || inContractFlow) && (
-          <div className="p-6 border-t border-outline-variant/30 flex flex-col gap-2">
+        <div className="p-6 border-t border-outline-variant/30 flex flex-col gap-2">
             {error && (
               <div className="text-sm text-[#c0392b] bg-[#c0392b]/5 border border-[#c0392b]/20 rounded-lg px-3 py-2">{error}</div>
             )}
-            {inContractFlow && (
-              <Link
-                href={`/booking/${booking.id}`}
-                className="w-full text-center bg-primary text-on-primary font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
-              >
-                View booking &amp; contract
-              </Link>
-            )}
+            <Link
+              href={`/booking/${booking.id}`}
+              className="w-full text-center bg-primary text-on-primary font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
+            >
+              {hasContractLink ? 'View booking & contract' : 'View booking'}
+            </Link>
             {action && (
               <button
                 onClick={() => handleAction(action.endpoint)}
@@ -208,7 +205,6 @@ function BookingDetailPanel({
               </button>
             )}
           </div>
-        )}
       </div>
     </>
   );

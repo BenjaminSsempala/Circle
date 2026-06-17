@@ -43,6 +43,10 @@ function whatsappLink(social: Record<string, string>) {
   return `https://wa.me/${digits}`;
 }
 
+function isBrandCollab(pkg: BookingPackage) {
+  return /brand|collaborat|campaign|commercial/.test(`${pkg.name} ${pkg.description ?? ''}`.toLowerCase());
+}
+
 export function BookingPanel({
   pkg,
   artist,
@@ -55,6 +59,7 @@ export function BookingPanel({
   onClose: () => void;
 }) {
   const productType = pkg.product_type ?? 'service';
+  const showBrandFields = isBrandCollab(pkg);
 
   const [gigDate, setGigDate] = useState('');
   const [gigTime, setGigTime] = useState('');
@@ -62,6 +67,17 @@ export function BookingPanel({
   const [deliveryDate, setDeliveryDate] = useState('');
   const [specialRequirements, setSpecialRequirements] = useState('');
   const [policyOpen, setPolicyOpen] = useState(false);
+
+  // Brand collaboration fields
+  const [brandDeliverables, setBrandDeliverables] = useState('');
+  const [brandUsagePurpose, setBrandUsagePurpose] = useState('');
+  const [brandUsageTerritory, setBrandUsageTerritory] = useState('');
+  const [brandUsageDuration, setBrandUsageDuration] = useState('');
+  const [brandUsageChannels, setBrandUsageChannels] = useState('');
+  const [brandExclusivity, setBrandExclusivity] = useState(false);
+  const [brandExclusivityPeriod, setBrandExclusivityPeriod] = useState('');
+  const [brandExclusivityExclusions, setBrandExclusivityExclusions] = useState('');
+  const [brandCreditLine, setBrandCreditLine] = useState('');
 
   const [blackoutDates, setBlackoutDates] = useState<string[]>([]);
   const [bookedDates, setBookedDates] = useState<string[]>([]);
@@ -112,6 +128,17 @@ export function BookingPanel({
           venue: productType === 'service' ? venue : undefined,
           deliveryDate: productType === 'digital' ? deliveryDate : undefined,
           specialRequirements: specialRequirements || undefined,
+          brandTerms: showBrandFields ? {
+            deliverables: brandDeliverables,
+            usage_purpose: brandUsagePurpose,
+            usage_territory: brandUsageTerritory,
+            usage_duration: brandUsageDuration,
+            usage_channels: brandUsageChannels,
+            exclusivity: brandExclusivity,
+            exclusivity_period: brandExclusivity ? brandExclusivityPeriod || null : null,
+            exclusivity_exclusions: brandExclusivity ? brandExclusivityExclusions || null : null,
+            credit_line: brandCreditLine,
+          } : undefined,
         }),
       });
       const json = await res.json();
@@ -279,6 +306,50 @@ export function BookingPanel({
                 <Field label="Notes for the artist (optional)">
                   <Textarea rows={5} placeholder="Sizing, customisation, delivery preferences, etc." value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} />
                 </Field>
+              )}
+
+              {showBrandFields && (
+                <div className="mt-3 flex flex-col gap-1">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-1">Campaign details</div>
+                  <Field label="Deliverables">
+                    <Textarea rows={3} placeholder="e.g. 2 Instagram Reels, 1 TikTok, 1 sponsored blog post" value={brandDeliverables} onChange={(e) => setBrandDeliverables(e.target.value)} />
+                  </Field>
+                  <Field label="Usage purpose">
+                    <Input type="text" placeholder="e.g. Product launch campaign for new skincare range" value={brandUsagePurpose} onChange={(e) => setBrandUsagePurpose(e.target.value)} />
+                  </Field>
+                  <Field label="Usage territory">
+                    <Input type="text" placeholder="e.g. Uganda, East Africa, Worldwide" value={brandUsageTerritory} onChange={(e) => setBrandUsageTerritory(e.target.value)} />
+                  </Field>
+                  <Field label="Usage duration">
+                    <Input type="text" placeholder="e.g. 6 months, 1 year, in perpetuity" value={brandUsageDuration} onChange={(e) => setBrandUsageDuration(e.target.value)} />
+                  </Field>
+                  <Field label="Distribution channels">
+                    <Input type="text" placeholder="e.g. Instagram, TikTok, TV, print" value={brandUsageChannels} onChange={(e) => setBrandUsageChannels(e.target.value)} />
+                  </Field>
+                  <Field label="How to credit the artist">
+                    <Input type="text" placeholder={`e.g. Content by @${artist.slug || 'artistname'}`} value={brandCreditLine} onChange={(e) => setBrandCreditLine(e.target.value)} />
+                  </Field>
+                  <div className="flex items-center gap-3 py-2">
+                    <button
+                      type="button"
+                      onClick={() => setBrandExclusivity((v) => !v)}
+                      className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${brandExclusivity ? 'bg-primary' : 'bg-primary/20'}`}
+                    >
+                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${brandExclusivity ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                    </button>
+                    <span className="font-sans text-sm text-on-surface">Exclusivity required</span>
+                  </div>
+                  {brandExclusivity && (
+                    <>
+                      <Field label="Exclusivity period">
+                        <Input type="text" placeholder="e.g. 3 months from delivery" value={brandExclusivityPeriod} onChange={(e) => setBrandExclusivityPeriod(e.target.value)} />
+                      </Field>
+                      <Field label="Exclusivity exclusions (optional)">
+                        <Textarea rows={2} placeholder="e.g. Personal art projects, prior brand commitments" value={brandExclusivityExclusions} onChange={(e) => setBrandExclusivityExclusions(e.target.value)} />
+                      </Field>
+                    </>
+                  )}
+                </div>
               )}
 
               {error && (

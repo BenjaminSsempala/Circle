@@ -166,6 +166,9 @@ export async function createPackage(
     currency: string;
     duration: string;
     logisticsInclusive: boolean;
+    productType?: 'service' | 'digital' | 'merchandise';
+    autoAccept?: boolean;
+    contractRequired?: boolean;
   }
 ) {
   const supabase = await createClient();
@@ -181,6 +184,9 @@ export async function createPackage(
       duration: data.duration,
       logistics_inclusive: data.logisticsInclusive,
       tier: 'standard',
+      product_type: data.productType ?? 'service',
+      auto_accept: data.autoAccept ?? false,
+      contract_required: data.contractRequired ?? true,
     })
     .select()
     .single();
@@ -229,6 +235,8 @@ export async function upsertPackage(
     logisticsInclusive: boolean;
     isActive?: boolean;
     productType?: 'service' | 'digital' | 'merchandise';
+    autoAccept?: boolean;
+    contractRequired?: boolean;
   }
 ) {
   const supabase = await createClient();
@@ -243,6 +251,8 @@ export async function upsertPackage(
   };
   if (data.isActive !== undefined) payload.is_active = data.isActive;
   if (data.productType !== undefined) payload.product_type = data.productType;
+  if (data.autoAccept !== undefined) payload.auto_accept = data.autoAccept;
+  if (data.contractRequired !== undefined) payload.contract_required = data.contractRequired;
 
   if (data.id) {
     const { data: pkg, error } = await supabase

@@ -13,6 +13,7 @@ export function BookingActions({
   productType,
   artistConfirmedAt,
   audienceConfirmedAt,
+  hasContract,
 }: {
   bookingId: string;
   state: BookingState;
@@ -20,6 +21,7 @@ export function BookingActions({
   productType: ProductType;
   artistConfirmedAt: string | null;
   audienceConfirmedAt: string | null;
+  hasContract: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
@@ -108,10 +110,24 @@ export function BookingActions({
 
       {state === 'CONTRACT_SIGNED' && (
         <>
-          <Banner variant="green" text="Contract complete. Payment processing is coming soon — we'll notify you when it's ready." />
-          <Link href={`/booking/${bookingId}/contract`}>
-            <Btn variant="tealOutline" full>View signed contract</Btn>
-          </Link>
+          <Banner variant="green" text="Locked in! Once the work is delivered, mark it complete below." />
+          {hasContract && (
+            <Link href={`/booking/${bookingId}/contract`}>
+              <Btn variant="tealOutline" full>View signed contract</Btn>
+            </Link>
+          )}
+          <Btn
+            variant="amber"
+            full
+            onClick={() => call('confirm')}
+            disabled={loading !== null}
+          >
+            {loading === 'confirm'
+              ? 'Marking…'
+              : role === 'audience'
+              ? 'Mark as delivered'
+              : 'Mark as complete'}
+          </Btn>
         </>
       )}
 
@@ -122,13 +138,36 @@ export function BookingActions({
       )}
 
       {state === 'CONFIRMING' && (
-        myConfirmed ? (
-          <Banner variant="amber" text="Waiting for the other party to confirm completion." />
-        ) : (
-          <Btn variant="amber" full onClick={() => call('confirm')} disabled={loading !== null}>
-            {loading === 'confirm' ? 'Confirming…' : 'Confirm completion'}
-          </Btn>
-        )
+        <>
+          {!myConfirmed && role === 'artist' && audienceConfirmedAt && (
+            <Banner variant="teal" text="Your client has confirmed delivery — mark as complete to finish the booking." />
+          )}
+          {!myConfirmed && role === 'audience' && artistConfirmedAt && (
+            <Banner variant="teal" text="The artist has confirmed — mark as delivered to complete the booking." />
+          )}
+          {myConfirmed ? (
+            <Banner variant="amber" text="Done on your end — waiting for the other party to confirm." />
+          ) : (
+            <Btn variant="amber" full onClick={() => call('confirm')} disabled={loading !== null}>
+              {loading === 'confirm'
+                ? 'Marking…'
+                : role === 'audience'
+                ? 'Mark as delivered'
+                : 'Mark as complete'}
+            </Btn>
+          )}
+          {hasContract && (
+            <Link href={`/booking/${bookingId}/contract`}>
+              <Btn variant="tealOutline" full small>View contract</Btn>
+            </Link>
+          )}
+        </>
+      )}
+
+      {(state === 'COMPLETED' || state === 'AUTO_RELEASED') && hasContract && (
+        <Link href={`/booking/${bookingId}/contract`}>
+          <Btn variant="tealOutline" full small>View contract</Btn>
+        </Link>
       )}
 
       {(canCancel || canDispute) && (

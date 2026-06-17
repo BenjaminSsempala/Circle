@@ -1,5 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/service';
-import type { Booking } from '@/lib/services/bookings';
+import type { Booking, BrandTerms } from '@/lib/services/bookings';
 import { renderContractPDF } from '@/lib/exports/ContractPDF';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -48,7 +48,8 @@ export interface ContractContent {
     cancellationTerms: CancellationTerms;
   };
   specialRequirements: string | null;
-  artistObligations: string;
+  brandTerms: BrandTerms | null;
+  artistObligations?: string;
   generatedAt: string;
 }
 
@@ -87,9 +88,9 @@ export function selectTemplate(pkg: ContractPackage): ContractTemplateType | nul
   if (pkg.product_type === 'digital') return 'digital_delivery';
 
   const haystack = `${pkg.name} ${pkg.description ?? ''}`.toLowerCase();
-  if (/brand|collaborat/.test(haystack)) return 'brand_collaboration';
-  if (/workshop|class|teach/.test(haystack)) return 'workshop';
-  if (/mentor/.test(haystack)) return 'mentorship';
+  if (/brand|collaborat|campaign|commercial/.test(haystack)) return 'brand_collaboration';
+  if (/workshop|class|teach|training|masterclass/.test(haystack)) return 'workshop';
+  if (/mentor|coaching|guidance|career/.test(haystack)) return 'mentorship';
   return 'performance';
 }
 
@@ -153,7 +154,7 @@ export async function generateContract(
       cancellationTerms: pkg.cancellation_terms ?? DEFAULT_CANCELLATION_TERMS,
     },
     specialRequirements: booking.special_requirements,
-    artistObligations: ARTIST_OBLIGATIONS[templateType],
+    brandTerms: (booking as unknown as { brand_terms?: BrandTerms }).brand_terms ?? null,
     generatedAt: new Date().toISOString(),
   };
 

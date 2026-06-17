@@ -1,10 +1,12 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { getBooking } from '@/lib/services/bookings';
 import { StatusBadge, TimelineStep, Rule, Lbl, Btn } from '@/app/components/booking/ui';
 import { STATE_LABELS } from '@/app/components/booking/constants';
 import { BookingActions } from '@/app/components/booking/BookingActions';
+import { RatingForm } from '@/app/components/booking/RatingForm';
 
 function fmtPrice(price: number, currency: string) {
   return `${currency} ${Number(price).toLocaleString()}`;
@@ -48,13 +50,22 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
   const wa = whatsappLink((artist.social_links as Record<string, string>) ?? {});
 
   let email = (artist.social_links as Record<string, string> | null)?.email;
-  if (!email && role !== 'artist') {
-    const { data: artistProfile } = await (await createClient())
-      .from('profiles')
-      .select('email')
-      .eq('id', artist.user_id)
+  if (!email) {
+    const { data: { user: artistAuthUser } } = await createServiceClient().auth.admin.getUserById(artist.user_id);
+    email = artistAuthUser?.email ?? undefined;
+  }
+
+  // Query existing review for this booking
+  let existingReview: { stars: number; comment: string | null } | null = null;
+  const isCompleted = booking.state === 'COMPLETED' || booking.state === 'AUTO_RELEASED';
+  if (isCompleted && role === 'audience') {
+    const { data: review } = await (await createClient())
+      .from('reviews')
+      .select('stars, comment')
+      .eq('booking_id', booking.id)
+      .eq('rater_id', user.id)
       .maybeSingle();
-    email = artistProfile?.email ?? undefined;
+    existingReview = review;
   }
 
   return (
@@ -91,8 +102,21 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
               productType={booking.product_type}
               artistConfirmedAt={booking.artist_confirmed_at}
               audienceConfirmedAt={booking.audience_confirmed_at}
+              hasContract={!!contract}
             />
           </div>
+
+          {/* Rating */}
+          {isCompleted && role === 'audience' && (
+            <div className="rounded-xl border border-primary/10 bg-white p-6">
+              <Lbl>Rate your experience</Lbl>
+              <RatingForm
+                bookingId={booking.id}
+                artistName={artist.name}
+                existingReview={existingReview}
+              />
+            </div>
+          )}
 
           {/* Timeline */}
           <div className="rounded-xl border border-primary/10 bg-white p-6">
@@ -189,6 +213,9 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
                     )}
                   </div>
                 </div>
+                {email && (
+                  <div className="text-xs text-on-surface-variant mb-2 break-all">{email}</div>
+                )}
                 <div className="flex gap-2">
                   {wa && (
                     <a href={wa} target="_blank" rel="noreferrer" className="flex-1">

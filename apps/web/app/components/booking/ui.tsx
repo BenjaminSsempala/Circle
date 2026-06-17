@@ -151,8 +151,8 @@ export function TimelineStep({ label, time, done = false, active = false, last =
 
 // ─── Signature box ───────────────────────────────────────────────────────────
 
-export function SignatureBox({ label, status = 'pending', filename }: {
-  label: string; status?: 'done' | 'waiting' | 'pending'; filename?: string;
+export function SignatureBox({ label, status = 'pending', filename, href }: {
+  label: string; status?: 'done' | 'waiting' | 'pending'; filename?: string; href?: string;
 }) {
   const done = status === 'done';
   const waiting = status === 'waiting';
@@ -175,7 +175,13 @@ export function SignatureBox({ label, status = 'pending', filename }: {
               <line x1="9" y1="13" x2="15" y2="13" stroke="#005440" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
             <div className="font-mono text-[10px] text-primary text-center">Uploaded ✓</div>
-            {filename && <div className="font-mono text-[9px] text-on-surface-variant text-center truncate max-w-full">{filename}</div>}
+            {filename && href ? (
+              <a href={href} target="_blank" rel="noreferrer" className="font-mono text-[9px] text-primary underline text-center truncate max-w-full hover:opacity-70">
+                {filename}
+              </a>
+            ) : filename ? (
+              <div className="font-mono text-[9px] text-on-surface-variant text-center truncate max-w-full">{filename}</div>
+            ) : null}
           </>
         ) : (
           <div className="font-sans text-xs text-on-surface-variant text-center leading-relaxed">

@@ -12,3 +12,4 @@ npm-debug.log
 .claude/settings.json
 .claude/
 apps/web/tsconfig.tsbuildinfo
+apps/web/tsconfig.debug.tsbuildinfo

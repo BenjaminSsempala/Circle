@@ -56,7 +56,7 @@ export function SignedCopyUpload({
 
   return (
     <div className="flex-1">
-      <SignatureBox label={label} status={status} filename={filename} />
+      <SignatureBox label={label} status={status} filename={filename} href={signedUrl ?? undefined} />
       {canUpload && !signedUrl && (
         <div className="mt-2">
           <input ref={fileInput} type="file" accept="application/pdf,image/*" onChange={handleFile} className="hidden" />

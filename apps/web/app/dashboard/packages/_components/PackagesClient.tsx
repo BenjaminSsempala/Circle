@@ -17,6 +17,8 @@ type Package = {
   is_active: boolean;
   created_at: string;
   product_type: ProductType;
+  auto_accept: boolean;
+  contract_required: boolean;
 };
 
 type FormState = {
@@ -27,6 +29,8 @@ type FormState = {
   duration: string;
   logisticsInclusive: boolean;
   productType: ProductType;
+  autoAccept: boolean;
+  contractRequired: boolean;
 };
 
 const EMPTY_FORM: FormState = {
@@ -37,6 +41,8 @@ const EMPTY_FORM: FormState = {
   duration: '',
   logisticsInclusive: false,
   productType: 'service',
+  autoAccept: false,
+  contractRequired: true,
 };
 
 const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
@@ -122,11 +128,21 @@ function PackageCard({
       </div>
 
       {/* Content */}
-      <div className="flex items-center gap-2 mb-1">
+      <div className="flex items-center gap-2 mb-1 flex-wrap">
         <h3 className="text-label-mono font-label-mono text-on-surface font-semibold">{pkg.name}</h3>
         <span className="text-[10px] uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
           {PRODUCT_TYPE_LABELS[pkg.product_type ?? 'service']}
         </span>
+        {pkg.auto_accept && (
+          <span className="text-[10px] uppercase tracking-wider font-semibold text-secondary bg-secondary-container/40 px-2 py-0.5 rounded-full">
+            Auto-accept
+          </span>
+        )}
+        {pkg.product_type !== 'merchandise' && !pkg.contract_required && (
+          <span className="text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">
+            No contract
+          </span>
+        )}
       </div>
       {pkg.description && (
         <p className="text-caption font-caption text-on-surface-variant mb-3 line-clamp-2">{pkg.description}</p>
@@ -177,6 +193,8 @@ function PackageDrawer({
           duration: editing.duration ?? '',
           logisticsInclusive: editing.logistics_inclusive,
           productType: editing.product_type ?? 'service',
+          autoAccept: editing.auto_accept ?? false,
+          contractRequired: editing.contract_required ?? true,
         }
       : EMPTY_FORM,
   );
@@ -203,6 +221,8 @@ function PackageDrawer({
         duration: form.duration,
         logisticsInclusive: form.logisticsInclusive,
         productType: form.productType,
+        autoAccept: form.autoAccept,
+        contractRequired: form.productType === 'merchandise' ? false : form.contractRequired,
       };
 
       const res = editing
@@ -256,7 +276,12 @@ function PackageDrawer({
                 <button
                   key={pt}
                   type="button"
-                  onClick={() => update('productType', pt)}
+                  onClick={() => {
+                    update('productType', pt);
+                    if (pt === 'digital') update('contractRequired', false);
+                    if (pt === 'service') update('contractRequired', true);
+                    if (pt === 'merchandise') update('contractRequired', false);
+                  }}
                   className={`text-sm font-semibold rounded-lg border px-3 py-2.5 transition-colors ${
                     form.productType === pt
                       ? 'border-primary bg-primary/10 text-primary'
@@ -268,9 +293,9 @@ function PackageDrawer({
               ))}
             </div>
             <p className="text-caption font-caption text-on-surface-variant mt-1.5">
-              {form.productType === 'service' && 'Audience books a date, time and venue — full contract + escrow.'}
-              {form.productType === 'digital' && 'Audience picks a delivery date — lightweight contract.'}
-              {form.productType === 'merchandise' && 'No contract — audience sees your contact card.'}
+              {form.productType === 'service' && 'Live performances, workshops, sessions — contract always required.'}
+              {form.productType === 'digital' && 'Birthday messages, custom videos, digital art — no contract needed by default.'}
+              {form.productType === 'merchandise' && 'Physical goods — audience sees your contact card to arrange purchase.'}
             </p>
           </div>
 
@@ -373,6 +398,66 @@ function PackageDrawer({
               </div>
             </button>
           </div>
+
+          {/* Auto-accept */}
+          <div>
+            <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Booking acceptance</p>
+            <button
+              type="button"
+              onClick={() => update('autoAccept', !form.autoAccept)}
+              className={`flex items-center gap-3 w-full border rounded-xl p-4 transition-colors ${
+                form.autoAccept ? 'border-primary/40 bg-primary/5' : 'border-outline-variant/40 bg-surface'
+              }`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${form.autoAccept ? 'bg-primary/15' : 'bg-surface-container'}`}>
+                <svg className={`w-4 h-4 ${form.autoAccept ? 'text-primary' : 'text-on-surface-variant'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <p className="text-label-mono font-label-mono text-on-surface text-sm font-semibold">Auto-accept bookings</p>
+                <p className="text-caption font-caption text-on-surface-variant">
+                  {form.autoAccept ? 'Booking accepted instantly' : 'You manually review each request'}
+                </p>
+              </div>
+              <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.autoAccept ? 'bg-primary' : 'bg-outline-variant'}`}>
+                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.autoAccept ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+              </div>
+            </button>
+          </div>
+
+          {/* Contract required — hide for merchandise */}
+          {form.productType !== 'merchandise' && (
+            <div>
+              <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Contract</p>
+              <button
+                type="button"
+                onClick={() => update('contractRequired', !form.contractRequired)}
+                className={`flex items-center gap-3 w-full border rounded-xl p-4 transition-colors ${
+                  form.contractRequired ? 'border-primary/40 bg-primary/5' : 'border-outline-variant/40 bg-surface'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${form.contractRequired ? 'bg-primary/15' : 'bg-surface-container'}`}>
+                  <svg className={`w-4 h-4 ${form.contractRequired ? 'text-primary' : 'text-on-surface-variant'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="text-label-mono font-label-mono text-on-surface text-sm font-semibold">
+                    {form.contractRequired ? 'Contract required' : 'No contract'}
+                  </p>
+                  <p className="text-caption font-caption text-on-surface-variant">
+                    {form.contractRequired
+                      ? 'Both parties sign before booking is locked in'
+                      : 'Booking locks in immediately after acceptance'}
+                  </p>
+                </div>
+                <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.contractRequired ? 'bg-primary' : 'bg-outline-variant'}`}>
+                  <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.contractRequired ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                </div>
+              </button>
+            </div>
+          )}
 
           {error && <p className="text-error text-sm">{error}</p>}
         </div>

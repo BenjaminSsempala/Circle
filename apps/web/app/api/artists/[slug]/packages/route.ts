@@ -14,9 +14,11 @@ export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return err('Invalid JSON'); }
 
-  const { name, description, price, currency, duration, logisticsInclusive } = body as {
+  const { name, description, price, currency, duration, logisticsInclusive, productType, autoAccept, contractRequired } = body as {
     name?: string; description?: string; price?: number;
     currency?: string; duration?: string; logisticsInclusive?: boolean;
+    productType?: 'service' | 'digital' | 'merchandise';
+    autoAccept?: boolean; contractRequired?: boolean;
   };
 
   if (!name || price === undefined) return err('name and price are required');
@@ -28,6 +30,9 @@ export async function POST(request: Request) {
     currency: currency ?? 'UGX',
     duration: duration ?? '',
     logisticsInclusive: logisticsInclusive ?? false,
+    productType,
+    autoAccept,
+    contractRequired,
   });
 
   if (!result.ok) return err(result.error, 500);

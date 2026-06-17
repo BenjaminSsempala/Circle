@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Request - The Circle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=DM+Sans:wght@400;500;700&amp;family=DM+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary-fixed-dim": "#6edab4",
+                "on-secondary-fixed-variant": "#474746",
+                "primary-fixed-dim": "#84d6b9",
+                "on-tertiary-container": "#85f1ca",
+                "on-background": "#1b1c19",
+                "inverse-surface": "#30312e",
+                "surface-container-highest": "#e4e2dd",
+                "on-error": "#ffffff",
+                "inverse-primary": "#84d6b9",
+                "secondary-container": "#e2dfde",
+                "surface-container": "#f0eee9",
+                "tertiary": "#00543f",
+                "background": "#fbf9f4",
+                "error-container": "#ffdad6",
+                "surface-container-low": "#f5f3ee",
+                "on-secondary-fixed": "#1c1b1b",
+                "surface-variant": "#e4e2dd",
+                "secondary": "#5f5e5e",
+                "on-tertiary": "#ffffff",
+                "inverse-on-surface": "#f2f1ec",
+                "surface-dim": "#dcdad5",
+                "primary": "#005440",
+                "on-tertiary-fixed-variant": "#00513d",
+                "on-secondary-container": "#636262",
+                "secondary-fixed-dim": "#c8c6c5",
+                "on-primary": "#ffffff",
+                "surface-container-high": "#eae8e3",
+                "outline-variant": "#bec9c3",
+                "on-secondary": "#ffffff",
+                "primary-fixed": "#a0f3d4",
+                "on-primary-fixed": "#002117",
+                "tertiary-container": "#006f54",
+                "on-surface-variant": "#3f4944",
+                "on-surface": "#1b1c19",
+                "on-error-container": "#93000a",
+                "surface-bright": "#fbf9f4",
+                "secondary-fixed": "#e5e2e1",
+                "on-tertiary-fixed": "#002117",
+                "on-primary-container": "#9aedcf",
+                "outline": "#6f7a74",
+                "on-primary-fixed-variant": "#00513e",
+                "primary-container": "#0f6e56",
+                "error": "#ba1a1a",
+                "tertiary-fixed": "#8af7cf",
+                "surface": "#fbf9f4",
+                "surface-tint": "#086b53",
+                "surface-container-lowest": "#ffffff",
+                "booking-amber": "#C17A2A",
+                "teal-light-bg": "#E1F5EE"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "xl": "80px",
+                "sm": "12px",
+                "container-max": "1200px",
+                "base": "8px",
+                "margin-mobile": "16px",
+                "md": "24px",
+                "xs": "4px",
+                "margin-desktop": "64px",
+                "lg": "48px",
+                "gutter": "24px"
+            },
+            "fontFamily": {
+                "mono-sm": ["DM Mono"],
+                "label-bold": ["DM Sans"],
+                "display-md": ["Playfair Display"],
+                "headline-lg": ["Playfair Display"],
+                "body-lg": ["DM Sans"],
+                "display-lg": ["Playfair Display"],
+                "headline-lg-mobile": ["Playfair Display"],
+                "body-sm": ["DM Sans"],
+                "body-md": ["DM Sans"],
+                "headline-md": ["Playfair Display"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .slide-in-panel {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(100%);
+        }
+        .slide-in-panel.active {
+            transform: translateX(0);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F5F3EF;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #BEC9C3;
+            border-radius: 2px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #005440 !important;
+        }
+    </style>
+</head>
+<body class="bg-surface-container font-body-md text-on-surface overflow-hidden">
+<!-- Mock Background (Screen 61: Artist Profile) -->
+<div class="fixed inset-0 z-0 flex flex-col">
+<!-- TopNavBar from JSON -->
+<header class="bg-background border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop py-base max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md text-primary tracking-tight">The Circle</div>
+<nav class="hidden md:flex gap-lg items-center">
+<a class="font-body-md text-secondary hover:text-primary transition-colors duration-200" href="#">Marketplace</a>
+<a class="font-body-md text-secondary hover:text-primary transition-colors duration-200" href="#">Exhibitions</a>
+<a class="font-body-md text-secondary hover:text-primary transition-colors duration-200" href="#">Our Story</a>
+</nav>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary cursor-pointer">shopping_bag</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer">person</span>
+<button class="bg-primary text-on-primary px-md py-xs rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Connect Wallet</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-margin-desktop py-lg">
+<div class="max-w-container-max mx-auto grid grid-cols-12 gap-gutter">
+<div class="col-span-4">
+<div class="aspect-square bg-surface-container-high rounded-xl mb-md">
+<img class="w-full h-full object-cover rounded-xl" data-alt="A professional portrait of an East African musician named Jaytham, sitting in a sunlit studio with acoustic foam and vintage microphones in the background. He wears a tailored linen shirt, looking directly at the camera with a calm, inviting expression. The lighting is soft and golden, creating a warm editorial feel that matches the premium aesthetic of a high-end arts marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAp2mbzbHLGFbUHHpCst8PBzeVqkiGP_bpZwJVb1zY6N4WtsgzkrnzK6I_SdjrvHpV25NqJLhyOfEVbhGB2ATfHotCqDx4_E_XiIhIP2aabIq1QGdeiOYNcgwWOEXt8gYr1h-7fBqYR6Or9iIvBPx7hkdFuKIvrUca5bmtOrzUBG-fC7lRtBl2rV0XOSSsfFTZVNWErDtBINQ3V6As_TiuT_oLf6RNSqlD9vatpqYtVHq4Fl9g1K8sk3HEAWJJZkO1ihn1ZaocZNI"/>
+</div>
+<h1 class="font-headline-lg text-headline-lg mb-xs">Jaytham</h1>
+<p class="text-secondary font-body-md mb-md">Soul &amp; Jazz Performance Artist</p>
+<div class="space-y-sm">
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-bold text-label-bold">VERIFIED ARTIST</span>
+</div>
+</div>
+</div>
+<div class="col-span-8 space-y-lg">
+<section>
+<h3 class="font-label-bold text-label-bold uppercase tracking-widest text-secondary mb-sm">About</h3>
+<p class="font-body-lg text-body-lg leading-relaxed">Jaytham is a Kampala-based multi-instrumentalist whose work explores the intersection of traditional Ganda rhythms and contemporary neo-soul. With over a decade of experience in intimate session performances, he brings a deeply personal atmosphere to every space he inhabits.</p>
+</section>
+<section class="grid grid-cols-2 gap-gutter">
+<div class="p-md bg-surface-container-low border border-outline-variant rounded-xl">
+<h4 class="font-headline-md text-headline-md mb-xs">The Private Hour</h4>
+<p class="text-secondary font-body-sm mb-md">An intimate 60-minute solo performance curated for small gatherings.</p>
+<p class="font-label-bold text-label-bold text-primary mb-lg">UGX 100,000</p>
+<button class="w-full py-sm border border-primary text-primary font-label-bold text-label-bold hover:bg-primary hover:text-on-primary transition-all" onclick="togglePanel()">Book Now</button>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+<!-- Overlay -->
+<div class="fixed inset-0 bg-on-background/40 backdrop-blur-[2px] z-40 opacity-0 pointer-events-none transition-opacity duration-300" id="overlay" onclick="togglePanel()"></div>
+<!-- Booking Panel -->
+<div class="fixed top-0 right-0 h-screen w-full max-w-[480px] bg-white z-50 slide-in-panel flex flex-col shadow-2xl" id="bookingPanel">
+<!-- Header -->
+<div class="px-md py-sm border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<h2 class="font-headline-md text-headline-md">Booking Request</h2>
+<button class="p-xs hover:bg-surface-container rounded-full transition-colors" onclick="togglePanel()">
+<span class="material-symbols-outlined text-secondary">close</span>
+</button>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto custom-scrollbar px-md py-lg space-y-lg">
+<!-- Package Summary Card -->
+<div class="bg-teal-light-bg p-md rounded-xl space-y-xs border border-primary-fixed-dim">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-headline-md text-primary">The Private Hour</h3>
+<span class="font-label-bold text-label-bold text-primary">UGX 100,000</span>
+</div>
+<div class="flex flex-wrap gap-x-md gap-y-xs text-on-surface-variant font-body-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>60 min</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">person</span>
+<span>with Jaytham</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+<span>Transport included</span>
+</div>
+</div>
+</div>
+<!-- Form Fields -->
+<form class="space-y-lg">
+<!-- What's happening? -->
+<div class="space-y-xs">
+<label class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">What's happening?</label>
+<textarea class="w-full p-md bg-white border border-outline-variant rounded-lg font-body-md placeholder:text-outline focus:ring-0 transition-all resize-none" placeholder="Tell Jaytham about your occasion — the birthday, the gathering, what makes it special." rows="3"></textarea>
+</div>
+<!-- What feeling? -->
+<div class="space-y-xs">
+<label class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">What feeling do you want people to leave with?</label>
+<textarea class="w-full p-md bg-white border border-outline-variant rounded-lg font-body-md placeholder:text-outline focus:ring-0 transition-all resize-none" placeholder="Joy? Tears? Inspiration? Give Jaytham a sense of the emotion you're going for." rows="3"></textarea>
+</div>
+<!-- Anything important? -->
+<div class="space-y-xs">
+<label class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Anything important Jaytham should know?</label>
+<textarea class="w-full p-md bg-white border border-outline-variant rounded-lg font-body-md placeholder:text-outline focus:ring-0 transition-all resize-none" placeholder="Cultural context, special requests, access needs — anything that helps him prepare." rows="3"></textarea>
+</div>
+<!-- Date & Time -->
+<div class="grid grid-cols-2 gap-gutter">
+<div class="space-y-xs">
+<label class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Date</label>
+<input class="w-full p-md bg-white border border-outline-variant rounded-lg font-body-md focus:ring-0" type="date"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Time</label>
+<input class="w-full p-md bg-white border border-outline-variant rounded-lg font-body-md focus:ring-0" type="time"/>
+</div>
+</div>
+<!-- Venue / Location -->
+<div class="space-y-xs">
+<label class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Venue / Location</label>
+<input class="w-full p-md bg-white border border-outline-variant rounded-lg font-body-md placeholder:text-outline focus:ring-0" placeholder="Where will this take place?" type="text"/>
+</div>
+<!-- Cancellation Policy -->
+<div class="pt-sm">
+<details class="group cursor-pointer">
+<summary class="list-none flex items-center justify-between text-secondary hover:text-primary font-body-sm transition-colors">
+<span>Cancellation policy</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-sm p-sm bg-surface-container-low rounded font-body-sm text-on-surface-variant leading-relaxed">
+                            Full refund if cancelled at least 48 hours before the event. 50% refund between 48 and 24 hours. No refund within 24 hours of the performance start time.
+                        </div>
+</details>
+</div>
+</form>
+</div>
+<!-- Action Bar -->
+<div class="p-md border-t border-outline-variant bg-white">
+<button class="w-full bg-booking-amber hover:opacity-95 text-white py-md rounded-lg font-label-bold text-label-bold flex items-center justify-center gap-sm transition-all group active:scale-[0.98]">
+                Send booking request
+                <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<p class="mt-sm text-center text-secondary font-body-sm">
+                No payment yet. Jaytham has 24 hours to respond.
+            </p>
+</div>
+</div>
+<script>
+        function togglePanel() {
+            const panel = document.getElementById('bookingPanel');
+            const overlay = document.getElementById('overlay');
+            
+            if (panel.classList.contains('active')) {
+                panel.classList.remove('active');
+                overlay.classList.add('pointer-events-none');
+                overlay.classList.remove('opacity-100');
+                document.body.classList.remove('overflow-hidden');
+            } else {
+                panel.classList.add('active');
+                overlay.classList.remove('pointer-events-none');
+                overlay.classList.add('opacity-100');
+                document.body.classList.add('overflow-hidden');
+            }
+        }
+
+        // Auto-open for demonstration
+        window.onload = () => {
+            setTimeout(togglePanel, 800);
+        }
+    </script>
+</body></html>

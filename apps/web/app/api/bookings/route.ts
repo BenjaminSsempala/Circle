@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return err('Invalid JSON'); }
 
-  const { packageId, productType, gigDate, gigTime, venue, deliveryDate, specialRequirements, audienceNotes } = body as {
+  const { packageId, productType, gigDate, gigTime, venue, deliveryDate, specialRequirements, audienceNotes, brandTerms } = body as {
     packageId?: string;
     productType?: ProductType;
     gigDate?: string;
@@ -21,6 +21,7 @@ export async function POST(request: Request) {
     deliveryDate?: string;
     specialRequirements?: string;
     audienceNotes?: string;
+    brandTerms?: import('@/lib/services/bookings').BrandTerms;
   };
 
   if (!packageId) return err('packageId is required');
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
     deliveryDate,
     specialRequirements,
     audienceNotes,
+    brandTerms,
   };
 
   const result = await createBooking(

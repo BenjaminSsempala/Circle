@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Circle | Digital Hearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&family=Playfair+Display:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #F5F3EF;
+            -webkit-font-smoothing: antialiased;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#6edab4",
+                      "on-secondary-fixed-variant": "#474746",
+                      "primary-fixed-dim": "#84d6b9",
+                      "on-tertiary-container": "#85f1ca",
+                      "on-background": "#1b1c19",
+                      "inverse-surface": "#30312e",
+                      "surface-container-highest": "#e4e2dd",
+                      "on-error": "#ffffff",
+                      "inverse-primary": "#84d6b9",
+                      "secondary-container": "#e2dfde",
+                      "surface-container": "#f0eee9",
+                      "tertiary": "#00543f",
+                      "background": "#fbf9f4",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f5f3ee",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "surface-variant": "#e4e2dd",
+                      "secondary": "#5f5e5e",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#f2f1ec",
+                      "surface-dim": "#dcdad5",
+                      "primary": "#005440",
+                      "on-tertiary-fixed-variant": "#00513d",
+                      "on-secondary-container": "#636262",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#eae8e3",
+                      "outline-variant": "#bec9c3",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#a0f3d4",
+                      "on-primary-fixed": "#002117",
+                      "tertiary-container": "#006f54",
+                      "on-surface-variant": "#3f4944",
+                      "on-surface": "#1b1c19",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#fbf9f4",
+                      "secondary-fixed": "#e5e2e1",
+                      "on-tertiary-fixed": "#002117",
+                      "on-primary-container": "#9aedcf",
+                      "outline": "#6f7a74",
+                      "on-primary-fixed-variant": "#00513e",
+                      "primary-container": "#0f6e56",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#8af7cf",
+                      "surface": "#fbf9f4",
+                      "surface-tint": "#086b53",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "80px",
+                      "sm": "12px",
+                      "container-max": "1200px",
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "md": "24px",
+                      "xs": "4px",
+                      "margin-desktop": "64px",
+                      "lg": "48px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "mono-sm": ["DM Mono"],
+                      "label-bold": ["DM Sans"],
+                      "display-md": ["Playfair Display"],
+                      "headline-lg": ["Playfair Display"],
+                      "body-lg": ["DM Sans"],
+                      "display-lg": ["Playfair Display"],
+                      "headline-lg-mobile": ["Playfair Display"],
+                      "body-sm": ["DM Sans"],
+                      "body-md": ["DM Sans"],
+                      "headline-md": ["Playfair Display"]
+              },
+              "fontSize": {
+                      "mono-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                      "label-bold": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "display-md": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="text-on-surface font-body-md bg-[#F5F3EF]">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface shadow-sm sticky top-0 z-50">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
+<div class="flex items-center gap-lg">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">Digital Hearth</span>
+<div class="hidden md:flex gap-md">
+<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed transition-colors duration-200" href="#">Explore</a>
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary" href="#">My Circle</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed transition-colors duration-200" href="#">Messages</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-secondary dark:hover:text-secondary-fixed transition-colors duration-200" href="#">Portfolio</a>
+</div>
+</div>
+<div class="flex items-center gap-base">
+<button class="material-symbols-outlined text-on-surface p-2 hover:bg-surface-container rounded-full">notifications</button>
+<img alt="Artist profile avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A sophisticated close-up portrait of a modern African artist with a warm smile, wearing a designer linen shirt. The lighting is soft and directional, typical of a high-end editorial photoshoot. The background is a clean, minimalist studio setting with neutral tones that complement the overall light-mode aesthetic of the interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6OnpUDtZSFQXFDAnjUkUV5_5D4LZ2VW8bEe1kNDPR2TF-I4oUwZE-0ccGVWhGm4mVb3UkjIrxWOKy1K3sHRd372-ppa040I-m5rFpcdD1OBW1myXo5of5inxLfOgivvAyOBaQ0kEhmKGell3sad0UWjWGNQC-LGtnW7BOCc8prZBzW3prPmb2eb5CV5IOYcBZA7eTQiy3mVnPmwZi1ZcfRT6CWdGPEzVQhmGy-StxqYXlfkdvHkcFd-HrFjvNcRZVxa8wfi_fbt4"/>
+</div>
+</nav>
+</header>
+<main class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg space-y-xl">
+<!-- Heading -->
+<section>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-on-surface tracking-tight">My Circle</h1>
+</section>
+<!-- Stats Row -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="bg-surface p-md border border-outline-variant rounded-lg">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">Artists</p>
+<p class="font-display-md text-display-md text-primary mt-xs">12</p>
+</div>
+<div class="bg-surface p-md border border-outline-variant rounded-lg">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">Experiences</p>
+<p class="font-display-md text-display-md text-primary mt-xs">08</p>
+</div>
+<div class="bg-surface p-md border border-outline-variant rounded-lg">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">Workshops</p>
+<p class="font-display-md text-display-md text-primary mt-xs">04</p>
+</div>
+<div class="bg-surface p-md border border-outline-variant rounded-lg">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">Commissioned</p>
+<p class="font-display-md text-display-md text-primary mt-xs">03</p>
+</div>
+</section>
+<!-- Saved Artists Strip -->
+<section class="space-y-sm">
+<div class="flex justify-between items-end">
+<h2 class="font-headline-md text-headline-md text-on-surface">Saved Artists</h2>
+<a class="font-label-bold text-label-bold text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="flex gap-lg overflow-x-auto hide-scrollbar pb-base -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
+<!-- Artist 1 -->
+<div class="flex-shrink-0 flex flex-col items-center gap-xs group cursor-pointer">
+<div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-primary-container p-1 group-hover:border-primary transition-all duration-300">
+<img alt="Artist" class="w-full h-full rounded-full object-cover" data-alt="Editorial portrait of a female contemporary sculptor with short hair and artisanal copper jewelry. She is posed against a textured lime-washed wall with soft, warm afternoon sunlight catching her profile. The style is premium, quiet luxury with high clarity and a focus on texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANBtgz8CvRo3UpAON8ZmeN1mEzyNpNmW3sj2NkBYRdZNMiObGPfa70RrQ3n9VozQdxUZueyRArdDc2wpWKbYJI5v7SEtvIN7OSysvlCqjPvWmhey8iOLkDqNEZJK5gy79nMm_OO2rUwg_esE54rcadLkUOrBrkbzZck0_VjD7B5Tp0ddWWQ2dvhsSjc2F9Y5UZ5JFCxZv7ctdMnZ15rt62x3Gn__h2vWyV9CF1JsL0-xmCKk6UwZ4tdRAuc_5Iyiz1C3XMXK0WTaQ"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Amina J.</span>
+</div>
+<!-- Artist 2 -->
+<div class="flex-shrink-0 flex flex-col items-center gap-xs group cursor-pointer">
+<div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-transparent p-1 group-hover:border-primary transition-all duration-300">
+<img alt="Artist" class="w-full h-full rounded-full object-cover" data-alt="Close-up headshot of a male textile artist in his late 30s, looking thoughtfully off-camera. The lighting is soft and diffuse, emphasizing his serene expression and the intricate texture of his woven scarf. The aesthetic is clean, professional, and sophisticated, set in a bright studio environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX32udwzcGPGm56NV3W_tIFqrD6SASmvVmhkDVyUTPCBltSaszBrRvgrUNH9dO7u0sjYUemFC9LbpjU3Y6ROjc4LFpZC6r8LJPRhpqrzkzHNBXymYolKK-jfqYLPA5Ki_qqnKKHISCuErZkQgsqjkbgTooKg0teo0AeQ4gNOeQ9C56bhn2BnErBEW4sKzGqgzdbGhc_R-TwIgkSHt7K2kY3Mi1EJZlmk8VEaNGOiozvkBd_1HbaRhOVUU1JQK66L0tyzbCh0EWiAY"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Kofi M.</span>
+</div>
+<!-- Artist 3 -->
+<div class="flex-shrink-0 flex flex-col items-center gap-xs group cursor-pointer">
+<div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-transparent p-1 group-hover:border-primary transition-all duration-300">
+<img alt="Artist" class="w-full h-full rounded-full object-cover" data-alt="Professional profile photo of a young female digital illustrator with colorful braided hair. She is smiling brightly in a sunlit outdoor garden setting with blurred tropical foliage in the background. High-quality editorial style with vibrant but natural color tones suitable for a high-end creative platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBqOxeBVlBZ9MtO3u-2pl_37IweaQiWvIU0vAT2jNtwJmLut-_n4Z9l79uDpVcZPL3sBq5c6NzaJdgmOvTPAX6pxToYL_Xk6tZjENi3tPp1B_JN4dRenILQ7xNhJkcPXv4WKTCPCqEWMfqR6F1CpyFJiYssdWAM1Y4YqXGMaKIMnCmjV8usrhHVvZ9FZ-X0QVQxNKFYt8WQlQuw913mRTDDJnkDD_ImdI4V3GnGY1fjYY4me80MksHbTPoSHMZlNxMQIknq5_ekSg"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Zanele S.</span>
+</div>
+<!-- Artist 4 -->
+<div class="flex-shrink-0 flex flex-col items-center gap-xs group cursor-pointer">
+<div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-transparent p-1 group-hover:border-primary transition-all duration-300">
+<img alt="Artist" class="w-full h-full rounded-full object-cover" data-alt="Elegant editorial portrait of a senior ceramic artist. Her face shows wisdom and character, captured in sharp detail with high-contrast black and white photography. She is wearing a dark, minimal apron. The background is a blurred shelf of organic pottery shapes in a clean, bright studio space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWu0Wbe8SajvBpMkM7nNRsEV4-h3S1Jh-HRPMaGubzSCWmZzT9qi8YMParVOvhzPw7gM7lRnJF9kEQB_-lBKRx4UH8SjBtVHoCt910m0HjbXqPQFJTodqSzYsquEDYFbjb9Z6iY55VVJE6wfWPxC18uLD5AGd66wGjLh90-d8rNmpdNqAhjaIXT0NWpKjjo4qA3I_Cn0wlq3clGfhvQPfYNR2XM-_QoIQrJ9yFV7Awh6dxgJECDmyDIdpkDw1RAHRCucUaA7jIsB0"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Fatima L.</span>
+</div>
+<!-- Artist 5 -->
+<div class="flex-shrink-0 flex flex-col items-center gap-xs group cursor-pointer">
+<div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-transparent p-1 group-hover:border-primary transition-all duration-300">
+<img alt="Artist" class="w-full h-full rounded-full object-cover" data-alt="Headshot of a male muralist with paint-splattered work clothes. He is smiling warmly, standing in front of a vibrant, large-scale abstract mural with bold geometric patterns. The lighting is bright morning sun, creating a dynamic and energetic feel that captures the essence of street art in a premium editorial context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0Jh8api57nZlULyRvvlXHJucHpeQq9d5V1iHO1AwkjEnYsD_4IJBuGvO0rvoSzsYDnRAfQYYOH_5T15aly_uNG6wKIENbodk4f0k6Fjt0lgAfmyVwy1LBCgFuQ8GXuCXMk-ip9iRFXoY19I2HKG0f8YDuQun9hX8UWBHnLOLthi2JhdjJux5uJtHxiiyDA3BIMTIjBxZ2aPp6x1UqpOxHURyrmavenvRtuCiMCb-KrsVMC-i4pGDZjK0T-GUpwBYR2S4LOoF1Rbk"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Tunde G.</span>
+</div>
+</div>
+</section>
+<!-- Experience Timeline -->
+<section class="space-y-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-base">
+                Timeline
+                <span class="font-mono-sm text-mono-sm text-primary uppercase bg-primary-container/20 px-2 py-0.5 rounded-full">Archive</span>
+</h2>
+<!-- Month Group -->
+<div class="space-y-md">
+<div class="flex items-center gap-base">
+<div class="h-px flex-grow bg-outline-variant"></div>
+<span class="font-label-bold text-label-bold text-on-surface-variant bg-[#F5F3EF] px-base">JULY 2026</span>
+<div class="h-px flex-grow bg-outline-variant"></div>
+</div>
+<!-- Entry 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col md:flex-row gap-md hover:shadow-sm transition-shadow">
+<!-- Date Block -->
+<div class="flex-shrink-0 flex md:flex-col items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-primary rounded-lg text-on-primary">
+<span class="font-label-bold text-[10px] md:text-[12px] uppercase opacity-80">Fri</span>
+<span class="font-display-md text-headline-md md:text-headline-lg leading-none">12</span>
+</div>
+<!-- Details -->
+<div class="flex-grow space-y-sm">
+<div class="flex flex-wrap justify-between items-start gap-xs">
+<div>
+<div class="flex items-center gap-sm">
+<img alt="Amina J." class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD1sF-pB4e6vxYlg1gvNfNJG2IiJV9LNKYIlTNTDpd0WdM096_mSTdQGYSf_Nv5z85AI0dzN2guPHAENEQRTDunq9KFLdFwIBpUxpAZSf4wsp6a4qvV9b1Xj7TOSyixhdJF7PVsVmrH1TjwuC-EXJKsi8twOD3Teo9nBvFdCr3qhj4PYoeKFyxmXIyy-8crk3IoSYitN0k4vpH3gRpNrPZvLIgqlXT9cB6SqiKGFBKtBvXyQ1yeFVo-KIUBfM8gU9T79yTjTyzIcQ"/>
+<h3 class="font-headline-md text-body-lg text-on-surface">Private Gallery Tour with Amina J.</h3>
+</div>
+<p class="text-on-surface-variant text-body-sm mt-xs">Lagos Island Studio · Masterclass Package · ✨ Serene</p>
+</div>
+<a class="font-label-bold text-label-bold text-primary flex items-center gap-1 hover:underline" href="#">
+                                View booking <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Memory Thumbnails -->
+<div class="flex gap-sm">
+<div class="relative w-24 h-24 rounded-lg overflow-hidden border border-outline-variant group">
+<img alt="Artwork" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A macro photograph of an abstract painting with thick impasto textures in shades of teal, ochre, and deep crimson. The lighting is soft and lateral, highlighting the sculptural quality of the paint on the canvas. High-end editorial style, clean and focused on artistic detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeySSXLv3eiFa7-U1lARGJc5ZMtpjy27ttcNQmG0nVDYeP9WkWI4bP36MnvqMtZOo4CYTqdMXPVeyhx4Lf6lRx45UufeAPv5ntVdgL7xNemaOL_D2bqa1QbQ5J05DUaSok2k8pm0jMAY2b3HADgF_XCH_PLunNndPraMnPz_UqDx01Ko-x7CpdjNqDrfPK89PTkOIkEeMz-QVjhcfI84vz3lQhBbfpTvjmzcABU31nOO-C0imVX_s8VP83-Vl8wonuoFp8Zba5q8M"/>
+</div>
+<div class="relative w-24 h-24 rounded-lg overflow-hidden border border-outline-variant group">
+<img alt="Gallery" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A wide-angle, minimalist photograph of a modern art gallery space with white walls and polished concrete floors. Natural light streams in from a high skylight, illuminating a single large-scale sculpture in the center. The mood is calm, professional, and extremely sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzQ-ecaMN6q-3iT7vffgxOuj0OHBoJhhU4u1XHvPjJB7sq-y8m_qRbPOER1tQWnzutvJMGhsCuAk-joqJ0IBbbdGsVVbP3CPLeDky_e7Gx1c26wOjKLfQNozxPSzbrsr2nHM9AZWXVxujVv0_oCX780Hl4ZEuS-CEOEsMvKFMgjHthr2jSinxC0htIAz6qVICkxt4fmABBOAlUc9KD8KnoScMtaxcmH8TTXODz7sYhbFYK47A2BXbHUfy2PyA085nFAKi3f2OudKY"/>
+</div>
+<div class="w-24 h-24 rounded-lg bg-surface-container flex items-center justify-center border border-dashed border-outline hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant">add_photo_alternate</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col md:flex-row gap-md hover:shadow-sm transition-shadow">
+<!-- Date Block -->
+<div class="flex-shrink-0 flex md:flex-col items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-primary rounded-lg text-on-primary">
+<span class="font-label-bold text-[10px] md:text-[12px] uppercase opacity-80">Mon</span>
+<span class="font-display-md text-headline-md md:text-headline-lg leading-none">01</span>
+</div>
+<!-- Details -->
+<div class="flex-grow space-y-sm">
+<div class="flex flex-wrap justify-between items-start gap-xs">
+<div>
+<div class="flex items-center gap-sm">
+<img alt="Kofi M." class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhKifKymwpa6GWCTSCtLKBUR7WF246oAw4YuRz2uOWf9BRcXgGeFFNjjExXqu-LxOqHCPPVrHUqegQsFwlE9rj2Ts8nmiZg2I_OWxl5hR7nCYVuGGL7HHUo-Fh49-hgwSwW2YHArbkmmKVYfjyUYeU_Orf9Gdm8J2hJJ-AEfMhXuhKjAlEM21NRKfkTJzRXVOb3ncHCFOKw1fyLQZWoVdjTGIiO9a0XFswnex4z7ZXUiMMteMVaABMB9mWsAy8JRhySqUt7AY9klg"/>
+<h3 class="font-headline-md text-body-lg text-on-surface">Ancestral Weaving Workshop</h3>
+</div>
+<p class="text-on-surface-variant text-body-sm mt-xs">V&A Waterfront · Intimate Group · ✨ Inspired</p>
+</div>
+<a class="font-label-bold text-label-bold text-primary flex items-center gap-1 hover:underline" href="#">
+                                View booking <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Month Group -->
+<div class="space-y-md">
+<div class="flex items-center gap-base">
+<div class="h-px flex-grow bg-outline-variant"></div>
+<span class="font-label-bold text-label-bold text-on-surface-variant bg-[#F5F3EF] px-base">JUNE 2026</span>
+<div class="h-px flex-grow bg-outline-variant"></div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col md:flex-row gap-md opacity-70">
+<div class="flex-shrink-0 flex md:flex-col items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-secondary rounded-lg text-on-primary">
+<span class="font-label-bold text-[10px] md:text-[12px] uppercase opacity-80">Sun</span>
+<span class="font-display-md text-headline-md md:text-headline-lg leading-none">20</span>
+</div>
+<div class="flex-grow py-xs">
+<h3 class="font-headline-md text-body-lg text-on-surface">Pottery Wheel Basics</h3>
+<p class="text-on-surface-variant text-body-sm mt-xs">Cape Town Design Hub · Introduction Session</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-base bg-surface-container dark:bg-surface-container-high border-t border-outline-variant mt-xl">
+<div class="flex flex-col items-center md:items-start gap-xs">
+<span class="text-headline-md font-headline-md text-primary">Digital Hearth</span>
+<p class="text-body-md font-body-md text-on-surface-variant">© 2024 Digital Hearth. Connecting African Artistry.</p>
+</div>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Contact</a>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden border-t border-outline-variant bg-surface dark:bg-surface-container-low shadow-lg rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined">home</span>
+<span class="text-caption font-caption mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined">event_note</span>
+<span class="text-caption font-caption mt-1">Gigs</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full px-4 py-1 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="text-caption font-caption mt-1">Circle</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined">person</span>
+<span class="text-caption font-caption mt-1">Profile</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions for timeline cards
+        document.querySelectorAll('.bg-surface-container-lowest').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Sticky nav shadow on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+    </script>
+</body></html>
