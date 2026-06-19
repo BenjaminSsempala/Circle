@@ -47,7 +47,7 @@ export function AuthLayout({
                 "Circle is more than a platform; it's where your art finds its audience."
               </p>
               <p className="text-label-mono font-label-mono text-secondary-fixed mt-4 uppercase tracking-widest">
-                — Artist, Nairobi
+               Artist, Nairobi
               </p>
             </div>
           </div>

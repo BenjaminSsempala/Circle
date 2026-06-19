@@ -16,7 +16,7 @@ export async function POST(
   // Re-render the PDF so any custom clauses added since generation are included
   const { data: booking } = await supabase
     .from('bookings')
-    .select('*, artists(name, city, country)')
+    .select('*, artists(legal_name, city, country)')
     .eq('id', params.id)
     .maybeSingle();
 
@@ -27,7 +27,7 @@ export async function POST(
     .maybeSingle();
 
   if (booking && contract) {
-    const artist = (booking as unknown as { artists: { name: string; city: string | null; country: string | null } }).artists;
+    const artist = (booking as unknown as { artists: { legal_name: string; city: string | null; country: string | null } }).artists;
     const pdfUrl = await generateContractPDF(contract as Contract, booking, artist, {
       name: booking.audience_name ?? '',
       email: booking.audience_email ?? '',

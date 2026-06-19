@@ -140,7 +140,7 @@ export function ContractDocument({ contract }: { contract: Contract }) {
             </div>
           </div>
           <div className="mt-4 text-center font-mono text-[9px] text-on-surface-variant tracking-wider uppercase">
-            Facilitated by The Circle — thecircle.co · {rendered.reference}
+            Facilitated by The Circle · thecircle.co · {rendered.reference}
           </div>
         </div>
       </div>

@@ -159,15 +159,13 @@ function PackageCard({
         </span>
       </div>
 
-      {/* Logistics */}
-      <div className="flex items-center gap-1.5 text-caption font-caption">
-        <span className={pkg.logistics_inclusive ? 'text-primary' : 'text-on-surface-variant'}>
-          {pkg.logistics_inclusive ? '✓' : '✗'}
-        </span>
-        <span className="text-on-surface-variant">
-          Transport {pkg.logistics_inclusive ? 'included' : 'not included'}
-        </span>
-      </div>
+      {/* Logistics: only show when included */}
+      {pkg.logistics_inclusive && (
+        <div className="flex items-center gap-1.5 text-caption font-caption">
+          <span className="text-primary">✓</span>
+          <span className="text-on-surface-variant">Transport included</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -293,9 +291,9 @@ function PackageDrawer({
               ))}
             </div>
             <p className="text-caption font-caption text-on-surface-variant mt-1.5">
-              {form.productType === 'service' && 'Live performances, workshops, sessions — contract always required.'}
-              {form.productType === 'digital' && 'Birthday messages, custom videos, digital art — no contract needed by default.'}
-              {form.productType === 'merchandise' && 'Physical goods — audience sees your contact card to arrange purchase.'}
+              {form.productType === 'service' && 'Live performances, workshops, sessions: contract always required.'}
+              {form.productType === 'digital' && 'Birthday messages, custom videos, digital art: no contract needed by default.'}
+              {form.productType === 'merchandise' && 'Physical goods: audience sees your contact card to arrange purchase.'}
             </p>
           </div>
 
@@ -394,7 +392,7 @@ function PackageDrawer({
                 </p>
               </div>
               <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.logisticsInclusive ? 'bg-primary' : 'bg-outline-variant'}`}>
-                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.logisticsInclusive ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.logisticsInclusive ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
               </div>
             </button>
           </div>
@@ -421,12 +419,12 @@ function PackageDrawer({
                 </p>
               </div>
               <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.autoAccept ? 'bg-primary' : 'bg-outline-variant'}`}>
-                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.autoAccept ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.autoAccept ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
               </div>
             </button>
           </div>
 
-          {/* Contract required — hide for merchandise */}
+          {/* Contract required: hide for merchandise */}
           {form.productType !== 'merchandise' && (
             <div>
               <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Contract</p>
@@ -453,7 +451,7 @@ function PackageDrawer({
                   </p>
                 </div>
                 <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.contractRequired ? 'bg-primary' : 'bg-outline-variant'}`}>
-                  <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.contractRequired ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                  <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.contractRequired ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
                 </div>
               </button>
             </div>

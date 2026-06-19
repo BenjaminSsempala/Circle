@@ -287,7 +287,7 @@ export function OwnerBar({
       </div>
     </div>
 
-    {/* Export modal — centred overlay, rendered outside the bar so it's full-viewport */}
+    {/* Export modal: centred overlay, rendered outside the bar so it's full-viewport */}
     {exportModal && (
       <ExportModal
         mode={exportModal}

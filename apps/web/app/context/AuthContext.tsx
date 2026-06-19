@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/client';
 interface Profile {
   id: string;
   full_name: string;
+  display_name?: string;
+  legal_name?: string;
   role?: 'artist' | 'organiser';
   onboarding_complete?: boolean;
 }
@@ -91,7 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('AuthContext: Profile loaded with role:', profile.role);
         setUser({
           id: profile.id,
-          full_name: profile.full_name || '',
+          full_name: profile.display_name || (profile as Record<string, string>).full_name || '',
+          display_name: profile.display_name || '',
           role: profile.role || undefined,
           onboarding_complete: profile.onboarding_complete || false,
         });

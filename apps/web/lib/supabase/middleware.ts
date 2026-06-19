@@ -32,9 +32,9 @@ export async function updateSession(request: NextRequest) {
 
   const isAuthPage = path.startsWith('/auth/login') || path.startsWith('/auth/signup');
   // /discover is always public — guests can browse
-  const requiresAuth = ['/dashboard', '/onboarding', '/saved', '/bookings'].some(p => path.startsWith(p));
+  const requiresAuth = ['/dashboard', '/onboarding', '/saved', '/bookings', '/my-circle', '/booking'].some(p => path.startsWith(p));
   const artistOnlyPaths = ['/dashboard', '/onboarding/artist'];
-  const audiencePaths = ['/discover', '/saved', '/bookings'];
+  const audiencePaths = ['/saved', '/bookings']; // /discover is open to artists (browse-only)
 
   // Not logged in trying to hit auth-required route
   if (!user && requiresAuth) {
@@ -64,7 +64,7 @@ export async function updateSession(request: NextRequest) {
     if (isAuthPage) {
       // Allow staying on signup if no role yet (role selection step)
       if (!role && path.startsWith('/auth/signup')) return supabaseResponse;
-      url.pathname = role === 'audience' ? '/discover' : '/dashboard';
+      url.pathname = role === 'audience' ? '/my-circle' : '/dashboard';
       return redirect(supabaseResponse, url);
     }
 
@@ -74,9 +74,9 @@ export async function updateSession(request: NextRequest) {
       return redirect(supabaseResponse, url);
     }
 
-    // Audience hitting artist-only routes → discover
+    // Audience hitting artist-only routes → my-circle
     if (role === 'audience' && artistOnlyPaths.some(p => path.startsWith(p))) {
-      url.pathname = '/discover';
+      url.pathname = '/my-circle';
       return redirect(supabaseResponse, url);
     }
   }

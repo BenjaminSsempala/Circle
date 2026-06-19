@@ -82,6 +82,7 @@ const config: Config = {
         'headline-lg': ['Plus Jakarta Sans'],
         'headline-lg-mobile': ['Plus Jakarta Sans'],
         'headline-md': ['Plus Jakarta Sans'],
+        'playfair': ['Playfair Display', 'serif'],
       },
       fontSize: {
         'body-md': ['16px', { lineHeight: '1.6', fontWeight: '400' }],

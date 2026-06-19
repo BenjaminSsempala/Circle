@@ -166,7 +166,7 @@ export default function SignupPage() {
       {/* ── Step 1: Credentials ── */}
       {step === 'credentials' && (
         <>
-          {/* Google — outside the form so it never triggers form validation */}
+          {/* Google: outside the form so it never triggers form validation */}
           <GoogleButton label="Sign up with Google" onClick={handleGoogleSignup} />
 
           <div className="relative flex items-center py-4">

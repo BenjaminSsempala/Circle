@@ -78,7 +78,7 @@ export default function LoginPage() {
     <AuthLayout title="Welcome Back" subtitle="Log in to your Circle profile." showImage>
       {error && <ErrorBanner message={error} />}
 
-      {/* Google — outside the form so it never triggers form validation */}
+      {/* Google: outside the form so it never triggers form validation */}
       <GoogleButton
         label={googleLoading ? 'Redirecting…' : 'Continue with Google'}
         onClick={handleGoogleLogin}

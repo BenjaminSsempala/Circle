@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { ok, err } from '@/lib/api';
 import { getArtistByUserId, createPackage } from '@/lib/services/artists';
 
-// POST — create first package (Step 2)
+// POST: create first package (Step 2)
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();

@@ -205,7 +205,7 @@ export function EventFormDrawer({
     try {
       const url = await uploadToCloudinary(file, 'circle/events');
       if (url) setField('poster_url', url);
-      else setError('Image upload failed — check Cloudinary env vars or paste a URL instead.');
+      else setError('Image upload failed: check Cloudinary env vars or paste a URL instead.');
     } finally {
       setUploading(false);
     }
@@ -519,7 +519,7 @@ export function EventsSection({
       {upcoming.length === 0 ? (
         <div className="px-4 pb-4 pt-2">
           <p className="text-caption font-caption text-on-surface-variant text-xs text-center py-4">
-            {isOwner ? 'No upcoming events — add one above.' : 'No upcoming events.'}
+            {isOwner ? 'No upcoming events: add one above.' : 'No upcoming events.'}
           </p>
         </div>
       ) : (

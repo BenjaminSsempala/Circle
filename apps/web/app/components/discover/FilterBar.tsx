@@ -10,11 +10,13 @@ export function FilterBar({ totalCount }: { totalCount: number }) {
   const params = useSearchParams();
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
+  const [availableOnOpen, setAvailableOnOpen] = useState(false);
 
   const currentArtForm = params.get('artForm') ?? 'All';
   const budgetMin = params.get('budgetMin') ?? '';
   const budgetMax = params.get('budgetMax') ?? '';
   const location = params.get('location') ?? '';
+  const availableOn = params.get('availableOn') ?? '';
 
   function setParam(key: string, value: string) {
     const next = new URLSearchParams(params.toString());
@@ -27,7 +29,7 @@ export function FilterBar({ totalCount }: { totalCount: number }) {
     router.replace('/discover', { scroll: false });
   }
 
-  const hasFilters = currentArtForm !== 'All' || budgetMin || budgetMax || location;
+  const hasFilters = currentArtForm !== 'All' || budgetMin || budgetMax || location || availableOn;
 
   return (
     <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
@@ -130,6 +132,55 @@ export function FilterBar({ totalCount }: { totalCount: number }) {
             {location && (
               <button
                 onClick={() => { setParam('location', ''); setLocationOpen(false); }}
+                className="mt-2 text-xs text-primary hover:underline"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Available on filter */}
+      <div className="relative shrink-0">
+        <button
+          onClick={() => { setAvailableOnOpen((v) => !v); setBudgetOpen(false); setLocationOpen(false); }}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-colors ${
+            availableOn
+              ? 'bg-primary/10 border-primary/30 text-primary'
+              : 'border-outline-variant/40 text-on-surface-variant hover:bg-surface-container'
+          }`}
+        >
+          {availableOn ? `Available: ${availableOn}` : 'Available on'}
+          {availableOn && (
+            <span
+              onClick={(e) => { e.stopPropagation(); setParam('availableOn', ''); setAvailableOnOpen(false); }}
+              className="ml-1 text-primary/70 hover:text-primary text-base leading-none"
+              title="Clear"
+            >
+              ×
+            </span>
+          )}
+          {!availableOn && (
+            <svg className={`w-3.5 h-3.5 transition-transform ${availableOnOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </button>
+        {availableOnOpen && (
+          <div className="absolute top-full mt-2 left-0 bg-surface border border-outline-variant/30 rounded-xl shadow-lg p-4 z-20 w-56">
+            <p className="text-xs font-semibold text-on-surface-variant mb-3">Date</p>
+            <input
+              type="date"
+              value={availableOn}
+              min={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => { setParam('availableOn', e.target.value); setAvailableOnOpen(false); }}
+              className="w-full border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              autoFocus
+            />
+            {availableOn && (
+              <button
+                onClick={() => { setParam('availableOn', ''); setAvailableOnOpen(false); }}
                 className="mt-2 text-xs text-primary hover:underline"
               >
                 Clear

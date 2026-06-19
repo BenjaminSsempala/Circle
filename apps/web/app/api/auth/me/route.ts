@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return err('Invalid JSON', 400);
 
-  const allowed = ['occasion_type', 'full_name'];
+  const allowed = ['occasion_type', 'display_name', 'legal_name'];
   const fields: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in body) fields[key] = body[key];

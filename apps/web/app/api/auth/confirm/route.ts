@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Email is now confirmed — check profile status
+  // Email is now confirmed: check profile status
   const { data: profile } = await supabase
     .from('profiles')
     .select('role, onboarding_complete')

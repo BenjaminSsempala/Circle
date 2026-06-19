@@ -20,7 +20,7 @@ export function SavedClient({
     try {
       await fetch(`/api/audience/saved/${artistId}`, { method: 'DELETE' });
     } catch {
-      // revert — refetch would be cleaner but simple revert works here
+      // revert: refetch would be cleaner but simple revert works here
     }
   }
 

@@ -43,7 +43,7 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
 
   const { booking, events, contract, role } = result;
   const artist = (booking as unknown as {
-    artists: { id: string; user_id: string; name: string; slug: string; profile_photo: string | null; city: string | null; country: string | null; social_links: Record<string, string> | null };
+    artists: { id: string; user_id: string; display_name: string; slug: string; profile_photo: string | null; city: string | null; country: string | null; social_links: Record<string, string> | null };
   }).artists;
   const pkg = (booking as unknown as { packages: { id: string; name: string; description: string | null; duration: string | null } | null }).packages;
 
@@ -87,7 +87,7 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
             <Lbl>Booking {contract?.reference_number ? `· REF ${contract.reference_number}` : ''}</Lbl>
             <h1 className="text-2xl font-bold text-on-surface mb-1">{pkg?.name ?? 'Booking'}</h1>
             <div className="text-sm text-on-surface-variant mb-4">
-              {role === 'artist' ? `Request from ${booking.audience_name ?? 'a guest'}` : `with ${artist.name}`}
+              {role === 'artist' ? `Request from ${booking.audience_name ?? 'a guest'}` : `with ${artist.display_name}`}
             </div>
             <StatusBadge state={booking.state} />
           </div>
@@ -112,7 +112,7 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
               <Lbl>Rate your experience</Lbl>
               <RatingForm
                 bookingId={booking.id}
-                artistName={artist.name}
+                artistName={artist.display_name}
                 existingReview={existingReview}
               />
             </div>
@@ -193,21 +193,23 @@ export default async function BookingStatusPage({ params }: { params: { id: stri
           <div className="sticky top-24 rounded-xl border border-primary/10 bg-white p-6">
             <Lbl>{role === 'artist' ? 'Audience' : 'Artist contact'}</Lbl>
             {role === 'artist' ? (
-              <div className="flex flex-col gap-1">
-                <div className="font-bold text-sm">{booking.audience_name ?? 'Guest'}</div>
-                {booking.audience_email && <div className="text-sm text-on-surface-variant">{booking.audience_email}</div>}
+              <div className="flex flex-col gap-1.5 mt-2">
+                <div className="font-bold text-sm">{booking.audience_name || booking.audience_email || 'Guest'}</div>
+                {booking.audience_email && (
+                  <div className="text-sm text-on-surface-variant">{booking.audience_email}</div>
+                )}
               </div>
             ) : (
               <>
                 <div className="flex items-center gap-3 mb-3">
                   {artist.profile_photo ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={artist.profile_photo} alt={artist.name} className="w-11 h-11 rounded-full object-cover flex-shrink-0" />
+                    <img src={artist.profile_photo} alt={artist.display_name} className="w-11 h-11 rounded-full object-cover flex-shrink-0" />
                   ) : (
                     <div className="w-11 h-11 rounded-full bg-primary/10 flex-shrink-0" />
                   )}
                   <div>
-                    <div className="font-bold text-sm">{artist.name}</div>
+                    <div className="font-bold text-sm">{artist.display_name}</div>
                     {(artist.city || artist.country) && (
                       <div className="text-xs text-on-surface-variant">{[artist.city, artist.country].filter(Boolean).join(', ')}</div>
                     )}

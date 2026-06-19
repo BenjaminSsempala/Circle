@@ -58,7 +58,7 @@ export async function setUserRole(userId: string, role: 'artist' | 'audience', f
 
   const { error } = await supabase
     .from('profiles')
-    .upsert({ id: userId, role, full_name: fullName, onboarding_complete: false });
+    .upsert({ id: userId, role, display_name: fullName, onboarding_complete: false });
 
   if (error) return { ok: false, error: error.message, status: 400 };
   return { ok: true };

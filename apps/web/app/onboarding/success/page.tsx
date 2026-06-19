@@ -47,7 +47,7 @@ export default function SuccessPage() {
         // 2. Mark onboarding complete in DB
         await fetch('/api/onboarding/complete', { method: 'POST' });
       } catch {
-        // Non-fatal — user can still proceed to dashboard
+        // Non-fatal: user can still proceed to dashboard
       } finally {
         setCompleting(false);
       }

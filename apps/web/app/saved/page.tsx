@@ -41,7 +41,7 @@ export default async function SavedPage() {
     artists = (artistRows ?? []).map((a) => {
       const priceInfo = priceMap.get(a.id);
       return {
-        id: a.id, slug: a.slug, name: a.name, bio: a.bio,
+        id: a.id, slug: a.slug, name: a.display_name ?? a.name, bio: a.bio,
         profile_photo: a.profile_photo, art_forms: a.art_forms ?? [],
         tags: a.tags ?? [], city: a.city, country: a.country,
         completed_bookings: a.completed_bookings ?? 0,
@@ -57,8 +57,9 @@ export default async function SavedPage() {
           <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/discover" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Explore</Link>
-            <Link href="/saved" className="text-on-surface font-semibold text-sm border-b-2 border-primary pb-0.5">Saved</Link>
+            <Link href="/my-circle" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My Circle</Link>
             <Link href="/bookings" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My bookings</Link>
+            <Link href="/my-circle/gigs" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My Gig Posts</Link>
           </div>
           <AccountMenu />
         </div>

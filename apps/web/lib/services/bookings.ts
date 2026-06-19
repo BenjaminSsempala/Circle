@@ -348,7 +348,7 @@ export async function createBooking(
   }
 
   const artistContact: ArtistContact = {
-    name: artist.name,
+    name: artist.display_name,
     photo: artist.profile_photo ?? null,
     email: null,
     whatsapp: (artist.social_links as Record<string, string> | null)?.whatsapp ?? null,
@@ -364,11 +364,15 @@ export async function getBooking(bookingId: string, userId: string) {
 
   const { data: booking } = await supabase
     .from('bookings')
-    .select('*, artists!inner(id, user_id, name, slug, profile_photo, city, country, art_forms, social_links), packages(id, name, description, duration)')
+    .select('*, artists!inner(id, user_id, display_name, slug, profile_photo, city, country, art_forms, social_links), packages(id, name, description, duration)')
     .eq('id', bookingId)
     .maybeSingle();
 
   if (!booking) return { ok: false as const, error: 'Booking not found' };
+
+  const artistRaw = (booking as unknown as { artists: Record<string, unknown> }).artists;
+  const display_name = (artistRaw.display_name ?? '') as string;
+  (booking as unknown as { artists: Record<string, unknown> }).artists = { ...artistRaw, display_name, name: display_name };
 
   const artist = (booking as unknown as { artists: { user_id: string } }).artists;
   if (artist.user_id !== userId && booking.audience_id !== userId) {
@@ -401,7 +405,7 @@ export async function listBookings(userId: string, role: 'artist' | 'audience') 
 
   let query = supabase
     .from('bookings')
-    .select('*, artists!inner(id, user_id, name, slug, profile_photo), packages(id, name)')
+    .select('*, artists!inner(id, user_id, display_name, slug, profile_photo), packages(id, name)')
     .order('created_at', { ascending: false });
 
   if (role === 'artist') {

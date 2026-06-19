@@ -72,7 +72,7 @@ export function TemplateTypeSelector({
 
       {currentType !== autoSelectedType && (
         <div className="mt-2 font-sans text-xs text-on-surface-variant">
-          Auto-selected: {TEMPLATE_OPTIONS.find(o => o.value === autoSelectedType)?.label} — you&apos;ve overridden this.
+          Auto-selected: {TEMPLATE_OPTIONS.find(o => o.value === autoSelectedType)?.label}: you&apos;ve overridden this.
         </div>
       )}
 

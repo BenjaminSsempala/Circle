@@ -34,6 +34,7 @@ export default function Home() {
         <div className="nav-logo">The Circle</div>
         <div className="nav-links">
           <a href="#how">How it works</a>
+          <a href="/discover">Explore artists</a>
           <a href="/auth/login" className="btn-nav-ghost">Log in</a>
           <a href="/auth/signup" className="btn-nav-primary">Join free</a>
         </div>
@@ -97,7 +98,7 @@ export default function Home() {
               <li><span className="check">✓</span> Auto-generated contracts: Protect your payments and bookings</li>
               <li><span className="check">✓</span> From solo artists to full lineups: one platform</li>
             </ul>
-            <a href="/auth/signup" className="btn btn-card-org">Find an artist →</a>
+            <a href="/discover" className="btn btn-card-org">Browse artists now →</a>
           </div>
         </div>
       </section>
@@ -198,6 +199,45 @@ export default function Home() {
               <div className="trust-title">Verified reviews</div>
               <p className="trust-desc">Reviews are only left after a completed, paid booking. No fake stars. No unverified opinions. Real work, real feedback.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DISCOVER NUDGE */}
+      <section className="discover-nudge">
+        <div className="discover-nudge-inner reveal" ref={addRef}>
+          <div className="discover-nudge-text">
+            <div className="pill" style={{ marginBottom: '12px' }}>Live on the platform</div>
+            <h2 className="discover-nudge-h">East Africa&apos;s finest<br />creative talent: <em>ready to book.</em></h2>
+            <p className="discover-nudge-sub">Poets, musicians, visual artists, dancers, storytellers. Browse their portfolios, see their prices, and book them directly: no middleman, no WhatsApp chains.</p>
+            <a href="/discover" className="btn btn-primary" style={{ marginTop: '24px', display: 'inline-block' }}>Explore all artists →</a>
+          </div>
+          <div className="discover-nudge-cards">
+            <div className="nudge-card nudge-card-1">
+              <div className="nudge-avatar"></div>
+              <div className="nudge-info">
+                <div className="nudge-name">Kampala Poets</div>
+                <div className="nudge-tag">Spoken Word · Poetry</div>
+              </div>
+              <div className="nudge-price">From UGX 100k</div>
+            </div>
+            <div className="nudge-card nudge-card-2">
+              <div className="nudge-avatar"></div>
+              <div className="nudge-info">
+                <div className="nudge-name">Visual Artists</div>
+                <div className="nudge-tag">Illustration · Design</div>
+              </div>
+              <div className="nudge-price">From UGX 150k</div>
+            </div>
+            <div className="nudge-card nudge-card-3">
+              <div className="nudge-avatar"></div>
+              <div className="nudge-info">
+                <div className="nudge-name">Live Musicians</div>
+                <div className="nudge-tag">Performance · Events</div>
+              </div>
+              <div className="nudge-price">From UGX 200k</div>
+            </div>
+            <a href="/discover" className="nudge-see-all">See all artists →</a>
           </div>
         </div>
       </section>

@@ -62,7 +62,7 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
 
     const isBlackout = blackouts.has(iso);
 
-    // Optimistic update — UI responds instantly
+    // Optimistic update: UI responds instantly
     if (isBlackout) {
       setBlackouts((prev) => { const next = new Set(prev); next.delete(iso); return next; });
       fetch(`/api/artists/${artistSlug}/availability/blackout`, {
@@ -283,7 +283,7 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
             className="fixed z-50 bg-on-surface text-surface text-xs px-3 py-2 rounded-lg shadow-lg"
             style={{ left: tooltip.x + 8, top: tooltip.y - 40 }}
           >
-            Booked — {new Date(tooltip.date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+            Booked on {new Date(tooltip.date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
           </div>
         </>
       )}

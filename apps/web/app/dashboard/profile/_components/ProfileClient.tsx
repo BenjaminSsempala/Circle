@@ -7,7 +7,8 @@ import { uploadToCloudinary } from '@/lib/upload';
 type Artist = {
   id: string;
   slug: string;
-  name: string;
+  display_name: string;
+  legal_name: string;
   tagline: string | null;
   bio: string | null;
   profile_photo: string | null;
@@ -20,7 +21,8 @@ type Artist = {
 };
 
 type FormState = {
-  name: string;
+  display_name: string;
+  legal_name: string;
   tagline: string;
   bio: string;
   art_forms: string;
@@ -42,7 +44,8 @@ type FormState = {
 function artistToForm(a: Artist): FormState {
   const sl = a.social_links ?? {};
   return {
-    name: a.name,
+    display_name: a.display_name,
+    legal_name: a.legal_name,
     tagline: a.tagline ?? '',
     bio: a.bio ?? '',
     art_forms: (a.art_forms ?? []).join(', '),
@@ -132,7 +135,8 @@ export function ProfileClient({ artist }: { artist: Artist }) {
       const tags = form.tags.split(',').map((s) => s.trim()).filter(Boolean);
 
       const body: Record<string, unknown> = {
-        name: form.name,
+        display_name: form.display_name,
+        legal_name: form.legal_name,
         tagline: form.tagline,
         bio: form.bio,
         art_forms: artForms,
@@ -225,9 +229,23 @@ export function ProfileClient({ artist }: { artist: Artist }) {
               </div>
             </div>
 
-            <div>
-              <label className={labelClass}>Artist Name</label>
-              <input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Your full name" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className={labelClass}>Display Name</label>
+                <input value={form.display_name} onChange={(e) => update('display_name', e.target.value)} className={inputClass} placeholder="Your artist name" />
+                <p className="text-caption font-caption text-on-surface-variant mt-1">Shown on your profile and across The Circle.</p>
+              </div>
+              <div>
+                <label className={`${labelClass} flex items-center gap-1.5`}>
+                  Legal Name
+                  <svg className="w-3 h-3 text-on-surface-variant/60 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </label>
+                <input value={form.legal_name} onChange={(e) => update('legal_name', e.target.value)} className={inputClass} placeholder="Your full legal name" />
+                <p className="text-caption font-caption text-on-surface-variant mt-1">Used only on booking agreements. Never shown publicly.</p>
+              </div>
             </div>
 
             <div>
@@ -334,7 +352,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
               {photoUrl && (
                 <img
                   src={photoUrl}
-                  alt={form.name}
+                  alt={form.display_name}
                   className="w-full aspect-square object-cover rounded-xl mb-4"
                 />
               )}
@@ -344,7 +362,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
                 </div>
               )}
               <p className="text-label-mono font-label-mono text-on-surface font-semibold mb-0.5">
-                {form.name || 'Your name'}
+                {form.display_name || 'Your name'}
               </p>
               {(form.city || form.country) && (
                 <p className="text-caption font-caption text-on-surface-variant mb-3">

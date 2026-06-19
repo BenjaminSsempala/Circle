@@ -191,7 +191,7 @@ function EPKPreview({
           </div>
         </div>
 
-        {/* Bio — uses editable version from form, fully shown */}
+        {/* Bio: uses editable version from form, fully shown */}
         <p style={{ fontSize: 9.5, color: '#3a4540', lineHeight: 1.7, margin: '0 0 10px' }}>
           {epkData.bio || artistBio}
         </p>
@@ -504,7 +504,7 @@ function SocialsForm({ active, handles, onActive, onHandle }: {
           </label>
           <div className="flex-1 relative">
             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-on-surface-variant/40">@</span>
-            <input disabled={!active[s]} placeholder={active[s] ? `yourhandle` : '—'}
+            <input disabled={!active[s]} placeholder={active[s] ? `yourhandle` : '-'}
               value={handles[s] || ''} onChange={(e) => onHandle({ ...handles, [s]: e.target.value })}
               className="w-full pl-5 pr-3 py-2 bg-transparent border-0 text-[11px] font-mono focus:outline-none disabled:text-on-surface-variant/30 text-on-surface" />
           </div>
@@ -539,9 +539,9 @@ function EPKForm({ data, onChange, artistName, artistTagline, artistBio, artistP
 
 
 
-      {/* Bio — editable */}
+      {/* Bio: editable */}
       <div>
-        <span className={lCls}>Bio <span className="normal-case font-normal text-on-surface-variant/50">— editable</span></span>
+        <span className={lCls}>Bio <span className="normal-case font-normal text-on-surface-variant/50">- editable</span></span>
         <textarea
           value={data.bio}
           onChange={(e) => set('bio', e.target.value)}
@@ -576,10 +576,10 @@ function EPKForm({ data, onChange, artistName, artistTagline, artistBio, artistP
           className="mt-2 text-xs text-primary font-semibold hover:opacity-75 transition-opacity">+ Add credit</button>
       </div>
 
-      {/* Selected Work — checkboxes from profile */}
+      {/* Selected Work: checkboxes from profile */}
       {packages.length >= 0 && (
         <div>
-          <span className={lCls}>Selected Work <span className="normal-case font-normal text-on-surface-variant/50">— uncheck to exclude</span></span>
+          <span className={lCls}>Selected Work <span className="normal-case font-normal text-on-surface-variant/50">- uncheck to exclude</span></span>
           {packages.length === 0 && selectedWorks.length === 0 && (
             <p className="text-[10px] text-on-surface-variant mt-1">No works on your profile yet.</p>
           )}
@@ -622,10 +622,10 @@ function EPKForm({ data, onChange, artistName, artistTagline, artistBio, artistP
           rows={4} className={iCls + ' resize-none text-xs'} />
       </div>
 
-      {/* Packages — toggle which to include */}
+      {/* Packages: toggle which to include */}
       {packages.length > 0 && (
         <div>
-          <span className={lCls}>Packages <span className="normal-case font-normal text-on-surface-variant/50">— uncheck to exclude</span></span>
+          <span className={lCls}>Packages <span className="normal-case font-normal text-on-surface-variant/50">- uncheck to exclude</span></span>
           <div className="flex flex-col gap-2 mt-1.5">
             {packages.map((p) => {
               const excluded = data.excluded_package_ids.includes(p.id);
@@ -729,10 +729,10 @@ function RateCardForm({ data, onChange, artistName, artistTagline, artistPhoto, 
         </div>
       </div>
 
-      {/* Packages — toggle which to include */}
+      {/* Packages: toggle which to include */}
       {packages.length > 0 && (
         <div>
-          <span className={lCls}>Packages <span className="normal-case font-normal text-on-surface-variant/50">— uncheck to exclude</span></span>
+          <span className={lCls}>Packages <span className="normal-case font-normal text-on-surface-variant/50">- uncheck to exclude</span></span>
           <div className="flex flex-col gap-2 mt-1.5">
             {packages.map((p) => {
               const excluded = (data.excluded_package_ids ?? []).includes(p.id);
@@ -851,7 +851,7 @@ export function ExportModal({
     if (!base.bio && artistBio) base.bio = artistBio;
 
     // Works are now drawn from selectedWorks prop filtered by excluded_work_ids
-    // No init needed — the profile works show as checkboxes by default (all included)
+    // No init needed: the profile works show as checkboxes by default (all included)
 
     return base;
   });
@@ -989,7 +989,7 @@ export function ExportModal({
           <div className="px-6 py-2 bg-error/5 border-b border-error/20 text-error text-sm">{errorMsg}</div>
         )}
 
-        {/* Body — form left, preview right */}
+        {/* Body: form left, preview right */}
         <div className="flex flex-1 min-h-0">
           {/* Form */}
           <div className="w-[360px] shrink-0 border-r border-outline-variant/30 overflow-y-auto px-5 py-5">

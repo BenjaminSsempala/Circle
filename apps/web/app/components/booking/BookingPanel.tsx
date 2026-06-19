@@ -258,7 +258,7 @@ export function BookingPanel({
                   <Field label="Date">
                     <Input type="date" value={gigDate} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setGigDate(e.target.value)} />
                     {unavailable.size > 0 && (
-                      <div className="font-sans text-[11px] text-on-surface-variant mt-1">Some dates are unavailable — you&apos;ll be notified if your chosen date doesn&apos;t work.</div>
+                      <div className="font-sans text-[11px] text-on-surface-variant mt-1">Some dates are unavailable: you&apos;ll be notified if your chosen date doesn&apos;t work.</div>
                     )}
                   </Field>
                   <Field label="Time">
@@ -268,7 +268,7 @@ export function BookingPanel({
                     <Input type="text" placeholder="e.g. Kampala Serena Hotel" value={venue} onChange={(e) => setVenue(e.target.value)} />
                   </Field>
                   <Field label="Special requirements (optional)">
-                    <Textarea rows={3} placeholder="Anything the artist should know — stage setup, run order, etc." value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} />
+                    <Textarea rows={3} placeholder="Anything the artist should know: stage setup, run order, etc." value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} />
                   </Field>
 
                   {pkg.cancellation_terms && (
@@ -297,7 +297,7 @@ export function BookingPanel({
                     <Input type="date" value={deliveryDate} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDeliveryDate(e.target.value)} />
                   </Field>
                   <Field label="Brief / requirements">
-                    <Textarea rows={6} placeholder="Describe what you'd like delivered — references, dimensions, format, deadline notes…" value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} />
+                    <Textarea rows={6} placeholder="Describe what you'd like delivered: references, dimensions, format, deadline notes…" value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} />
                   </Field>
                 </>
               )}

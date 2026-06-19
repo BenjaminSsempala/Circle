@@ -28,8 +28,9 @@ export async function POST(request: Request) {
     return err('Invalid JSON body');
   }
 
-  const { fullName, tagline, artForm, otherArtForm, tags, city, country, bio, profilePhotoUrl, customSlug } = body as {
-    fullName?: string;
+  const { displayName, legalName, tagline, artForm, otherArtForm, tags, city, country, bio, profilePhotoUrl, customSlug } = body as {
+    displayName?: string;
+    legalName?: string;
     tagline?: string;
     artForm?: string;
     otherArtForm?: string;
@@ -41,12 +42,13 @@ export async function POST(request: Request) {
     customSlug?: string;
   };
 
-  if (!fullName || !artForm || !city || !country) {
-    return err('Missing required fields: fullName, artForm, city, country');
+  if (!displayName || !legalName || !artForm || !city || !country) {
+    return err('Missing required fields: displayName, legalName, artForm, city, country');
   }
 
   const result = await upsertArtistProfile(user.id, {
-    name: fullName,
+    displayName,
+    legalName,
     tagline,
     artForm,
     otherArtForm,

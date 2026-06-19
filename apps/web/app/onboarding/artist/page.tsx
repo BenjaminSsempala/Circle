@@ -10,7 +10,8 @@ export default function ArtistOnboardingPage() {
   const { user, loading, session } = useAuth();
 
   const [formData, setFormData] = useState({
-    fullName: '',
+    displayName: '',
+    legalName: '',
     tagline: '',
     tags: '',
     artForm: '',
@@ -66,15 +67,16 @@ export default function ArtistOnboardingPage() {
       .then((r) => r.json())
       .then(({ artist }) => {
         if (!artist) {
-          // No artist row yet — pre-fill name from profile only
-          if (user.full_name) {
-            setFormData((prev) => ({ ...prev, fullName: user.full_name }));
+          // No artist row yet — pre-fill display_name from profile only
+          if (user.display_name ?? user.full_name) {
+            setFormData((prev) => ({ ...prev, displayName: user.display_name ?? user.full_name }));
           }
           return;
         }
         setFormData((prev) => ({
           ...prev,
-          fullName: artist.name || user.full_name || '',
+          displayName: artist.display_name || (user.display_name ?? user.full_name) || '',
+          legalName: artist.legal_name || '',
           tagline: artist.tagline || '',
           artForm: artist.art_forms?.[0] || '',
           tags: Array.isArray(artist.tags) ? artist.tags.join(', ') : '',
@@ -171,8 +173,8 @@ export default function ArtistOnboardingPage() {
     if (name === 'bio') {
       setWordCount(value.trim().split(/\s+/).filter((w) => w.length > 0).length);
     }
-    // Auto-generate slug from name if the user hasn't manually edited it
-    if (name === 'fullName') {
+    // Auto-generate slug from display name if the user hasn't manually edited it
+    if (name === 'displayName') {
       const generated = toSlug(value);
       setSlug(generated);
       checkSlug(generated);
@@ -183,7 +185,7 @@ export default function ArtistOnboardingPage() {
     e.preventDefault();
     setApiError('');
 
-    if (!formData.fullName || !formData.artForm || !formData.city || !formData.country) {
+    if (!formData.displayName || !formData.legalName || !formData.artForm || !formData.city || !formData.country) {
       setApiError('Please fill all required fields.');
       return;
     }
@@ -198,7 +200,8 @@ export default function ArtistOnboardingPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: formData.fullName,
+          displayName: formData.displayName,
+          legalName: formData.legalName,
           tagline: formData.tagline || undefined,
           artForm: formData.artForm,
           otherArtForm: formData.otherArtForm,
@@ -337,24 +340,54 @@ export default function ArtistOnboardingPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                {/* Full Name */}
+                {/* Display Name */}
                 <div className="flex flex-col gap-xs">
                   <label
-                    htmlFor="fullName"
+                    htmlFor="displayName"
                     className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
                   >
-                    Full Name *
+                    Display Name *
                   </label>
                   <input
                     type="text"
-                    id="fullName"
-                    name="fullName"
-                    value={formData.fullName}
+                    id="displayName"
+                    name="displayName"
+                    value={formData.displayName}
                     onChange={handleInputChange}
                     placeholder="Amani Okafor"
                     className="w-full"
                     required
                   />
+                  <p className="text-caption font-caption text-on-surface-variant">
+                    Shown on your profile and across The Circle.
+                  </p>
+                </div>
+
+                {/* Legal Name */}
+                <div className="flex flex-col gap-xs">
+                  <label
+                    htmlFor="legalName"
+                    className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs flex items-center gap-1.5"
+                  >
+                    Legal Name *
+                    <svg className="w-3 h-3 text-on-surface-variant/60 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </label>
+                  <input
+                    type="text"
+                    id="legalName"
+                    name="legalName"
+                    value={formData.legalName}
+                    onChange={handleInputChange}
+                    placeholder="Your full legal name"
+                    className="w-full"
+                    required
+                  />
+                  <p className="text-caption font-caption text-on-surface-variant">
+                    Your full legal name, used only on booking agreements. Never shown publicly.
+                  </p>
                 </div>
 
                 {/* Profile link / slug */}

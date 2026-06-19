@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
-    // Try to resend the confirmation email — only works for unconfirmed accounts
+    // Try to resend the confirmation email: only works for unconfirmed accounts
     const { error: resendError } = await supabase.auth.resend({
       type: 'signup',
       email: body.email,
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!resendError) {
-      // Unconfirmed account — confirmation email resent successfully
+      // Unconfirmed account: confirmation email resent successfully
       return ok({ userId: null, nextStep: 'email_confirmation' }, 200);
     }
 

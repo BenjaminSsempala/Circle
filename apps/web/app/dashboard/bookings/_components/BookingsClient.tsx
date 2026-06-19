@@ -52,13 +52,13 @@ function actionForState(state: string): { label: string; endpoint: string } | nu
 }
 
 function formatDate(d: string | unknown) {
-  if (!d) return '—';
+  if (!d) return '-';
   const date = new Date(String(d));
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function formatPrice(amount: unknown, currency: unknown) {
-  if (!amount) return '—';
+  if (!amount) return '-';
   return `${currency ?? 'UGX'} ${Number(amount).toLocaleString()}`;
 }
 
@@ -160,13 +160,15 @@ function BookingDetailPanel({
               <p className="text-body-md font-body-md text-on-surface">{String((booking.packages as { duration?: string }).duration)}</p>
             </div>
           )}
-          {booking.audience_name && (
-            <div>
-              <p className="text-caption font-caption text-on-surface-variant mb-1">Client</p>
-              <p className="text-body-md font-body-md text-on-surface">{String(booking.audience_name)}</p>
-              {booking.audience_email && <p className="text-caption font-caption text-on-surface-variant">{String(booking.audience_email)}</p>}
-            </div>
-          )}
+          <div>
+            <p className="text-caption font-caption text-on-surface-variant mb-1">Client</p>
+            <p className="text-body-md font-body-md text-on-surface">
+              {String(booking.audience_name || booking.audience_email || 'Guest')}
+            </p>
+            {booking.audience_email && booking.audience_name !== booking.audience_email && (
+              <p className="text-caption font-caption text-primary text-xs mt-0.5">{String(booking.audience_email)}</p>
+            )}
+          </div>
           {(booking.special_requirements || booking.audience_notes) && (
             <div>
               <p className="text-caption font-caption text-on-surface-variant mb-1">
@@ -263,7 +265,7 @@ export function BookingsClient({
 
               <div className="flex-1 min-w-0">
                 <p className="text-label-mono font-label-mono text-on-surface font-semibold truncate">
-                  {String(b.audience_name ?? 'Client')}
+                  {String(b.audience_name || b.audience_email || 'Guest')}
                 </p>
                 <p className="text-caption font-caption text-on-surface-variant truncate">
                   {packageName(b)}

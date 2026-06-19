@@ -35,7 +35,7 @@ export function AudienceProfileClient({ user, occasionType, savedCount, bookingC
     await fetch('/api/auth/me', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ full_name: name }),
+      body: JSON.stringify({ display_name: name }),
     });
     setSaving(false);
     setEditingName(false);
@@ -65,6 +65,7 @@ export function AudienceProfileClient({ user, occasionType, savedCount, bookingC
           <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/discover" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Explore</Link>
+            <Link href="/my-circle" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My Circle</Link>
             <Link href="/saved" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Saved</Link>
             <Link href="/bookings" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My bookings</Link>
           </div>

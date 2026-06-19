@@ -3,7 +3,7 @@ import { ok, err } from '@/lib/api';
 
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-// Strip query params from TikTok URLs — oEmbed returns 400 with tracking params
+// Strip query params from TikTok URLs: oEmbed returns 400 with tracking params
 function cleanTikTokUrl(url: string): string {
   try {
     const u = new URL(url);
@@ -25,7 +25,7 @@ function getOembedEndpoint(url: string): string | null {
   return null;
 }
 
-// Upload an image URL to Cloudinary permanently (not fetch proxy — those re-fetch expired URLs)
+// Upload an image URL to Cloudinary permanently (not fetch proxy: those re-fetch expired URLs)
 async function uploadToCloudinary(imageUrl: string): Promise<string | null> {
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
@@ -68,12 +68,12 @@ export async function POST(request: Request) {
     let title: string | null = data.title ?? null;
 
     if (/tiktok\.com/.test(url)) {
-      // TikTok titles are the full caption — truncate before first hashtag or newline
+      // TikTok titles are the full caption: truncate before first hashtag or newline
       if (title) {
         title = title.split('#')[0].split('\n')[0].trim();
         if (title.length > 80) title = title.slice(0, 80).trimEnd() + '…';
       }
-      // TikTok thumbnails are signed and expire — upload to Cloudinary immediately
+      // TikTok thumbnails are signed and expire: upload to Cloudinary immediately
       if (thumbnail_url) {
         const permanent = await uploadToCloudinary(thumbnail_url);
         if (permanent) thumbnail_url = permanent;

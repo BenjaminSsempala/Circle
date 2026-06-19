@@ -34,7 +34,7 @@ export default async function AudienceBookingsPage({
 
   const result = await listBookings(user.id, 'audience');
   const bookings = result.ok ? result.bookings as (Booking & {
-    artists: { id: string; user_id: string; name: string; slug: string; profile_photo: string | null };
+    artists: { id: string; user_id: string; display_name: string; slug: string; profile_photo: string | null };
     packages: { id: string; name: string } | null;
   })[] : [];
 
@@ -51,8 +51,10 @@ export default async function AudienceBookingsPage({
           <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/discover" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Explore</Link>
+            <Link href="/my-circle" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My Circle</Link>
             <Link href="/saved" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Saved</Link>
             <Link href="/bookings" className="text-on-surface font-semibold text-sm border-b-2 border-primary pb-0.5">My bookings</Link>
+            <Link href="/my-circle/gigs" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My Gig Posts</Link>
           </div>
           <AccountMenu />
         </div>
@@ -111,14 +113,14 @@ export default async function AudienceBookingsPage({
               >
                 {b.artists.profile_photo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={b.artists.profile_photo} alt={b.artists.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+                  <img src={b.artists.profile_photo} alt={b.artists.display_name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex-shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-on-surface truncate">{b.packages?.name ?? 'Booking'}</div>
                   <div className="text-sm text-on-surface-variant truncate">
-                    with {b.artists.name}
+                    with {b.artists.display_name}
                     {b.gig_date && ` · ${fmtDate(b.gig_date)}`}
                     {b.delivery_date && ` · Delivery ${fmtDate(b.delivery_date)}`}
                   </div>

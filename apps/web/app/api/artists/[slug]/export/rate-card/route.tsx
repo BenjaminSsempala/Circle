@@ -111,7 +111,7 @@ function RateCardImage({
             ))}
           </div>
 
-          {/* Right: Stats — no Fragment, Satori doesn't support <> */}
+          {/* Right: Stats: no Fragment, Satori doesn't support <> */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {topStats.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

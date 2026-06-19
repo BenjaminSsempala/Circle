@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { ok, err } from '@/lib/api';
 import { updateSocialLinks } from '@/lib/services/artists';
 
-// PATCH — save social link URLs (Step 3)
+// PATCH: save social link URLs (Step 3)
 export async function PATCH(request: Request) {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();

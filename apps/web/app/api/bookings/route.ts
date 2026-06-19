@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return err('Invalid JSON'); }
 
-  const { packageId, productType, gigDate, gigTime, venue, deliveryDate, specialRequirements, audienceNotes, brandTerms } = body as {
+  const { packageId, productType, gigDate, gigTime, venue, deliveryDate, specialRequirements, audienceNotes, brandTerms, legalName } = body as {
     packageId?: string;
     productType?: ProductType;
     gigDate?: string;
@@ -22,6 +22,7 @@ export async function POST(request: Request) {
     specialRequirements?: string;
     audienceNotes?: string;
     brandTerms?: import('@/lib/services/bookings').BrandTerms;
+    legalName?: string;
   };
 
   if (!packageId) return err('packageId is required');
@@ -31,9 +32,17 @@ export async function POST(request: Request) {
 
   const { data: profile } = await (await createClient())
     .from('profiles')
-    .select('full_name')
+    .select('display_name, legal_name')
     .eq('id', user.id)
     .maybeSingle();
+
+  // Save legal_name to profile if not already set and provided
+  if (legalName && !profile?.legal_name) {
+    await (await createClient())
+      .from('profiles')
+      .update({ legal_name: legalName })
+      .eq('id', user.id);
+  }
 
   const input: CreateBookingInput = {
     packageId,
@@ -48,7 +57,7 @@ export async function POST(request: Request) {
   };
 
   const result = await createBooking(
-    { id: user.id, name: profile?.full_name ?? user.email ?? 'Audience member', email: user.email ?? '' },
+    { id: user.id, name: profile?.display_name ?? user.email ?? 'Audience member', email: user.email ?? '' },
     input,
   );
 

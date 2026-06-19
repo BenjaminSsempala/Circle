@@ -8,7 +8,7 @@ function extractInstagramEmbed(url: string): string | null {
   if (post) return `https://www.instagram.com/p/${post[1]}/embed/captioned/`;
   const reel = url.match(/instagram\.com\/reel(?:s)?\/([A-Za-z0-9_-]+)/);
   if (reel) return `https://www.instagram.com/reel/${reel[1]}/embed/`;
-  return null; // profile URL — will show handle card
+  return null; // profile URL: will show handle card
 }
 
 function buildEmbedUrl(work: Work): string | null {

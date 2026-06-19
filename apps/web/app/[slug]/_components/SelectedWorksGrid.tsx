@@ -138,7 +138,7 @@ function WorkCard({
         </div>
       )}
 
-      {/* Type icon — centred */}
+      {/* Type icon: centred */}
       <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
         {!work.thumbnail_url && work.provider === 'tiktok'    ? <TikTokIcon />    :
        !work.thumbnail_url && work.provider === 'instagram' ? <InstagramIcon /> :
@@ -265,7 +265,7 @@ export function SelectedWorksGrid({
         {isOwner && (
           <div className="flex items-center gap-3">
             {atLimit && (
-              <span className="text-xs text-on-surface-variant">6 / 6 — delete one to add more</span>
+              <span className="text-xs text-on-surface-variant">6 / 6: delete one to add more</span>
             )}
             {!atLimit && (
               <button

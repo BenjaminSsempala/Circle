@@ -18,6 +18,6 @@ export async function POST(req: NextRequest) {
 
   if (!result.ok) return err(result.error, result.status);
 
-  // Always return ok — don't reveal whether the email exists
+  // Always return ok: don't reveal whether the email exists
   return ok({ message: 'If that email exists, a reset link has been sent.' });
 }

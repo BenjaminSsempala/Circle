@@ -166,7 +166,7 @@ export default async function DashboardPage() {
                           {(b.packages as { name?: string } | null)?.name ?? 'Booking'}
                         </p>
                         <p className="text-caption font-caption text-on-surface-variant">
-                          Client: {String(b.audience_name ?? '—')}
+                          Client: {String(b.audience_name ?? '-')}
                         </p>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">

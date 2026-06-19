@@ -87,7 +87,7 @@ export default function PackageOnboardingPage() {
   };
 
   const handleSkip = () => {
-    // Artist chose to add packages later — skip to socials
+    // Artist chose to add packages later: skip to socials
     router.push('/onboarding/socials');
   };
 
