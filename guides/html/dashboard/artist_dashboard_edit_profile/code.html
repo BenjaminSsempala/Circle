@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Artist Dashboard | Digital Hearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#3f4944",
+                    "surface-container-low": "#f6f3f2",
+                    "error-container": "#ffdad6",
+                    "primary": "#005440",
+                    "on-surface": "#1c1b1b",
+                    "tertiary-fixed-dim": "#6edab4",
+                    "surface-dim": "#dcd9d9",
+                    "secondary": "#88520e",
+                    "on-tertiary-fixed": "#002117",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-tint": "#086b53",
+                    "on-background": "#1c1b1b",
+                    "outline-variant": "#bec9c3",
+                    "secondary-fixed": "#ffdcbe",
+                    "primary-container": "#0f6e56",
+                    "secondary-fixed-dim": "#ffb870",
+                    "on-secondary-container": "#774400",
+                    "tertiary-container": "#006f54",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "on-secondary-fixed": "#2d1600",
+                    "primary-fixed": "#a0f3d4",
+                    "on-primary-fixed-variant": "#00513e",
+                    "surface-container": "#f0eded",
+                    "outline": "#6f7a74",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#fcf9f8",
+                    "tertiary-fixed": "#8af7cf",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e5e2e1",
+                    "inverse-primary": "#84d6b9",
+                    "background": "#fcf9f8",
+                    "on-primary-fixed": "#002117",
+                    "inverse-surface": "#313030",
+                    "surface-variant": "#e5e2e1",
+                    "on-tertiary-fixed-variant": "#00513d",
+                    "tertiary": "#00543f",
+                    "primary-fixed-dim": "#84d6b9",
+                    "surface-container-high": "#eae7e7",
+                    "on-tertiary-container": "#85f1ca",
+                    "on-secondary": "#ffffff",
+                    "surface": "#fcf9f8",
+                    "secondary-container": "#feb56b",
+                    "on-primary-container": "#9aedcf"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xl": "80px",
+                    "margin-mobile": "16px",
+                    "xs": "4px",
+                    "sm": "12px",
+                    "margin-desktop": "64px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "lg": "48px"
+            },
+            "fontFamily": {
+                    "body-md": ["Plus Jakarta Sans"],
+                    "label-mono": ["JetBrains Mono"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "caption": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-mono": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Bar -->
+<header class="bg-surface shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
+<div class="flex items-center gap-base">
+<span class="text-headline-md font-headline-md font-bold text-primary">Digital Hearth</span>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Explore</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">My Gigs</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Messages</a>
+<a class="text-primary font-bold border-b-2 border-primary hover:text-secondary transition-colors duration-200" href="#">Portfolio</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-transform active:scale-90" data-icon="notifications">notifications</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a stylish East African artist with short cropped hair and traditional beaded jewelry. The lighting is soft and warm, characteristic of the 'Digital Hearth' aesthetic, set against a minimalist cream background. The portrait conveys confidence, creativity, and a sense of belonging in a premium professional network." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATclqB6cWUnYD8VSJ_o_chwU5L0b4d_O7hnmmnl3kIH2etKwbwgC2z_6wFz0jAq80poLpB_vCH2ZE6IDIBjFEh_-KIBwTr9vKlnZ8HCUyxm5GxxdcGX1a6MfiWpQdqvVtvG_7Gv4VSnp__o06Tn4E-7j3Z0xTxLPjL7xeqv_tAFKBx_LAnBViLfkbqXOeqyJpELLw-UsLRd4z9NeiMXfDOCqmk5z43Zj-lEHsJxAYjD3JVZRYvi7Rs_SNZrOuan-ScX_ZQGoW22Ak"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg pb-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Edit Form -->
+<div class="lg:col-span-7 space-y-lg">
+<section>
+<h1 class="font-headline-lg text-headline-lg mb-base">Edit Your Hearth</h1>
+<p class="text-on-surface-variant mb-lg">Show the world the fire behind your craft. Your changes will update across the platform instantly.</p>
+</section>
+<!-- Identity Section -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-primary-fixed/30 space-y-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="badge">badge</span>
+<h2 class="font-headline-md text-headline-md">Identity</h2>
+</div>
+<div class="space-y-sm">
+<label class="font-label-mono text-label-mono text-on-surface-variant block uppercase tracking-wider">Hero Media</label>
+<div class="relative w-full h-48 rounded-lg overflow-hidden bg-surface-container-high group cursor-pointer border-2 border-dashed border-outline-variant hover:border-primary transition-colors">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A cinematic, wide-angle shot of a vibrant East African market at sunset, capturing the rich textures of woven baskets and traditional fabrics. The scene is bathed in a warm, amber glow from the setting sun, creating long shadows and a sense of peaceful activity. The artistic composition emphasizes the connection between culture and commerce in a modern professional context." id="hero-preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQqq3Df4LCCRgG0_8ZZzB18qabsnpD8aZbyWNj4eh6HYjTO36u8k8khrJgqT8cpSh1KyxIKOa3tR7QzNAMfzSkDNAl8c1SWd-_BQQmOMaSeBxMoY9yG5zsMpIuKthl9zoi-k-vRep6jRT7YyJYRspcrDrWQfB5bK6H8wpTATHO0xCxFOic5xCWcz-C2E1Z4xChp90W4qdNXjn6VmIxuglzLOOYESAKpc5y7dqxvK-KRqnhkxSVUIDc50p4p0mgOTtiIkDDuN8kLNk"/>
+<div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 text-white">
+<span class="material-symbols-outlined text-3xl" data-icon="upload_file">upload_file</span>
+<span class="text-caption font-caption">Change Cover Image</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Artist Name</label>
+<input class="w-full px-sm py-base rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Enter your professional name" type="text" value="Amani Kibaki"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Pronouns</label>
+<input class="w-full px-sm py-base rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="e.g. She/Her" type="text" value="They/Them"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Short Tagline</label>
+<input class="w-full px-sm py-base rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Sum up your art in one line" type="text" value="Contemporary Fiber Artist &amp; Cultural Curator"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Bio</label>
+<textarea class="w-full px-sm py-base rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none" placeholder="Tell your story..." rows="4">Blending traditional East African weaving techniques with contemporary sculptural forms. Based in Nairobi, exploring the intersection of memory, texture, and digital heritage.</textarea>
+</div>
+</div>
+<!-- Details Section -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-primary-fixed/30 space-y-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="brush">brush</span>
+<h2 class="font-headline-md text-headline-md">Details</h2>
+</div>
+<div class="space-y-sm">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Art Form</label>
+<div class="flex flex-wrap gap-xs">
+<span class="px-sm py-xs bg-primary-light text-primary rounded-full text-caption flex items-center gap-xs border border-primary/20">#TextileArt <button class="material-symbols-outlined text-xs" data-icon="close">close</button></span>
+<span class="px-sm py-xs bg-primary-light text-primary rounded-full text-caption flex items-center gap-xs border border-primary/20">#Sculpture <button class="material-symbols-outlined text-xs" data-icon="close">close</button></span>
+<button class="px-sm py-xs border border-dashed border-outline text-on-surface-variant rounded-full text-caption hover:bg-surface-container transition-colors">+ Add tag</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">City</label>
+<input class="w-full px-sm py-base rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="Nairobi, Kenya"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Active Since</label>
+<input class="w-full px-sm py-base rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="2018"/>
+</div>
+</div>
+</div>
+<!-- Your Link & Socials -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-primary-fixed/30 space-y-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="link">link</span>
+<h2 class="font-headline-md text-headline-md">Presence</h2>
+</div>
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Your Personal Hearth Link</label>
+<div class="flex items-center group">
+<span class="bg-surface-container-high px-sm py-base rounded-l-lg border border-r-0 border-outline-variant text-on-surface-variant font-label-mono text-caption">hearth.art/</span>
+<input class="flex-1 px-sm py-base border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="amanikibaki"/>
+<span class="bg-primary-light text-primary px-sm py-base rounded-r-lg border border-l-0 border-outline-variant text-caption flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span> Available
+                            </span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md pt-sm">
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">Instagram</label>
+<div class="flex items-center">
+<span class="bg-surface-container-high px-3 py-base rounded-l-lg border border-r-0 border-outline-variant material-symbols-outlined text-sm" data-icon="photo_camera">photo_camera</span>
+<input class="flex-1 px-sm py-base rounded-r-lg border border-outline-variant bg-surface-bright focus:border-primary outline-none transition-all" placeholder="@username" type="text"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-mono text-label-mono text-on-surface-variant block">YouTube</label>
+<div class="flex items-center">
+<span class="bg-surface-container-high px-3 py-base rounded-l-lg border border-r-0 border-outline-variant material-symbols-outlined text-sm" data-icon="play_circle">play_circle</span>
+<input class="flex-1 px-sm py-base rounded-r-lg border border-outline-variant bg-surface-bright focus:border-primary outline-none transition-all" placeholder="Channel URL" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Live Preview -->
+<aside class="lg:col-span-5 sticky top-24 h-fit">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-mono text-label-mono text-secondary uppercase tracking-widest flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span> Live Preview
+                    </span>
+<button class="text-primary hover:underline text-caption flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="open_in_new">open_in_new</span> View Public Page
+                    </button>
+</div>
+<!-- Profile Card Preview (Mirrors public UI) -->
+<div class="bg-surface border border-outline-variant/30 rounded-xl overflow-hidden shadow-lg transition-all duration-300 transform-gpu hover:shadow-xl">
+<div class="relative h-40 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A stunning artistic photograph capturing the intricate textures of traditional East African weaving. The focus is sharp on the interlocking natural fibers, showcasing the earthy tones of sisal and wool. Soft, directional light creates dramatic shadows that emphasize the craftsmanship, set against a blurred background that suggests a modern studio environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8vzZQ7bB9k6mc9j_bqAPFx-FB2vcJCDRUFMg0tM-dSrp85Ak2HcX8o5GXpHwoWPH3O26nTVUNMIcSPmdn8wJoplv2SMS3lbeY7XrJHHjW8X-FVlVTeuOSI-c5srTAkNhAXHz448_f4tKSqXCv6s-ZpcSsU2iryPAU8-s4U8mDaSKBzN2niIYNfiNLZDKQtz5AJiMqRtu9rHT04wGPQ6aN_ti3fBtZ3OKpQ2uGf9jqhTvdc_zyMLIjEZR76DSmQz3HIxtMPyiKxes"/>
+<div class="absolute -bottom-10 left-md">
+<div class="w-24 h-24 rounded-full border-4 border-surface bg-surface-container overflow-hidden shadow-md">
+<img class="w-full h-full object-cover" data-alt="A portrait of a contemporary artist from East Africa, looking thoughtfully off-camera. The artist is wearing a minimalist linen shirt and bold, geometric earrings. The lighting is bright and airy, reflecting a professional yet creative persona. The background is a clean white studio wall with soft shadows, creating a polished light-mode aesthetic for a high-end portfolio site." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGdsQ2huO9KZMl10yjsl_ZobTyExMgdyj1_00_b1mgYcW6sqH_IlWPk-Y5RjtxBVJcdUxaRuM28qNfQAJrmHfZ0JLzluEcrTnYujwXNi3lyPbf-NzJWWyuetOWXJe3BqT0PDLNXx4ZZiPk8fJo880Q9q4Ic1DG5ImMA0MV3zE13MEp8qevZtD3MLbF9K73WRZy8P-X3ZuZ7AJTfhSoqj2naaB2ogmmTh8N5WIgg0ydZSCxNx0jl-uc932qZ1wIw2-9rul7FjWL464"/>
+</div>
+</div>
+</div>
+<div class="pt-12 px-md pb-md space-y-md">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">Amani Kibaki</h3>
+<p class="text-on-surface-variant font-medium">They/Them</p>
+</div>
+<span class="px-sm py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-caption font-label-mono">AVAILABLE</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface italic">"Contemporary Fiber Artist &amp; Cultural Curator"</p>
+<div class="flex flex-wrap gap-xs">
+<span class="text-caption px-sm py-xs bg-primary-light text-primary rounded-full font-medium">#TextileArt</span>
+<span class="text-caption px-sm py-xs bg-primary-light text-primary rounded-full font-medium">#Sculpture</span>
+</div>
+<div class="space-y-xs pt-base">
+<div class="flex items-center gap-sm text-on-surface-variant text-caption">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                                Nairobi, Kenya
+                            </div>
+<div class="flex items-center gap-sm text-on-surface-variant text-caption">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_month">calendar_month</span>
+                                Joined Hearth in 2018
+                            </div>
+</div>
+<div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center">
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="photo_camera">photo_camera</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="play_circle">play_circle</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="language">language</span>
+</div>
+<button class="bg-secondary text-white px-md py-base rounded-lg text-caption font-bold shadow-sm hover:bg-secondary/90 transition-transform active:scale-95">Book Studio Visit</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Bottom Save Bar -->
+<div class="fixed bottom-0 left-0 w-full z-[100] bg-surface/80 backdrop-blur-md border-t border-outline-variant py-md px-margin-mobile md:px-margin-desktop">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="hidden md:block">
+<span class="text-caption text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span> All changes are auto-drafted until you save.
+                </span>
+</div>
+<div class="flex items-center gap-md w-full md:w-auto">
+<button class="flex-1 md:flex-none text-on-surface-variant font-bold px-lg py-base hover:bg-surface-container transition-all rounded-lg active:scale-95">Discard</button>
+<button class="flex-1 md:flex-none bg-primary text-white font-bold px-xl py-base rounded-lg shadow-lg hover:bg-primary-container transition-all transform active:scale-90">Save changes</button>
+</div>
+</div>
+</div>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-caption font-caption">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="text-caption font-caption">Gigs</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-caption font-caption">Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-caption font-caption">Profile</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction: Update text fields in preview in real-time
+        const inputs = document.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                // This is a placeholder for real-time binding logic
+                // In a production app, we would map specific inputs to specific preview elements
+            });
+        });
+
+        // Simple button active states handled by Tailwind 'active:' classes
+    </script>
+</body></html>

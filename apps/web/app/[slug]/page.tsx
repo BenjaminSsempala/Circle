@@ -1,12 +1,14 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { getArtistBySlug } from '@/lib/services/artists';
+import { getArtistBySlug, getRedirectSlug } from '@/lib/services/artists';
+import { getArtistEvents } from '@/lib/services/events';
 import { OwnerBar } from './_components/OwnerBar';
 import { EditableProfileHeader } from './_components/EditableProfileHeader';
 import { EditableBio } from './_components/EditableBio';
 import { PackagesSection } from './_components/PackagesSection';
 import { SelectedWorksGrid } from './_components/SelectedWorksGrid';
+import { EventsSection } from './_components/EventsSection';
 import type { Work } from '@/lib/services/artists';
 
 export default async function ArtistProfilePage({ params }: { params: { slug: string } }) {
@@ -15,10 +17,17 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
     createClient(),
   ]);
 
-  if (!result.ok) return notFound();
+  if (!result.ok) {
+    const currentSlug = await getRedirectSlug(params.slug);
+    if (currentSlug) permanentRedirect(`/${currentSlug}`);
+    return notFound();
+  }
 
   const { artist, packages } = result;
-  const { data: { user } } = await supabase.auth.getUser();
+  const [{ data: { user } }, events] = await Promise.all([
+    supabase.auth.getUser(),
+    getArtistEvents(artist.id),
+  ]);
   const isOwner = !!user && user.id === artist.user_id;
 
   return (
@@ -53,17 +62,43 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
           slug={params.slug}
           hasPhoto={!!artist.profile_photo}
           hasBio={!!artist.bio}
+          hasTagline={!!artist.tagline}
+          artistName={artist.name}
+          artistPhoto={artist.profile_photo ?? null}
+          artistTagline={(artist as Record<string, unknown>).tagline as string | null ?? null}
+          artistBio={artist.bio ?? null}
+          artistCity={(artist as Record<string, unknown>).city as string | null ?? null}
+          artistCountry={(artist as Record<string, unknown>).country as string | null ?? null}
+          artForms={Array.isArray(artist.art_forms) ? artist.art_forms as string[] : []}
+          artistTags={Array.isArray(artist.tags) ? artist.tags as string[] : null}
+          socialLinks={(artist.social_links as Record<string, string>) ?? {}}
+          selectedWorks={(Array.isArray(artist.selected_works) ? artist.selected_works : []) as import('@/app/[slug]/_components/ExportModal').ExportWork[]}
+          packages={packages.map((p) => ({ id: p.id, name: p.name, price: p.price, currency: p.currency, duration: p.duration ?? null, description: p.description ?? null, logistics_inclusive: p.logistics_inclusive }))}
+          savedEPK={(artist as Record<string, unknown>).epk_data as import('@/lib/exports/exportTypes').EPKFillable | null ?? null}
+          savedRC={(artist as Record<string, unknown>).rate_card_data as import('@/lib/exports/exportTypes').RateCardFillable | null ?? null}
         />
       )}
 
       {/* Main */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
+      <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-10 py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
 
-        {/* Left column */}
-        <div className="md:col-span-8 flex flex-col gap-lg">
+        {/* Left column — events */}
+        <div className="md:col-span-3 relative order-last md:order-first">
+          <div className="sticky top-24">
+            <EventsSection
+              initialEvents={events}
+              isOwner={isOwner}
+              artistSlug={artist.slug}
+            />
+          </div>
+        </div>
+
+        {/* Centre column — main content */}
+        <div className="md:col-span-6 flex flex-col gap-lg">
           <EditableProfileHeader
             artist={{
               name: artist.name,
+              tagline: artist.tagline,
               art_forms: artist.art_forms,
               tags: artist.tags,
               city: artist.city,
@@ -82,10 +117,21 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
           />
         </div>
 
-        {/* Right column — sticky packages */}
-        <div className="md:col-span-4 relative">
+        {/* Right column — packages */}
+        <div className="md:col-span-3 relative">
           <div className="sticky top-24">
-            <PackagesSection packages={packages} isOwner={isOwner} />
+            <PackagesSection
+              packages={packages}
+              isOwner={isOwner}
+              isLoggedIn={!!user}
+              artist={{
+                slug: artist.slug,
+                name: artist.name,
+                profile_photo: artist.profile_photo ?? null,
+                social_links: (artist.social_links as Record<string, string>) ?? {},
+                account_email: artist.account_email,
+              }}
+            />
           </div>
         </div>
       </main>

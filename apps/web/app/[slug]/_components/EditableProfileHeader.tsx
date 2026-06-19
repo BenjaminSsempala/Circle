@@ -19,7 +19,7 @@ const ART_FORM_LABELS: Record<string, string> = Object.fromEntries(
   ART_FORM_OPTIONS.map(({ value, label }) => [value, label])
 );
 
-type SocialKey = 'youtube' | 'spotify' | 'tiktok' | 'instagram' | 'soundcloud' | 'linkedin' | 'twitter';
+type SocialKey = 'youtube' | 'spotify' | 'tiktok' | 'instagram' | 'soundcloud' | 'linkedin' | 'twitter' | 'website';
 
 const SOCIAL_META: Record<SocialKey, { label: string; fill: string; path: string }> = {
   youtube: { label: 'YouTube', fill: '#FF0000', path: 'M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z' },
@@ -29,10 +29,12 @@ const SOCIAL_META: Record<SocialKey, { label: string; fill: string; path: string
   soundcloud: { label: 'SoundCloud', fill: '#FF5500', path: 'M1.175 12.225c-.015 0-.019.008-.019.023l.188 2.328-.188 2.167c0 .015.004.022.019.022.011 0 .015-.007.019-.022l.222-2.167-.222-2.328c-.004-.015-.008-.023-.019-.023zm11.4-5.095c-.188 0-.371.031-.543.086-.114-2.59-2.344-4.656-5.07-4.656-.63 0-1.231.118-1.779.332-.207.079-.261.161-.266.238v9.135c.005.079.066.142.147.149h7.511c.465 0 .843-.378.843-.843V11.65c0-.465-.378-.843-.843-.843z' },
   linkedin: { label: 'LinkedIn', fill: '#0A66C2', path: 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z' },
   twitter: { label: 'X / Twitter', fill: 'currentColor', path: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z' },
+  website: { label: 'Website', fill: 'currentColor', path: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z' },
 };
 
 type Artist = {
   name: string;
+  tagline: string | null;
   art_forms: string[] | null;
   tags: string[] | null;
   city: string | null;
@@ -54,6 +56,7 @@ export function EditableProfileHeader({
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [draft, setDraft] = useState({
     name: initial.name,
+    tagline: initial.tagline ?? '',
     artForm: initial.art_forms?.[0] ?? '',
     tagsRaw: (initial.tags ?? []).join(', '),
     city: initial.city ?? '',
@@ -102,6 +105,7 @@ export function EditableProfileHeader({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: draft.name,
+        tagline: draft.tagline,
         art_forms: draft.artForm ? [draft.artForm] : [],
         tags,
         city: draft.city,
@@ -111,6 +115,7 @@ export function EditableProfileHeader({
     setArtist((prev) => ({
       ...prev,
       name: draft.name,
+      tagline: draft.tagline,
       art_forms: draft.artForm ? [draft.artForm] : [],
       tags,
       city: draft.city,
@@ -154,6 +159,17 @@ export function EditableProfileHeader({
         {editing ? (
           /* ── Edit form ── */
           <div className="w-full flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tagline <span className="text-on-surface-variant/50 normal-case font-normal">· one line, optional</span></label>
+              <input
+                value={draft.tagline}
+                onChange={(e) => setDraft((p) => ({ ...p, tagline: e.target.value }))}
+                placeholder="e.g. Spoken word poet blending tradition and technology"
+                className="w-full"
+                maxLength={120}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Name</label>
@@ -206,6 +222,12 @@ export function EditableProfileHeader({
               <div className="text-body-lg font-body-lg text-on-surface-variant font-medium">
                 {[artFormLabel, artist.city && artist.country ? `${artist.city}, ${artist.country}` : artist.city].filter(Boolean).join(' · ')}
               </div>
+            )}
+
+            {artist.tagline && (
+              <p className="text-body-md font-body-md text-on-surface-variant italic mt-1">
+                {artist.tagline}
+              </p>
             )}
 
             {Array.isArray(artist.tags) && artist.tags.length > 0 && (

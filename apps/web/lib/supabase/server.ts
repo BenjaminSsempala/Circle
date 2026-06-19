@@ -26,3 +26,30 @@ export async function createClient() {
     },
   );
 }
+
+// ─── Auth helper for export routes ───────────────────────────────────────────
+
+export async function requireArtistOwnership(slug: string) {
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { error: 'Unauthorized', status: 401 as const, artist: null };
+  }
+
+  const { data: artist } = await supabase
+    .from('artists')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (!artist) {
+    return { error: 'Not found', status: 404 as const, artist: null };
+  }
+
+  if (artist.user_id !== user.id) {
+    return { error: 'Forbidden', status: 403 as const, artist: null };
+  }
+
+  return { error: null, status: 200 as const, artist, user };
+}

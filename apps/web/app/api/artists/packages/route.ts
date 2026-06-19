@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { ok, err } from '@/lib/api';
 import { getArtistByUserId, upsertPackage } from '@/lib/services/artists';
@@ -13,9 +14,10 @@ export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return err('Invalid JSON'); }
 
-  const { name, description, price, currency, duration, logisticsInclusive } = body as {
+  const { name, description, price, currency, duration, logisticsInclusive, productType } = body as {
     name?: string; description?: string; price?: number;
     currency?: string; duration?: string; logisticsInclusive?: boolean;
+    productType?: 'service' | 'digital' | 'merchandise';
   };
 
   if (!name || price === undefined || !description) return err('name, price, and description are required');
@@ -24,6 +26,7 @@ export async function POST(request: Request) {
     name, description: description ?? '', price: Number(price),
     currency: currency ?? 'UGX', duration: duration ?? '1 hour',
     logisticsInclusive: logisticsInclusive ?? false,
+    productType,
   });
 
   if (!result.ok) return err(result.error, 500);

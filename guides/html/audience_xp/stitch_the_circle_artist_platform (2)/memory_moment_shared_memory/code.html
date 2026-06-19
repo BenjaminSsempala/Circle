@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Memory Moment | Digital Hearth</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&amp;family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#6edab4",
+                    "on-secondary-fixed-variant": "#474746",
+                    "primary-fixed-dim": "#84d6b9",
+                    "on-tertiary-container": "#85f1ca",
+                    "on-background": "#1b1c19",
+                    "inverse-surface": "#30312e",
+                    "surface-container-highest": "#e4e2dd",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#84d6b9",
+                    "secondary-container": "#e2dfde",
+                    "surface-container": "#f0eee9",
+                    "tertiary": "#00543f",
+                    "background": "#fbf9f4",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f5f3ee",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "surface-variant": "#e4e2dd",
+                    "secondary": "#5f5e5e",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#f2f1ec",
+                    "surface-dim": "#dcdad5",
+                    "primary": "#005440",
+                    "on-tertiary-fixed-variant": "#00513d",
+                    "on-secondary-container": "#636262",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#eae8e3",
+                    "outline-variant": "#bec9c3",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#a0f3d4",
+                    "on-primary-fixed": "#002117",
+                    "tertiary-container": "#006f54",
+                    "on-surface-variant": "#3f4944",
+                    "on-surface": "#1b1c19",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#fbf9f4",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-tertiary-fixed": "#002117",
+                    "on-primary-container": "#9aedcf",
+                    "outline": "#6f7a74",
+                    "on-primary-fixed-variant": "#00513e",
+                    "primary-container": "#0f6e56",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#8af7cf",
+                    "surface": "#fbf9f4",
+                    "surface-tint": "#086b53",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "80px",
+                    "sm": "12px",
+                    "container-max": "1200px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "md": "24px",
+                    "xs": "4px",
+                    "margin-desktop": "64px",
+                    "lg": "48px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "mono-sm": ["DM Mono"],
+                    "label-bold": ["DM Sans"],
+                    "display-md": ["Playfair Display"],
+                    "headline-lg": ["Playfair Display"],
+                    "body-lg": ["DM Sans"],
+                    "display-lg": ["Playfair Display"],
+                    "headline-lg-mobile": ["Playfair Display"],
+                    "body-sm": ["DM Sans"],
+                    "body-md": ["DM Sans"],
+                    "headline-md": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "mono-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                    "label-bold": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-md": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fbf9f4; /* Using theme surface color manually for initial load */
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .mood-btn.active {
+            border-color: #005440;
+            background-color: #0f6e56;
+            color: #ffffff;
+        }
+        .mood-btn.active span {
+            color: #ffffff;
+        }
+        /* Custom scrollbar for better editorial feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fbf9f4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #bec9c3;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary-fixed-dim">
+<!-- Header Navigation (Hidden on focused task as per mandate) -->
+<!-- We suppress TopNavBar & BottomNavBar as this is a focused Task-Focused/Transactional sub-page -->
+<main class="min-h-screen flex flex-col items-center justify-center px-margin-mobile py-lg md:py-xl bg-background">
+<!-- Main Form Container -->
+<div class="w-full max-w-[480px] bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="p-lg md:p-gutter flex flex-col gap-lg">
+<!-- Header Section -->
+<header class="text-center">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs">How did the moment feel?</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Your response becomes a Circle Note on Jaytham's profile.</p>
+</header>
+<!-- Mood Selector -->
+<section class="grid grid-cols-2 sm:grid-cols-3 gap-sm">
+<button class="mood-btn flex flex-col items-center justify-center p-sm border border-outline-variant rounded-xl transition-all duration-200 hover:bg-surface-container-low active:scale-95" type="button">
+<span class="text-2xl mb-xs">✨</span>
+<span class="font-label-bold text-label-bold">Magical</span>
+</button>
+<button class="mood-btn flex flex-col items-center justify-center p-sm border border-outline-variant rounded-xl transition-all duration-200 hover:bg-surface-container-low active:scale-95" type="button">
+<span class="text-2xl mb-xs">❤️</span>
+<span class="font-label-bold text-label-bold">Meaningful</span>
+</button>
+<button class="mood-btn flex flex-col items-center justify-center p-sm border border-outline-variant rounded-xl transition-all duration-200 hover:bg-surface-container-low active:scale-95" type="button">
+<span class="text-2xl mb-xs">🎉</span>
+<span class="font-label-bold text-label-bold">Energetic</span>
+</button>
+<button class="mood-btn flex flex-col items-center justify-center p-sm border border-outline-variant rounded-xl transition-all duration-200 hover:bg-surface-container-low active:scale-95" type="button">
+<span class="text-2xl mb-xs">🤝</span>
+<span class="font-label-bold text-label-bold">Professional</span>
+</button>
+<button class="mood-btn flex flex-col items-center justify-center p-sm border border-outline-variant rounded-xl transition-all duration-200 hover:bg-surface-container-low active:scale-95 col-span-2 sm:col-span-1" type="button">
+<span class="text-2xl mb-xs">🌱</span>
+<span class="font-label-bold text-label-bold">Inspiring</span>
+</button>
+</section>
+<!-- Circle Note Textarea -->
+<section class="flex flex-col gap-xs">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="circle-note">CIRCLE NOTE</label>
+<div class="relative">
+<textarea class="w-full p-md bg-surface-container-lowest border border-outline rounded-xl focus:ring-0 focus:border-primary transition-colors font-body-md resize-none" id="circle-note" maxlength="140" placeholder="Share a short reflection of your experience..." rows="4"></textarea>
+<div class="absolute bottom-3 right-4 font-mono-sm text-mono-sm text-on-surface-variant" id="char-count">0/140</div>
+</div>
+</section>
+<!-- Submit Button -->
+<button class="w-full h-[56px] bg-[#FFBF00] text-[#1b1c19] font-label-bold text-body-lg rounded-full flex items-center justify-center gap-base transition-transform active:scale-[0.98] shadow-sm" type="button">
+                    Save my memory →
+                </button>
+</div>
+<!-- Memory Card Preview (The Generated Aspect) -->
+<section class="bg-surface-container p-lg flex flex-col items-center gap-lg border-t border-outline-variant">
+<div class="w-full aspect-square max-w-[360px] relative rounded-xl overflow-hidden shadow-xl">
+<!-- Background via Gradient and subtle shader -->
+<div class="absolute inset-0 bg-gradient-to-br from-[#003B2D] via-[#005440] to-[#086b53] z-0"></div>
+
+<!-- Content Overlay -->
+<div class="absolute inset-0 z-10 p-gutter flex flex-col justify-between text-white">
+<div class="flex justify-between items-start">
+<span class="font-mono-sm text-mono-sm uppercase tracking-widest opacity-80">Memory Moment</span>
+<div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<h2 class="font-headline-md text-display-md leading-none">Jaytham</h2>
+<p class="font-headline-md italic text-body-lg opacity-90">Private Poetry Session</p>
+</div>
+<div class="flex justify-between items-end border-t border-white/20 pt-sm">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold opacity-60">DATE</span>
+<span class="font-body-md">July 21, 2026</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-bold text-label-bold opacity-60">MOOD</span>
+<span class="font-body-md">✨ Magical</span>
+</div>
+</div>
+</div>
+<!-- Branding Detail -->
+<div class="absolute bottom-1/2 -right-8 rotate-90 text-[10px] font-mono-sm tracking-widest opacity-30 text-white select-none">
+                        DIGITAL HEARTH • COLLECTIBLE MOMENT
+                    </div>
+</div>
+<!-- Action Buttons -->
+<div class="w-full flex flex-col gap-sm">
+<button class="w-full py-sm border border-primary text-primary rounded-xl font-label-bold hover:bg-primary-fixed transition-colors flex items-center justify-center gap-base">
+<span class="material-symbols-outlined text-body-md">download</span>
+                        Download
+                    </button>
+<div class="grid grid-cols-2 gap-sm">
+<button class="py-sm bg-surface-container-highest text-on-surface rounded-xl font-label-bold hover:bg-surface-variant transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-body-md">share</span>
+                            WhatsApp
+                        </button>
+<button class="py-sm bg-surface-container-highest text-on-surface rounded-xl font-label-bold hover:bg-surface-variant transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-body-md">photo_camera</span>
+                            Instagram
+                        </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Note -->
+<footer class="mt-lg text-center">
+<p class="font-label-bold text-label-bold text-on-surface-variant opacity-60">© 2024 DIGITAL HEARTH • SECURE CHECKOUT</p>
+</footer>
+</main>
+<script>
+        // Mood selection logic
+        const moodButtons = document.querySelectorAll('.mood-btn');
+        moodButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                moodButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Haptic feedback simulation
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => btn.style.transform = 'scale(1)', 100);
+            });
+        });
+
+        // Character count logic
+        const textarea = document.getElementById('circle-note');
+        const countDisplay = document.getElementById('char-count');
+        
+        textarea.addEventListener('input', (e) => {
+            const count = e.target.value.length;
+            countDisplay.textContent = `${count}/140`;
+            
+            if (count >= 130) {
+                countDisplay.classList.add('text-error');
+            } else {
+                countDisplay.classList.remove('text-error');
+            }
+        });
+
+        // Simple button active state visual feedback
+        const primaryBtn = document.querySelector('button[type="button"].bg-[#FFBF00]');
+        primaryBtn.addEventListener('mousedown', () => {
+            primaryBtn.style.transform = 'scale(0.98)';
+        });
+        primaryBtn.addEventListener('mouseup', () => {
+            primaryBtn.style.transform = 'scale(1)';
+        });
+    </script>
+</body></html>

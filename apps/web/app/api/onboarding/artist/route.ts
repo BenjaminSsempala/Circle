@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { ok, err } from '@/lib/api';
 import { getArtistByUserId, upsertArtistProfile } from '@/lib/services/artists';
@@ -27,8 +28,9 @@ export async function POST(request: Request) {
     return err('Invalid JSON body');
   }
 
-  const { fullName, artForm, otherArtForm, tags, city, country, bio, profilePhotoUrl } = body as {
+  const { fullName, tagline, artForm, otherArtForm, tags, city, country, bio, profilePhotoUrl, customSlug } = body as {
     fullName?: string;
+    tagline?: string;
     artForm?: string;
     otherArtForm?: string;
     tags?: string[];
@@ -36,6 +38,7 @@ export async function POST(request: Request) {
     country?: string;
     bio?: string;
     profilePhotoUrl?: string;
+    customSlug?: string;
   };
 
   if (!fullName || !artForm || !city || !country) {
@@ -44,6 +47,7 @@ export async function POST(request: Request) {
 
   const result = await upsertArtistProfile(user.id, {
     name: fullName,
+    tagline,
     artForm,
     otherArtForm,
     tags,
@@ -51,6 +55,7 @@ export async function POST(request: Request) {
     country,
     bio,
     profilePhotoUrl,
+    customSlug,
   });
 
   if (!result.ok) return err(result.error, 500);

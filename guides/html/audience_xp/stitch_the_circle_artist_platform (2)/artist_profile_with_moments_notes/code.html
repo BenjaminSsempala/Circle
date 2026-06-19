@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jaytham - ArtHearth Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Playfair+Display:ital,wght@0,700;1,400&amp;family=DM+Sans:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#feb56b",
+                        "on-tertiary-container": "#85f1ca",
+                        "on-primary-fixed-variant": "#00513e",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "on-secondary-container": "#774400",
+                        "inverse-primary": "#84d6b9",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "surface": "#fcf9f8",
+                        "primary-fixed-dim": "#84d6b9",
+                        "tertiary-fixed-dim": "#6edab4",
+                        "tertiary": "#00543f",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container-high": "#eae7e7",
+                        "on-surface": "#1c1b1b",
+                        "secondary-fixed": "#ffdcbe",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#002117",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#9aedcf",
+                        "surface-tint": "#086b53",
+                        "tertiary-container": "#006f54",
+                        "surface-container": "#f0eded",
+                        "outline": "#6f7a74",
+                        "surface-dim": "#dcd9d9",
+                        "surface-bright": "#fcf9f8",
+                        "secondary": "#88520e",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb870",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "on-secondary-fixed": "#2d1600",
+                        "tertiary-fixed": "#8af7cf",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#002117",
+                        "on-background": "#1c1b1b",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e5e2e1",
+                        "background": "#fcf9f8",
+                        "outline-variant": "#bec9c3",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#a0f3d4",
+                        "primary-container": "#0f6e56",
+                        "primary": "#005440",
+                        "on-surface-variant": "#3f4944",
+                        "teal-custom": "#2D6A4F",
+                        "sage-chip": "#E8F0E8",
+                        "sage-text": "#3D5A4D"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "playfair": ["Playfair Display"],
+                        "dm-sans": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-mono": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        .moment-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .moment-card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F5F3EF] text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="bg-surface/90 backdrop-blur-md fixed top-0 w-full z-50 border-b border-primary-container/20 shadow-sm transition-all duration-300">
+<div class="hidden md:flex justify-between items-center px-margin-desktop py-4 w-full max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md text-primary tracking-tight">Circle</div>
+<div class="flex items-center gap-gutter">
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:opacity-80 font-body-md text-body-md" href="#">Hero</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:opacity-80 font-body-md text-body-md" href="#about">About</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#portfolio">Portfolio</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:opacity-80 font-body-md text-body-md" href="#packages">Packages</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:opacity-80 font-body-md text-body-md" href="#events">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:opacity-80 font-body-md text-body-md" href="#contact">Contact</a>
+</div>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-lg font-body-md text-body-md font-medium hover:opacity-80 transition-opacity Active: scale-95 duration-150 ease-in-out">
+                Book Now
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-[1440px] mx-auto pt-32 pb-xl">
+<!-- 1. Hero Section -->
+<section class="px-margin-desktop mb-xl" id="hero">
+<div class="grid grid-cols-12 gap-gutter relative">
+<!-- Left 2/3: Feature Media -->
+<div class="col-span-8 rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(15,110,86,0.05)] border border-primary-fixed/30 bg-surface-container-lowest h-[600px] relative group cursor-pointer">
+<img alt="Featured Media" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGmUSTGWjD0KbYKcjCuBgff8VflteKOPw5e0yD0Xb96cBvMdWpTY1mTyJJH0t6v3P6PA5NhvTwNFm6hp8gDWXZECyJokqUhfc0yVnTDBWNIrdNYcVpBVDXyiLMaV6OUhhOQDUrbMf7Em2f03SbyCfPq9Riz2b9dFOXlt2G74kPGb3clVIy0Xbf5vjPFG2B96Ao4M4E8pG2EDTUgWlPWFADFCDVed0sJpaJBkLqvciLknkov1Hnuc4M91zALhrdwpjrY6R4MAqRf7Q"/>
+<div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-surface/90 to-transparent">
+<span class="bg-primary-fixed text-on-primary-fixed font-label-mono text-label-mono px-3 py-1 rounded-full mb-4 inline-block">Latest Release</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Echoes of the Rift</h2>
+</div>
+</div>
+<!-- Right 1/3: Sticky Summary Card -->
+<div class="col-span-4">
+<div class="sticky top-[160px] bg-surface-container-lowest rounded-xl p-md shadow-[0_8px_32px_rgba(15,110,86,0.08)] border border-outline-variant/20 flex flex-col gap-6 transition-transform hover:-translate-y-1 duration-300">
+<div class="flex gap-4 items-center">
+<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary-container shrink-0">
+<img alt="Jaytham Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqdl3e8aQbIIfQ0-MqRj2ACQYnqbamQwoa4zhaAen-LahEKQXcrjH5WfxtCji1l3enWxoBIyfB7FarTfoc1r7fdwAIONZ_s2vtu_KYjyA-KSXfpjhH8McNq_GmYqWweT_TuU3rrk9pY7YWBNbop_nVHFFXPmIjuBQtQ2GRNzw1nvOs4OpiSXez_33hmf2zqhoEZ1iMvkZIE0hWu1nevXQObUvsihhS-J1jxONGU8rNS23vFHC64gB0SyYASuWSahAfNWYRSIXQuFw"/>
+</div>
+<div>
+<h1 class="font-headline-xl text-headline-xl text-primary-container">Jaytham</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Spoken Word &amp; Soundscapes</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-primary font-label-mono text-label-mono px-3 py-1 rounded-full">#Poetry</span>
+<span class="bg-surface-container text-primary font-label-mono text-label-mono px-3 py-1 rounded-full">#Nairobi</span>
+<span class="bg-surface-container text-primary font-label-mono text-label-mono px-3 py-1 rounded-full">#Acoustic</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+                            Weaving contemporary narratives with traditional rhythms, creating immersive audio-visual experiences that resonate across borders.
+                        </p>
+<div class="flex flex-col gap-3 mt-4">
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-body-md text-body-md font-medium hover:bg-surface-tint transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                                Book Jaytham
+                            </button>
+<button class="w-full bg-transparent border border-primary-container text-primary-container py-3 rounded-lg font-body-md text-body-md font-medium hover:bg-primary-container/5 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+                                Share Profile
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. About Section -->
+<section class="px-margin-desktop py-lg mb-xl bg-surface-container-low/50 rounded-xl mx-margin-desktop" id="about">
+<div class="grid grid-cols-12 gap-gutter items-center">
+<div class="col-span-7 pr-8">
+<h3 class="font-label-mono text-label-mono text-secondary tracking-widest uppercase mb-4">About the Artist</h3>
+<h2 class="font-headline-lg text-headline-lg text-primary-container mb-6">A Voice from the Highlands</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6 leading-relaxed">
+                        Jaytham's work explores the intersection of urban life and ancestral memory. With over a decade of performance experience across East Africa and Europe, his pieces are crafted to be both intensely personal and universally accessible.
+                    </p>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        He believes in the power of the 'digital hearth'—spaces where technology amplifies human connection rather than diluting it. Every performance is an invitation to gather, listen, and reflect.
+                    </p>
+</div>
+<div class="col-span-5">
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm">
+<div class="font-headline-xl text-headline-xl text-primary-container mb-2">150+</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase">Performances</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm">
+<div class="font-headline-xl text-headline-xl text-primary-container mb-2">3</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase">Studio Albums</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm">
+<div class="font-headline-xl text-headline-xl text-primary-container mb-2">1M+</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase">Streams</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Moments Section -->
+<section class="px-margin-desktop mb-xl" id="moments">
+<h2 class="font-playfair text-[32px] font-bold text-teal-custom mb-8 text-left">Moments</h2>
+<div class="moment-card-grid">
+<!-- Moment Card 1 -->
+<div class="bg-[#F5F3EF] rounded-[12px] p-6 border border-outline-variant/30 relative shadow-sm h-full flex flex-col justify-between">
+<div>
+<span class="inline-block bg-sage-chip text-sage-text px-3 py-1 rounded-full text-[12px] font-medium mb-4">Birthday</span>
+<p class="font-dm-sans text-[13px] text-[#333333] leading-relaxed mb-4 line-clamp-3">
+                    A magical evening celebrating with friends under the city lights. Jaytham's performance brought a soulful warmth that we will never forget. Every word felt like a gift.
+                </p>
+<button class="text-teal-custom text-[12px] font-medium hover:underline">Read more</button>
+</div>
+<div class="flex justify-end mt-4">
+<img alt="Moment thumbnail" class="w-[48px] h-[48px] rounded-[8px] object-cover border border-outline-variant/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC_0MFeX3-GH7nexIcg4OvtgKFiKtsDarSvZOfCxQMnSybD37G5CIv9oP33lAYh-nwnOLZIJF4cEZcH4WFXYyruDaBW8xlQMfu1wzyoBE-su63wQEY1ZFYPkIfaOoZH_DAFpn8TF3Vhx07Cbn_p4mdKFPCYRjbefe8qcZH7lVpGRAazjzPq1tBRD0dog8DNBDiWG_87nVRCer7YvutOvzFI03yNiALkDollIzHXZdnwXOw3EYGCCWhxgfgyJ6GCKAzzCiN9f-oIQo"/>
+</div>
+</div>
+<!-- Moment Card 2 -->
+<div class="bg-[#F5F3EF] rounded-[12px] p-6 border border-outline-variant/30 relative shadow-sm h-full flex flex-col justify-between">
+<div>
+<span class="inline-block bg-sage-chip text-sage-text px-3 py-1 rounded-full text-[12px] font-medium mb-4">Corporate</span>
+<p class="font-dm-sans text-[13px] text-[#333333] leading-relaxed mb-4 line-clamp-3">
+                    The annual gala was transformed by the rhythmic soundscapes. It provided the perfect ambient backdrop for networking while still commanding attention.
+                </p>
+<button class="text-teal-custom text-[12px] font-medium hover:underline">Read more</button>
+</div>
+<div class="flex justify-end mt-4">
+<img alt="Moment thumbnail" class="w-[48px] h-[48px] rounded-[8px] object-cover border border-outline-variant/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkSJ5ZzZN0zV3H5c3Ek-91iT-iNkMSjEyPeMIIsIyxHpc2XEUlL1L5RBy8-Xpq-4alQbUwkXCv16dgpe6SKhCquutJeVMCq_k0W-5qJW9IFgTMRLafmm5snm2T0SIcX4M4v4YTxROHkFJmMSw8sMjn5GNdZrHlIapNvGRXkhoBxTRcmAe8AXvv-VsmfNoxKXAlc0GkhHURhoaBVBCtTwmgVWnsb2aq4CdkL01dFYBdtPwdhx-ptX4nbWFKffO17bIWxBMc0d-X8JU"/>
+</div>
+</div>
+<!-- Moment Card 3 -->
+<div class="bg-[#F5F3EF] rounded-[12px] p-6 border border-outline-variant/30 relative shadow-sm h-full flex flex-col justify-between">
+<div>
+<span class="inline-block bg-sage-chip text-sage-text px-3 py-1 rounded-full text-[12px] font-medium mb-4">Community</span>
+<p class="font-dm-sans text-[13px] text-[#333333] leading-relaxed mb-4 line-clamp-3">
+                    Gathering at the local gallery for a night of spoken word. The intimacy of the performance made the space feel like a living, breathing hearth.
+                </p>
+<button class="text-teal-custom text-[12px] font-medium hover:underline">Read more</button>
+</div>
+<div class="flex justify-end mt-4">
+<img alt="Moment thumbnail" class="w-[48px] h-[48px] rounded-[8px] object-cover border border-outline-variant/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3WkPFv_UnpEu6EOsvyHTqKALF0hmAyqwXH0uRioWOuLzeujJDWEtKkxr4TEWdb39e1VvQkRjDogaaQkFJaX-CZuJQXuU1MIK7L8qbAg6Af3XoB4Rr3cxVHPX0l60e1adOylyo91r84DpVauruQkdkXr0IVTb9zENOy8Rr970wQsw8D4HHYOCP32tw2URVVFGbqL4OIbB1ETQJvZkveqfuh8gbQdWN48BVFafeIyO042M0b-iH_VmyxI28nu3JCs0jVNn4Vu24vrI"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Circle Notes Section -->
+<section class="px-margin-desktop mb-xl" id="circle-notes">
+<h2 class="font-playfair text-[32px] font-bold text-teal-custom mb-8 text-left">Circle Notes</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Circle Note 1 -->
+<div class="bg-white rounded-[12px] p-6 border border-outline-variant/20 shadow-sm flex flex-col gap-4">
+<span class="font-playfair text-[32px] text-teal-custom leading-none">“</span>
+<p class="font-playfair italic text-[14px] text-[#1A1A1A] line-clamp-2 leading-relaxed">
+                The most immersive spoken word experience I have ever had the pleasure of attending.
+            </p>
+<div class="flex items-center gap-2 mt-auto">
+<span class="text-[14px]">✨</span>
+<span class="text-[13px] text-on-surface-variant font-medium">— Sarah</span>
+</div>
+</div>
+<!-- Circle Note 2 -->
+<div class="bg-white rounded-[12px] p-6 border border-outline-variant/20 shadow-sm flex flex-col gap-4">
+<span class="font-playfair text-[32px] text-teal-custom leading-none">“</span>
+<p class="font-playfair italic text-[14px] text-[#1A1A1A] line-clamp-2 leading-relaxed">
+                Articulating the unspoken with such grace and power. A true master of the craft.
+            </p>
+<div class="flex items-center gap-2 mt-auto">
+<span class="text-[14px]">✨</span>
+<span class="text-[13px] text-on-surface-variant font-medium">— Michael</span>
+</div>
+</div>
+<!-- Circle Note 3 -->
+<div class="bg-white rounded-[12px] p-6 border border-outline-variant/20 shadow-sm flex flex-col gap-4">
+<span class="font-playfair text-[32px] text-teal-custom leading-none">“</span>
+<p class="font-playfair italic text-[14px] text-[#1A1A1A] line-clamp-2 leading-relaxed">
+                Breathtaking performance that bridged cultures and stories effortlessly.
+            </p>
+<div class="flex items-center gap-2 mt-auto">
+<span class="text-[14px]">✨</span>
+<span class="text-[13px] text-on-surface-variant font-medium">— Elena</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Portfolio Section -->
+<section class="px-margin-desktop py-lg mb-xl" id="portfolio">
+<div class="flex justify-between items-end mb-8">
+<h2 class="font-headline-lg text-headline-lg text-primary-container">Selected Works</h2>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full bg-primary-fixed text-on-primary-fixed font-label-mono text-label-mono border border-primary-fixed shadow-sm">All</button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-mono text-label-mono hover:bg-surface-variant transition-colors border border-outline-variant/20">Video</button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-mono text-label-mono hover:bg-surface-variant transition-colors border border-outline-variant/20">Audio</button>
+</div>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-3 gap-6 mb-8">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/20 group cursor-pointer relative h-[300px]">
+<img alt="Portfolio Video 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCx5f8CfLPHfolTlPCic4rxYdeclijA_kz7loyXhXodkotXXCdhl0Y2p-zS-wyDEhCpK3so2QofNpLRlhvXw8BVcc3ICcqhJPDuutObCN8QVzwMje1hNKxAGNgDkDB-Vvj21rv1r_vbmDPwwsqp4DECZ7OlneTRnKvXgZaCpoCd0thAKE5LQlFF4zo5L0-e9XN1mMtKMkmDxdHj-b8rMMr6hAR0cIpTqsCtxZBTGhi-ituXCvEMlNTDte0SPkUz5g_OO9ydniVlmKw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-surface/80 backdrop-blur-sm p-2 rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow">play_arrow</span>
+</div>
+<div class="absolute bottom-4 left-4 right-4">
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1">Nairobi Nights</h4>
+<p class="font-caption text-caption text-on-surface-variant">Live at The Alchemist</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/20 group cursor-pointer relative h-[300px]">
+<img alt="Portfolio Video 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClmivCq8_9SssrHh4jnS-CiNo82otYx8k8qhsQRaV1KJtkFStm83py4Bem6GpZnX0NJQCCtqq1l-3rise5n8ST_tXAHJhs1W2GnL8rN0X-ZCA5cq6I51LrCaTB9InQxpI8GCwG_Iw9Gf8HkGj0rOab1Yo0_zE56GRmmsGv_ZIGu1mLuQ9hZQqnA8KDr4LlylhkNPKi8r2-16C8xaCVDE_CtQQF-mOTfgQiL51Rtn_-26H24COAhjHnwMhJy7ip-od0kRmeyRUHDDw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-surface/80 backdrop-blur-sm p-2 rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow">play_arrow</span>
+</div>
+<div class="absolute bottom-4 left-4 right-4">
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1">Rhythm &amp; Roots</h4>
+<p class="font-caption text-caption text-on-surface-variant">Festival Mainstage</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/20 group cursor-pointer relative h-[300px]">
+<img alt="Portfolio Video 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6pJLFD29CFK9BoWBW75zCowLtWI5ZDsEdqpRMlhpcwLCY3Qj36j0IBZ8ZGN0s2ZzzfQf2xLdHkSqz-ocV6R1VijzPSgauRb3OK1QDjgjfSiWFNAJljRW418WCrDCRnh1CKIB_b23sE-lKo40j9209VmUBIxBmjzFAaa5Et_1Zc2woub0uCpMu4Os6SuREDqtWlD4KUaeVGEUMZgjyaFAsOPSJqqe3_wCd4gImgtryQX7U8c3TlhuzE9Bm2yqKGg7q0cKSuyi3kjQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-surface/80 backdrop-blur-sm p-2 rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow">play_arrow</span>
+</div>
+<div class="absolute bottom-4 left-4 right-4">
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1">Acoustic Session</h4>
+<p class="font-caption text-caption text-on-surface-variant">Studio B Interludes</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Packages Section -->
+<section class="px-margin-desktop py-lg mb-xl bg-surface-container-low/30 rounded-xl mx-margin-desktop" id="packages">
+<div class="text-center mb-12">
+<h2 class="font-headline-lg text-headline-lg text-primary-container mb-4">Booking Packages</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Tailored experiences for different scales of events. Connect with Jaytham to craft the perfect ambient or focal performance for your gathering.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+<!-- Standard Package -->
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-[0_4px_20px_rgba(15,110,86,0.05)] hover:-translate-y-1 transition-transform duration-300">
+<div class="font-label-mono text-label-mono text-secondary mb-2 uppercase tracking-wide">Intimate Gathering</div>
+<h3 class="font-headline-md text-headline-md text-primary-container mb-6">Acoustic Set</h3>
+<ul class="flex flex-col gap-4 mb-8">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="check_circle">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">45-minute solo performance</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="check_circle">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">Minimal technical requirements</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="check_circle">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">Ideal for private events &amp; galleries</span>
+</li>
+</ul>
+<button class="w-full bg-transparent border border-primary text-primary py-3 rounded-lg font-body-md text-body-md font-medium hover:bg-primary/5 transition-colors">Inquire</button>
+</div>
+<!-- Premium Package -->
+<div class="bg-surface-container-lowest rounded-xl p-8 border-2 border-primary-fixed shadow-[0_8px_30px_rgba(15,110,86,0.1)] relative hover:-translate-y-1 transition-transform duration-300">
+<div class="absolute top-0 right-8 -translate-y-1/2 bg-primary text-on-primary font-label-mono text-label-mono px-4 py-1 rounded-full shadow-sm">Popular</div>
+<div class="font-label-mono text-label-mono text-secondary mb-2 uppercase tracking-wide">Full Experience</div>
+<h3 class="font-headline-md text-headline-md text-primary-container mb-6">Ensemble Performance</h3>
+<ul class="flex flex-col gap-4 mb-8">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">90-minute set with 3-piece band</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">Full audio-visual production</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">Pre-event consultation &amp; custom curation</span>
+</li>
+</ul>
+<button class="w-full bg-secondary-container text-on-secondary-container py-3 rounded-lg font-body-md text-body-md font-medium hover:opacity-90 transition-opacity shadow-sm">Request Proposal</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest w-full py-xl border-t border-outline-variant/30 flat text-secondary font-body-md flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop transition-all duration-300">
+<div class="font-headline-md text-headline-md text-primary mb-4 md:mb-0">ArtHearth</div>
+<div class="text-center md:text-left mb-4 md:mb-0 text-on-surface-variant">
+            © 2024 ArtHearth. Celebrating African Excellence.
+        </div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-secondary hover:underline transition-all duration-300" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-secondary hover:underline transition-all duration-300" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-secondary hover:underline transition-all duration-300" href="#">Artist Support</a>
+</div>
+</footer>
+</body></html>

@@ -1,27 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '@/app/context/AuthContext'; // 1. Hook up your Auth Context
-import { createClient } from '@/lib/supabase/client'; // 2. Hook up your Browser Client
+import { useAuth } from '@/app/context/AuthContext';
+import { createClient } from '@/lib/supabase/client';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { GoogleButton, ErrorBanner } from '../../components/auth/AuthComponents';
 import '../auth.css';
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { refetchProfile } = useAuth(); // 3. Grab the refetch runner
+  const { refetchProfile } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     searchParams.get('error') ? 'There was a problem signing in. Please try again.' : null,
   );
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleGoogleLogin() {
+    setGoogleLoading(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${siteUrl}/api/auth/callback` },
+      });
+
+      if (error) throw error;
+
+      // Supabase should auto-redirect, but manually navigate as a failsafe
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('Google sign-in is not configured. Please enable the Google provider in your Supabase dashboard.');
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
+      setGoogleLoading(false);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -41,13 +66,9 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-
-      // Perform a hard redirect. The browser's new page request will transmit the cookies 
-      // set by the login API route, allowing the client-side AuthContext on the target page
-      // to initialize cleanly from the start.
+      await refetchProfile();
       window.location.href = data.redirectTo || '/dashboard';
-
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
       setLoading(false);
     }
@@ -55,18 +76,22 @@ export default function LoginPage() {
 
   return (
     <AuthLayout title="Welcome Back" subtitle="Log in to your Circle profile." showImage>
+      {error && <ErrorBanner message={error} />}
+
+      {/* Google — outside the form so it never triggers form validation */}
+      <GoogleButton
+        label={googleLoading ? 'Redirecting…' : 'Continue with Google'}
+        onClick={handleGoogleLogin}
+        disabled={googleLoading || loading}
+      />
+
+      <div className="relative flex items-center py-4">
+        <div className="flex-grow border-t border-outline-variant/30" />
+        <span className="flex-shrink mx-4 text-caption font-caption text-outline">OR CONTINUE WITH EMAIL</span>
+        <div className="flex-grow border-t border-outline-variant/30" />
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-5">
-
-        {error && <ErrorBanner message={error} />}
-
-        <GoogleButton label="Continue with Google" />
-
-        <div className="relative flex items-center py-4">
-          <div className="flex-grow border-t border-outline-variant/30" />
-          <span className="flex-shrink mx-4 text-caption font-caption text-outline">OR CONTINUE WITH EMAIL</span>
-          <div className="flex-grow border-t border-outline-variant/30" />
-        </div>
-
         <div>
           <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
           <input

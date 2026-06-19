@@ -51,8 +51,8 @@ export default function Home() {
           <h1 className="hero-h1">Your art.<br /><em>Your income.</em><br />Your circle.</h1>
           <p className="hero-sub">The platform where artists get booked, get paid, get professional and build communities.</p>
           <div className="hero-ctas">
-            <a href="/auth/signup" className="btn btn-primary">Join as an artist</a>
-            <a href="#organiser" className="btn btn-secondary">I'm looking for talent</a>
+            <a href="/auth/signup?type=artist" className="btn btn-primary">Join as an artist</a>
+            <a href="/discover" className="btn btn-secondary">Find an artist</a>
           </div>
           <div className="hero-stats" >
             <div className="stat"><div className="stat-n">500+</div><div className="stat-l">Target artists</div></div>
@@ -209,7 +209,7 @@ export default function Home() {
           <h2 className="cta-h reveal" ref={addRef}>Your art<br />deserves a<br /><em>proper home.</em></h2>
           <p className="cta-sub reveal" ref={addRef}>Join the first 50 artists on The Circle. Build your profile, set your prices, and start getting booked: safely.</p>
           <div className="hero-ctas reveal" ref={addRef}>
-            <a href="/auth/signup" className="btn btn-primary">Join as an artist — it's free</a>
+            <a href="/auth/signup" className="btn btn-primary">Join as an artist; it's free</a>
             <a href="/auth/login" className="btn btn-secondary">Log in</a>
           </div>
           <p className="cta-note">Get Professional. Get Paid!</p>

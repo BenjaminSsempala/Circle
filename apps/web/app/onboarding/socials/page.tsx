@@ -52,6 +52,13 @@ const TwitterLogo = () => (
   </svg>
 );
 
+const WebsiteLogo = () => (
+  <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8}>
+    <circle cx="12" cy="12" r="10" />
+    <path strokeLinecap="round" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+
 const SoundCloudLogo = () => (
   <svg viewBox="0 0 24 24" className="w-6 h-6" fill="#FF5500">
     <path d="M1.175 12.225c-.015 0-.019.008-.019.023l.188 2.328-.188 2.167c0 .015.004.022.019.022.011 0 .015-.007.019-.022l.222-2.167-.222-2.328c-.004-.015-.008-.023-.019-.023zm.79-.5c-.019 0-.023.008-.027.027l-.166 2.824.166 2.49c.004.019.008.027.027.027s.027-.008.031-.027l.19-2.49-.19-2.824c-.004-.019-.012-.027-.031-.027zm.843-.274c-.023 0-.027.008-.031.031l-.144 3.098.144 2.46c.004.023.008.031.031.031s.027-.008.035-.031l.163-2.46-.163-3.098c-.008-.023-.012-.031-.035-.031zm.82-.197c-.027 0-.031.008-.035.035l-.121 3.295.121 2.427c.004.027.008.035.035.035.023 0 .031-.008.035-.035l.14-2.427-.14-3.295c-.004-.027-.012-.035-.035-.035zm.831-.098c-.031 0-.039.012-.039.039l-.098 3.393.098 2.394c0 .027.008.039.039.039s.039-.012.039-.039l.113-2.394-.113-3.393c0-.027-.008-.039-.039-.039zm.835-.051c-.035 0-.047.016-.047.047l-.074 3.444.074 2.362c0 .031.012.047.047.047.031 0 .047-.016.047-.047l.086-2.362-.086-3.444c0-.031-.016-.047-.047-.047zm.847-.027c-.039 0-.055.02-.055.055l-.051 3.471.051 2.331c0 .035.016.055.055.055.035 0 .055-.02.055-.055l.059-2.331-.059-3.471c0-.035-.02-.055-.055-.055zm.855-.012c-.043 0-.063.024-.063.063l-.027 3.483.027 2.3c0 .039.02.063.063.063.039 0 .063-.024.063-.063l.031-2.3-.031-3.483c0-.039-.024-.063-.063-.063zm.863 0c-.047 0-.07.028-.07.07v.004l-.004 3.413.004 2.27c0 .043.024.07.07.07s.07-.028.07-.07l.004-2.27-.004-3.413c0-.043-.024-.07-.07-.07h-.004zm2.347-1.218c-.188 0-.371.031-.543.086-.114-2.59-2.344-4.656-5.07-4.656-.63 0-1.231.118-1.779.332-.207.079-.261.161-.266.238v9.135c.005.079.066.142.147.149h7.511c.465 0 .843-.378.843-.843V11.65c0-.465-.378-.843-.843-.843z" />
@@ -327,6 +334,32 @@ function TwitterPreview({ url }: { url: string }) {
   );
 }
 
+function WebsitePreview({ url }: { url: string }) {
+  let display = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  if (!display) display = 'yourwebsite.com';
+
+  return (
+    <div
+      className="rounded-lg overflow-hidden relative"
+      style={{ minHeight: '148px', background: 'linear-gradient(135deg, #003d2e 0%, #005440 100%)' }}
+    >
+      <div className="absolute top-0 right-0 w-28 h-28 rounded-full opacity-20 blur-2xl" style={{ background: '#feb56b' }} />
+      <div className="relative flex items-center gap-4 p-4 h-full">
+        <div className="w-14 h-14 rounded-full flex-shrink-0 bg-white/10 border border-white/20 flex items-center justify-center text-white">
+          <WebsiteLogo />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-white font-bold text-base leading-tight truncate">{display}</p>
+          <p className="text-white/60 text-xs mt-1">Personal Website</p>
+        </div>
+        <svg viewBox="0 0 24 24" className="w-4 h-4 text-white/30 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 function LinkedInPreview({ url }: { url: string }) {
   const handle = extractLinkedInHandle(url);
   const isCompany = isLinkedInCompany(url);
@@ -404,7 +437,7 @@ function SoundCloudPreview({ url }: { url: string }) {
 
 // ─── Platform config ──────────────────────────────────────────────────────────
 
-type PlatformKey = 'youtube' | 'spotify' | 'tiktok' | 'instagram' | 'soundcloud' | 'linkedin' | 'twitter';
+type PlatformKey = 'youtube' | 'spotify' | 'tiktok' | 'instagram' | 'soundcloud' | 'linkedin' | 'twitter' | 'website';
 
 const PLATFORMS: {
   key: PlatformKey;
@@ -485,6 +518,16 @@ const PLATFORMS: {
     description: 'Share your thoughts, announcements, and connect with fans and industry on X.',
     placeholder: 'https://x.com/yourname',
     Preview: TwitterPreview,
+  },
+  {
+    key: 'website',
+    name: 'Website',
+    category: 'Personal',
+    Logo: WebsiteLogo,
+    bgColor: '#00544015',
+    description: 'Link your personal website, portfolio, or any other page you want clients to visit.',
+    placeholder: 'https://yourwebsite.com',
+    Preview: WebsitePreview,
   },
 ];
 
@@ -645,10 +688,10 @@ export default function SocialsOnboardingPage() {
   const { user, loading } = useAuth();
 
   const [cardStates, setCardStates] = useState<Record<PlatformKey, CardState>>({
-    youtube: 'idle', spotify: 'idle', tiktok: 'idle', instagram: 'idle', soundcloud: 'idle', linkedin: 'idle', twitter: 'idle',
+    youtube: 'idle', spotify: 'idle', tiktok: 'idle', instagram: 'idle', soundcloud: 'idle', linkedin: 'idle', twitter: 'idle', website: 'idle',
   });
   const [links, setLinks] = useState<Record<PlatformKey, string>>({
-    youtube: '', spotify: '', tiktok: '', instagram: '', soundcloud: '', linkedin: '', twitter: '',
+    youtube: '', spotify: '', tiktok: '', instagram: '', soundcloud: '', linkedin: '', twitter: '', website: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');

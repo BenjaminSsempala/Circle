@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Agreement | Digital Hearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&family=Playfair+Display:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .paper-texture {
+            background-color: #fbf9f4;
+            background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+        }
+        @media (max-width: 767px) {
+            .mobile-nav-active {
+                background-color: #0f6e56; /* primary-container */
+                color: #9aedcf; /* on-primary-container */
+                border-radius: 9999px;
+            }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#6edab4",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#84d6b9",
+                        "on-tertiary-container": "#85f1ca",
+                        "on-background": "#1b1c19",
+                        "inverse-surface": "#30312e",
+                        "surface-container-highest": "#e4e2dd",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#84d6b9",
+                        "secondary-container": "#e2dfde",
+                        "surface-container": "#f0eee9",
+                        "tertiary": "#00543f",
+                        "background": "#fbf9f4",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f3ee",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-variant": "#e4e2dd",
+                        "secondary": "#5f5e5e",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f2f1ec",
+                        "surface-dim": "#dcdad5",
+                        "primary": "#005440",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "on-secondary-container": "#636262",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#eae8e3",
+                        "outline-variant": "#bec9c3",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#a0f3d4",
+                        "on-primary-fixed": "#002117",
+                        "tertiary-container": "#006f54",
+                        "on-surface-variant": "#3f4944",
+                        "on-surface": "#1b1c19",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fbf9f4",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-fixed": "#002117",
+                        "on-primary-container": "#9aedcf",
+                        "outline": "#6f7a74",
+                        "on-primary-fixed-variant": "#00513e",
+                        "primary-container": "#0f6e56",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#8af7cf",
+                        "surface": "#fbf9f4",
+                        "surface-tint": "#086b53",
+                        "surface-container-lowest": "#ffffff",
+                        "amber-accent": "#FFBF00",
+                        "amber-light": "#FFF8E1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "sm": "12px",
+                        "container-max": "1200px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "margin-desktop": "64px",
+                        "lg": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "mono-sm": ["DM Mono"],
+                        "label-bold": ["DM Sans"],
+                        "display-md": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "display-lg": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "body-sm": ["DM Sans"],
+                        "body-md": ["DM Sans"],
+                        "headline-md": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "mono-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                        "label-bold": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-md": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased mb-32">
+<!-- Top Navigation (Contextual Suppression Logic: Hidden as this is a focused task) -->
+<header class="bg-surface shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
+<div class="text-headline-md font-headline-md font-bold text-primary">Digital Hearth</div>
+<div class="hidden md:flex gap-lg items-center">
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors" href="#">Explore</a>
+<a class="text-primary font-bold border-b-2 border-primary" href="#">My Gigs</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors" href="#">Messages</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors" href="#">Portfolio</a>
+</div>
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary p-2 cursor-pointer transition-transform active:scale-90" data-icon="notifications">notifications</span>
+<img alt="Artist profile avatar" class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A professional headshot of a creative male artist with a confident smile, wearing a minimalist black turtleneck. The lighting is soft and high-end, against a muted off-white studio background that matches the luxury editorial aesthetic of the Digital Hearth brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHO9bs6Z3XorrkAfG_AN7lgh-wDw-sWmGSian9YHyaBbRGGCsAt0-9z_YsY_PnZ4UtOJmM-K00LzVjL0-vVIK89zVIQSZtA7T1qqz3IQkzRyScI0Dxgo49oCK2x34C0S-GTU49He2VjF0SFf0iBr5vBleC86Z4DXHwaV3BW99fsYEnRZE6hKzRGuqommnsXMLksvSve9JEQqwNdtyuClACMjOasfMCl8RLj_ysmqPa_CB9T5RQmdFamqGHRj13NIdwXNLZCCoBA1E"/>
+</div>
+</div>
+</header>
+<!-- Amber Step Banner -->
+<div class="w-full bg-amber-accent py-3 px-margin-mobile md:px-margin-desktop shadow-sm">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-base">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest text-on-primary-fixed">Your signature — Step 1 of 2</span>
+</div>
+<div class="flex items-center gap-base font-body-sm text-body-sm text-on-primary-fixed">
+<span>Download</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+<span>Print</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+<span>Sign</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+<span>Upload</span>
+</div>
+</div>
+</div>
+<!-- Framing Text -->
+<main class="mt-lg px-margin-mobile md:px-margin-desktop">
+<section class="max-w-[640px] mx-auto text-center mb-lg">
+<span class="text-primary font-label-bold text-label-bold uppercase tracking-widest mb-base block">YOUR BOOKING AGREEMENT</span>
+<h1 class="font-headline-md text-headline-md italic text-on-surface">
+                Great art deserves clarity. This agreement protects you and Jaytham, ensuring every detail of your collaboration is honored.
+            </h1>
+</section>
+<!-- The Document -->
+<article class="max-w-[640px] mx-auto bg-surface-container-lowest border border-outline-variant rounded-xl p-8 md:p-12 shadow-sm paper-texture">
+<!-- Document Header -->
+<header class="mb-lg">
+<div class="bg-tertiary-fixed-dim/20 -mx-8 md:-mx-12 -mt-8 md:-mt-12 p-6 md:p-8 mb-base border-b border-outline-variant flex justify-between items-start">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">BOOKING AGREEMENT</h2>
+<p class="font-mono-sm text-mono-sm text-on-surface-variant">The Circle · REF: TCC-2026-00142</p>
+</div>
+<div class="text-right">
+<span class="material-symbols-outlined text-4xl text-primary/30" data-icon="verified_user">verified_user</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-gutter py-base">
+<div>
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase mb-xs">Artist</p>
+<p class="font-body-md font-bold text-on-surface">Jaytham K. S.</p>
+<p class="text-body-sm text-secondary">Nairobi, Kenya</p>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase mb-xs">Client</p>
+<p class="font-body-md font-bold text-on-surface">The Heritage Foundation</p>
+<p class="text-body-sm text-secondary">Client ID: 88219</p>
+</div>
+</div>
+<hr class="border-outline-variant mt-base"/>
+</header>
+<!-- Sections -->
+<div class="space-y-lg text-on-surface-variant">
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">PARTIES</h3>
+<p class="text-body-md leading-relaxed">This agreement is entered into between Jaytham K. S. (the "Artist") and The Heritage Foundation (the "Client") on this day, the 14th of October, 2026.</p>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">SERVICE</h3>
+<p class="text-body-md leading-relaxed">The Artist agrees to provide a live mural installation and curated workshop during the "Heritage Week" summit.</p>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">DATE AND VENUE</h3>
+<div class="flex items-start gap-base mt-base">
+<span class="material-symbols-outlined text-secondary" data-icon="calendar_today">calendar_today</span>
+<div>
+<p class="font-body-md font-bold text-on-surface">Nov 22 — Nov 24, 2026</p>
+<p class="text-body-sm">Main Hall, Nairobi Cultural Center</p>
+</div>
+</div>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">COMPENSATION</h3>
+<p class="text-body-md leading-relaxed">Total fee of $4,200.00. A non-refundable deposit of 30% is required to secure the booking. Final balance due on the day of the event.</p>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">CANCELLATION TERMS</h3>
+<p class="text-body-md leading-relaxed">Cancellations made less than 14 days prior to the event will incur a 50% cancellation fee. Cancellations within 48 hours are non-refundable.</p>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">WHAT YOU'RE LOOKING FOR</h3>
+<div class="bg-surface-container-low p-4 rounded border border-outline-variant italic">
+<p class="text-body-md text-on-surface-variant">"We want a piece that bridges traditional East African motifs with futuristic digital aesthetics. The mural should be interactive, allowing attendees to add their own digital strokes via our API."</p>
+</div>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">ARTIST OBLIGATIONS</h3>
+<ul class="list-disc ml-4 space-y-2 text-body-md">
+<li>Provision of all painting materials and digital projection hardware.</li>
+<li>Compliance with venue safety and noise regulations.</li>
+<li>A minimum of 4 hours of live performance daily.</li>
+</ul>
+</section>
+<section>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">CUSTOM CLAUSES</h3>
+<p class="text-body-md leading-relaxed">Artist retains all intellectual property rights to the final mural unless a separate buyout agreement is signed.</p>
+</section>
+<!-- Signature Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-lg pt-lg border-t border-outline-variant">
+<div>
+<h3 class="font-label-bold text-label-bold text-secondary uppercase mb-base">JAYTHAM'S SIGNATURE</h3>
+<div class="h-24 border-2 border-dashed border-outline-variant flex items-center justify-center bg-surface-container-low/50 rounded">
+<span class="font-label-bold text-label-bold text-secondary/40 uppercase">Pending Artist Action</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-primary uppercase mb-base">YOUR SIGNATURE</h3>
+<div class="h-24 border-2 border-dashed border-primary/30 flex flex-col items-center justify-center bg-tertiary-fixed-dim/5 rounded p-4 text-center">
+<p class="text-body-sm text-on-surface-variant">Print, sign, and upload here...</p>
+</div>
+</div>
+</section>
+</div>
+</article>
+<!-- Spacer for sticky bottom bar -->
+<div class="h-24"></div>
+</main>
+<!-- Bottom Action Bar (Sticky) -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant z-40 py-4 px-margin-mobile md:px-margin-desktop">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-center items-center gap-base">
+<button class="w-full md:w-auto h-[44px] px-lg border border-primary text-primary font-bold rounded-lg flex items-center justify-center gap-base hover:bg-primary/5 transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                Download agreement PDF
+            </button>
+<button class="w-full md:w-auto h-[44px] px-lg bg-amber-accent text-on-primary-fixed font-bold rounded-lg flex items-center justify-center gap-base hover:opacity-90 transition-opacity active:scale-95">
+                Upload my signed copy
+                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Mobile Bottom Nav (Suppressed because this is a focused transactional sub-page) -->
+<!-- Not rendering as per "Shell Visibility & Relevance" rule: suppression for task-focused pages -->
+<script>
+        // Micro-interactions
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add visual scroll shadow logic for sticky bottom
+        window.addEventListener('scroll', () => {
+            const actionBar = document.querySelector('.fixed.bottom-0');
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 10) {
+                actionBar.classList.remove('shadow-[0_-10px_20px_rgba(0,0,0,0.05)]');
+            } else {
+                actionBar.classList.add('shadow-[0_-10px_20px_rgba(0,0,0,0.05)]');
+            }
+        });
+    </script>
+</body></html>

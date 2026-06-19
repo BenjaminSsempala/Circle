@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
@@ -37,21 +38,18 @@ export async function GET(request: NextRequest) {
     .eq('id', user.id)
     .single();
 
-  // No profile yet — this is a brand new Google signup.
-  // The role wasn't set yet; redirect to role selection.
-  if (!profile) {
+  // No profile or no role yet → role selection first.
+  // The DB trigger creates a profile row with role = null on signup,
+  // so we must check for null role explicitly, not just missing profile.
+  if (!profile || !profile.role) {
     return NextResponse.redirect(`${origin}/auth/signup?step=role`);
   }
 
-  // Profile exists but onboarding not done
   if (!profile.onboarding_complete) {
-    const dest = profile.role === 'organiser'
-      ? '/onboarding/organiser'
-      : '/onboarding/artist';
+    const dest = profile.role === 'audience' ? '/discover' : '/onboarding/artist';
     return NextResponse.redirect(`${origin}${dest}`);
   }
 
-  // Fully onboarded — send to their home
-  const home = profile.role === 'organiser' ? '/discover' : '/dashboard';
+  const home = profile.role === 'audience' ? '/discover' : '/dashboard';
   return NextResponse.redirect(`${origin}${home}`);
 }

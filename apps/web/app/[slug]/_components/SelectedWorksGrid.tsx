@@ -58,6 +58,30 @@ const FALLBACK_BG: Record<Work['type'], string> = {
   document: 'from-secondary/30 to-secondary/10',
 };
 
+const PROVIDER_FALLBACK_BG: Partial<Record<Work['provider'], string>> = {
+  tiktok:    'from-[#010101] to-[#161823]',
+  spotify:   'from-[#121212] to-[#1DB95420]',
+  instagram: 'from-[#833ab4] via-[#fd1d1d] to-[#fcb045]',
+};
+
+function TikTokIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-10 h-10 opacity-40" fill="white">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.23 8.23 0 0 0 4.81 1.54V6.77a4.85 4.85 0 0 1-1.04-.08z"/>
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-10 h-10 opacity-60" fill="none" stroke="white" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none" />
+    </svg>
+  );
+}
+
 // ─── Single work card ─────────────────────────────────────────────────────────
 
 function WorkCard({
@@ -69,6 +93,8 @@ function WorkCard({
   onClick,
   onMoveUp,
   onMoveDown,
+  deleting,
+  reordering,
 }: {
   work: Work;
   featured: boolean;
@@ -78,6 +104,8 @@ function WorkCard({
   onClick: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  deleting?: boolean;
+  reordering?: boolean;
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -94,15 +122,27 @@ function WorkCard({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (
-        <div className={`absolute inset-0 bg-gradient-to-br ${FALLBACK_BG[work.type]}`} />
+        <div className={`absolute inset-0 bg-gradient-to-br ${PROVIDER_FALLBACK_BG[work.provider] ?? FALLBACK_BG[work.type]}`} />
       )}
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
+      {/* Deleting overlay */}
+      {deleting && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20">
+          <svg className="w-7 h-7 text-white animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        </div>
+      )}
+
       {/* Type icon — centred */}
       <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
-        {getTypeIcon(work)}
+        {!work.thumbnail_url && work.provider === 'tiktok'    ? <TikTokIcon />    :
+       !work.thumbnail_url && work.provider === 'instagram' ? <InstagramIcon /> :
+       getTypeIcon(work)}
       </div>
 
       {/* Top bar */}
@@ -110,17 +150,17 @@ function WorkCard({
         <span className="text-label-mono font-label-mono text-tertiary-fixed bg-tertiary-fixed/20 backdrop-blur-sm px-2.5 py-1 rounded text-xs font-bold">
           {work.category}
         </span>
-        {isOwner && (
+        {isOwner && !deleting && (
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
             {onMoveUp && (
-              <button onClick={onMoveUp} className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 transition-colors backdrop-blur-sm" title="Move up">
+              <button onClick={onMoveUp} disabled={reordering} className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 transition-colors backdrop-blur-sm disabled:opacity-40" title="Move up">
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
                 </svg>
               </button>
             )}
             {onMoveDown && (
-              <button onClick={onMoveDown} className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 transition-colors backdrop-blur-sm" title="Move down">
+              <button onClick={onMoveDown} disabled={reordering} className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 transition-colors backdrop-blur-sm disabled:opacity-40" title="Move down">
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
@@ -149,7 +189,7 @@ function WorkCard({
 
       {/* Bottom overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-md">
-        <h3 className={`font-semibold text-white leading-snug ${featured ? 'text-headline-md font-headline-md' : 'text-body-lg font-body-lg'}`}>
+        <h3 className={`font-semibold text-white leading-snug line-clamp-2 ${featured ? 'text-headline-md font-headline-md' : 'text-body-lg font-body-lg'}`}>
           {work.title}
         </h3>
         <p className="text-caption font-caption text-white/70 mt-0.5">
@@ -177,6 +217,8 @@ export function SelectedWorksGrid({
   const [showAddModal, setShowAddModal] = useState(false);
   const [editWork, setEditWork] = useState<Work | undefined>();
   const [previewWork, setPreviewWork] = useState<Work | undefined>();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [reordering, setReordering] = useState(false);
 
   const sorted = [...works].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const atLimit = works.length >= MAX_WORKS;
@@ -191,11 +233,14 @@ export function SelectedWorksGrid({
   };
 
   const handleDelete = async (id: string) => {
+    setDeletingId(id);
     await fetch(`/api/artists/works/${id}`, { method: 'DELETE' });
     setWorks((prev) => prev.filter((w) => w.id !== id));
+    setDeletingId(null);
   };
 
   const handleReorder = async (id: string, direction: 'up' | 'down') => {
+    if (reordering) return;
     const s = [...works].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     const idx = s.findIndex((w) => w.id === id);
     if (direction === 'up' && idx === 0) return;
@@ -204,11 +249,13 @@ export function SelectedWorksGrid({
     [s[idx], s[swapIdx]] = [s[swapIdx], s[idx]];
     const reordered = s.map((w, i) => ({ ...w, order: i }));
     setWorks(reordered);
+    setReordering(true);
     await fetch('/api/artists/works/reorder', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ orderedIds: reordered.map((w) => w.id) }),
     });
+    setReordering(false);
   };
 
   return (
@@ -251,6 +298,8 @@ export function SelectedWorksGrid({
                   onDelete={() => handleDelete(work.id)}
                   onMoveUp={isOwner && fullIdx > 0 ? () => handleReorder(work.id, 'up') : undefined}
                   onMoveDown={isOwner && fullIdx < sorted.length - 1 ? () => handleReorder(work.id, 'down') : undefined}
+                  deleting={deletingId === work.id}
+                  reordering={reordering}
                 />
               );
             })}

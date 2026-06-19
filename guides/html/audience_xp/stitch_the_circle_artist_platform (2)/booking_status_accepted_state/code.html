@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Status | Digital Hearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&family=Playfair+Display:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .timeline-line {
+            width: 2px;
+            background-color: #bec9c3; /* outline-variant */
+            position: absolute;
+            top: 24px;
+            bottom: -8px;
+            left: 11px;
+        }
+        .timeline-line-active {
+            background-color: #005440; /* primary */
+        }
+        .editorial-shadow {
+            box-shadow: 0 12px 32px rgba(26, 26, 26, 0.04);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#6edab4",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#84d6b9",
+                        "on-tertiary-container": "#85f1ca",
+                        "on-background": "#1b1c19",
+                        "inverse-surface": "#30312e",
+                        "surface-container-highest": "#e4e2dd",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#84d6b9",
+                        "secondary-container": "#e2dfde",
+                        "surface-container": "#f0eee9",
+                        "tertiary": "#00543f",
+                        "background": "#fbf9f4",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f3ee",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-variant": "#e4e2dd",
+                        "secondary": "#5f5e5e",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f2f1ec",
+                        "surface-dim": "#dcdad5",
+                        "primary": "#005440",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "on-secondary-container": "#636262",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#eae8e3",
+                        "outline-variant": "#bec9c3",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#a0f3d4",
+                        "on-primary-fixed": "#002117",
+                        "tertiary-container": "#006f54",
+                        "on-surface-variant": "#3f4944",
+                        "on-surface": "#1b1c19",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fbf9f4",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-fixed": "#002117",
+                        "on-primary-container": "#9aedcf",
+                        "outline": "#6f7a74",
+                        "on-primary-fixed-variant": "#00513e",
+                        "primary-container": "#0f6e56",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#8af7cf",
+                        "surface": "#fbf9f4",
+                        "surface-tint": "#086b53",
+                        "surface-container-lowest": "#ffffff",
+                        "teal-light": "#E1F5EE"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "sm": "12px",
+                        "container-max": "1200px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "margin-desktop": "64px",
+                        "lg": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "mono-sm": ["DM Mono"],
+                        "label-bold": ["DM Sans"],
+                        "display-md": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "display-lg": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "body-sm": ["DM Sans"],
+                        "body-md": ["DM Sans"],
+                        "headline-md": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "mono-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                        "label-bold": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-md": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#F5F3EF] text-on-surface font-body-md min-h-screen">
+<!-- Top Navigation -->
+<nav class="bg-surface sticky top-0 z-50 w-full px-margin-mobile md:px-margin-desktop h-16 shadow-sm">
+<div class="max-w-7xl mx-auto flex justify-between items-center h-full">
+<div class="flex items-center gap-base">
+<div class="w-8 h-8 rounded-full border-2 border-primary flex items-center justify-center">
+<div class="w-4 h-4 bg-primary rounded-full"></div>
+</div>
+<span class="text-headline-md font-headline-md font-bold text-primary">Circle</span>
+</div>
+<div class="flex items-center gap-lg">
+<a class="hidden md:block text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">My Circle</a>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<img alt="Audience avatar" class="w-8 h-8 rounded-full object-cover" data-alt="A high-end, professional studio portrait of a young creative professional with a warm expression. The lighting is soft and cinematic, following an editorial photography style with a neutral grey background. The image has a clean, minimalist aesthetic with focus on the person's friendly demeanor, fitting for a premium digital service profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVT3vczXO7FbNuNgFdlEDD1PFVtom2CcyFaj2Y1gNF3JleLgDYKQcnJmNbrV8JhJlUD9W5EOGxBMX3oZe0Jw9ZWc-bXKugkZr7fQeydv6meoqgbmCfXt6qC3lfntS3_whNQloI4kfBrmo8rEAI27kasDCvMZeIi1ZWc1W5_GV-baoCEVDIG_tUROl4tOggkrHwwCgLk-D8ag1XRk9Rk1ATBu2FadAyAveO98IFGm3k1IoJgKyp0GXrcsWuJNe0_vi1wuwXXZvwSvg"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Status Hero -->
+<header class="bg-teal-light pt-xl pb-lg px-margin-mobile">
+<div class="max-w-3xl mx-auto text-center">
+<div class="inline-flex items-center gap-sm mb-md px-4 py-2 bg-white/50 rounded-full border border-primary/10">
+<img alt="Jaytham profile" class="w-10 h-10 rounded-full object-cover border-2 border-white" data-alt="Close-up editorial portrait of a talented African musician named Jaytham, looking serene and confident. The lighting is warm and golden, highlighting rich skin tones against a soft, out-of-focus studio background. The style is minimalist and high-fashion, capturing an aura of professional artistry and calm luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNRtw5Fk00Mi4wSzprg_535jKWmBxymSgCoEf80oIHzRY4NsLDUWY6Lsgi6YgQgKFKMbUjVST3hXi1lLfnRhbbOPPlajXtcxy8tumCpiIazijjcuwRsOr938l-v6UCEiKDEYM-G681V9Zc1MfCSgaaQ4md9bRZLazlK6vCpqgQ1CFkQ46oOzVy_JC8j2mHIelDSsWHG5lwF0IvzZNaRv_oHzmwUHTRbMmjv8McFz2VK27cdBeyZrTXWBNVnxsh4L6cupxl2bjWG1Q"/>
+<span class="font-label-bold text-primary">Jaytham • The Private Hour</span>
+</div>
+<p class="font-mono-sm text-primary/60 mb-xs">REF: TCC-2026-00142</p>
+<h1 class="text-display-md md:text-display-lg font-display-md text-primary mb-xl">Jaytham is in. 🎉</h1>
+</div>
+</header>
+<!-- Main Content -->
+<main class="px-margin-mobile pb-xl -mt-lg">
+<div class="max-w-3xl mx-auto space-y-gutter">
+<!-- Booking Timeline Card -->
+<section class="bg-white p-lg rounded-lg border border-outline-variant editorial-shadow max-w-[560px] mx-auto">
+<h2 class="font-label-bold text-on-surface-variant uppercase tracking-widest mb-lg">Status Timeline</h2>
+<div class="space-y-lg relative">
+<!-- Step 1 -->
+<div class="relative flex gap-md">
+<div class="timeline-line timeline-line-active"></div>
+<div class="relative z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-on-primary">check</span>
+</div>
+<div class="pt-1">
+<p class="font-label-bold text-primary">Request sent</p>
+<p class="text-body-sm text-on-surface-variant">Submitted on June 12, 2026</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative flex gap-md">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-on-primary">check</span>
+</div>
+<div class="pt-1">
+<p class="font-label-bold text-primary">Jaytham accepted 🎉</p>
+<p class="text-body-sm text-on-surface-variant">Artist confirmed availability</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative flex gap-md">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-6 h-6 rounded-full border-2 border-outline-variant bg-white"></div>
+<div class="pt-1">
+<p class="font-label-bold text-on-surface">Booking agreement</p>
+<p class="text-body-sm text-on-surface-variant">Awaiting your signature</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="relative flex gap-md">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-6 h-6 rounded-full border-2 border-outline-variant bg-white"></div>
+<div class="pt-1">
+<p class="font-label-bold text-on-surface">Payment protected</p>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="relative flex gap-md">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-6 h-6 rounded-full border-2 border-outline-variant bg-white"></div>
+<div class="pt-1">
+<p class="font-label-bold text-on-surface">Performance day — July 21</p>
+</div>
+</div>
+<!-- Step 6 -->
+<div class="relative flex gap-md">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-6 h-6 rounded-full border-2 border-outline-variant bg-white"></div>
+<div class="pt-1">
+<p class="font-label-bold text-on-surface">Confirm complete</p>
+</div>
+</div>
+<!-- Step 7 -->
+<div class="relative flex gap-md">
+<div class="relative z-10 w-6 h-6 rounded-full border-2 border-outline-variant bg-white"></div>
+<div class="pt-1">
+<p class="font-label-bold text-on-surface">Memory kept ✓</p>
+</div>
+</div>
+</div>
+<div class="mt-lg pt-lg border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-label-bold uppercase tracking-widest active:scale-95 transition-transform duration-150">
+                        Review Agreement
+                    </button>
+</div>
+</section>
+<!-- Booking Details Card -->
+<section class="bg-white p-lg rounded-lg border border-outline-variant">
+<h2 class="font-label-bold text-on-surface-variant uppercase tracking-widest mb-lg">Booking Details</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-lg gap-x-xl">
+<div>
+<p class="text-[10px] font-label-bold text-primary uppercase mb-xs">Experience</p>
+<p class="text-body-lg text-on-background font-medium">The Private Hour</p>
+</div>
+<div>
+<p class="text-[10px] font-label-bold text-primary uppercase mb-xs">Date & Time</p>
+<p class="text-body-lg text-on-background font-medium">July 21, 2026 • 20:00</p>
+</div>
+<div>
+<p class="text-[10px] font-label-bold text-primary uppercase mb-xs">Location</p>
+<p class="text-body-lg text-on-background font-medium">The Glass House, Nairobi</p>
+</div>
+<div>
+<p class="text-[10px] font-label-bold text-primary uppercase mb-xs">Total Protection</p>
+<p class="text-body-lg text-on-background font-medium">$1,200.00 USD</p>
+</div>
+</div>
+</section>
+<!-- Artist Contact Card -->
+<section class="bg-white p-lg rounded-lg border border-outline-variant text-center">
+<div class="flex flex-col items-center mb-lg">
+<img alt="Jaytham Contact" class="w-20 h-20 rounded-full object-cover mb-sm border border-outline-variant p-1" data-alt="Editorial close-up of Jaytham, an African musician with a calm and welcoming expression. High-end lighting creates soft shadows on his face, emphasizing a sense of intimacy and trust. The background is a clean, off-white studio wall, ensuring the subject remains the focal point of this professional artist contact card." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7_l-GWxG2i4evkC9AaLCanhMLQLX7iDUcnDkcYu4zcYz_45BfcaUzsJmOsS8QEvYvZNva1hj19s7z6kUnF1gT1RicYf7yQ6DuW2q10nScjujEkNfBzADl0CyBpBTiGreu6R6OT-DWR56_7Nca5zOyC9Er-1Mc4G2TX8b-SKIZYFBvb8bwGyAnm4ddrT5H4Nu-YRjD5lwTWaspjOoU1w7Tnjo10OqZVrluPz_UGGjerE8e1NvQolHg9sX_Z9Lnetz2Py0agvQCij0"/>
+<h3 class="text-headline-md font-headline-md">Jaytham</h3>
+<p class="text-body-sm text-on-surface-variant">Artist & Performer</p>
+</div>
+<div class="flex flex-col md:flex-row gap-base justify-center mb-lg">
+<a class="inline-flex items-center justify-center gap-xs px-lg py-sm border border-[#25D366] text-[#25D366] rounded-lg font-label-bold hover:bg-[#25D366]/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+                        Message on WhatsApp
+                    </a>
+<a class="inline-flex items-center justify-center gap-xs px-lg py-sm border border-outline text-on-surface-variant rounded-lg font-label-bold hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+                        Send an email
+                    </a>
+</div>
+<div class="flex items-center justify-center gap-xs text-body-sm text-on-surface-variant italic">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    All bookings are protected by The Circle.
+                </div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-lg px-margin-mobile md:px-margin-desktop bg-surface-container border-t border-outline-variant">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-base">
+<span class="text-headline-md font-headline-md text-primary">Circle</span>
+<p class="text-caption font-caption text-on-surface-variant">© 2024 Digital Hearth. Connecting African Artistry.</p>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Mobile Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface border-t border-outline-variant shadow-lg">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-label-bold mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="text-[10px] font-label-bold mt-1">Gigs</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px] font-label-bold mt-1">Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-label-bold mt-1">Profile</span>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

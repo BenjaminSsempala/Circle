@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { ok, err } from '@/lib/api';
 import { getArtistByUserId, upsertPackage, deletePackage } from '@/lib/services/artists';
@@ -19,9 +20,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return err('Invalid JSON'); }
 
-  const { name, description, price, currency, duration, logisticsInclusive } = body as {
+  const { name, description, price, currency, duration, logisticsInclusive, is_active, productType, autoAccept, contractRequired } = body as {
     name?: string; description?: string; price?: number;
     currency?: string; duration?: string; logisticsInclusive?: boolean;
+    is_active?: boolean; productType?: 'service' | 'digital' | 'merchandise';
+    autoAccept?: boolean; contractRequired?: boolean;
   };
 
   if (!name || price === undefined || !description) return err('name, price, and description are required');
@@ -31,6 +34,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     name, description: description ?? '', price: Number(price),
     currency: currency ?? 'UGX', duration: duration ?? '1 hour',
     logisticsInclusive: logisticsInclusive ?? false,
+    isActive: is_active, productType, autoAccept, contractRequired,
   });
 
   if (!result.ok) return err(result.error, 500);

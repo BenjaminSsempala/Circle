@@ -1,8 +1,13 @@
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
+function redirect(from: NextResponse, url: URL) {
+  const r = NextResponse.redirect(url);
+  from.headers.getSetCookie().forEach((c) => r.headers.append('set-cookie', c));
+  return r;
+}
+
 export async function updateSession(request: NextRequest) {
-  // 1. Create the initial downstream response object
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -10,70 +15,70 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
-          // Sync changes cleanly back to the incoming request stream
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-
-          // 2. SAFE FIX: Write all cookies onto the existing response instance 
-          // WITHOUT overwriting the whole object inside the loop
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
     },
   );
 
-  // Refresh session token state securely
   const { data: { user } } = await supabase.auth.getUser();
-
   const url = request.nextUrl.clone();
-  const isProtected = ['/dashboard', '/onboarding', '/discover'].some(p =>
-    url.pathname.startsWith(p),
-  );
-  const isAuthPage = ['/auth/login', '/auth/signup'].some(p =>
-    url.pathname.startsWith(p),
-  );
+  const path = url.pathname;
 
-  // Not logged in, trying to hit a protected route → redirect to login
-  if (!user && isProtected) {
+  const isAuthPage = path.startsWith('/auth/login') || path.startsWith('/auth/signup');
+  // /discover is always public — guests can browse
+  const requiresAuth = ['/dashboard', '/onboarding', '/saved', '/bookings'].some(p => path.startsWith(p));
+  const artistOnlyPaths = ['/dashboard', '/onboarding/artist'];
+  const audiencePaths = ['/discover', '/saved', '/bookings'];
+
+  // Not logged in trying to hit auth-required route
+  if (!user && requiresAuth) {
     url.pathname = '/auth/login';
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.headers.getSetCookie().forEach((cookieStr) => {
-      redirectResponse.headers.append('set-cookie', cookieStr);
-    });
-    return redirectResponse;
+    return redirect(supabaseResponse, url);
   }
 
-  // Already logged in, hitting auth pages → redirect to their home dashboard
-  if (user && isAuthPage) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role') // Pull the role to check if they need to finish the signup step
-      .eq('id', user.id)
-      .single();
+  if (user) {
+    // Cache the role in a short-lived cookie to avoid a DB query on every request
+    const ROLE_COOKIE = '__circle_role';
+    const ROLE_TTL    = 120; // seconds
+    let role: string | undefined = request.cookies.get(ROLE_COOKIE)?.value;
 
-    // =================================================================
-    // THE FIX: Allow logged-in users to stay on signup IF they have no role
-    // =================================================================
-    if (!profile?.role && url.pathname.startsWith('/auth/signup')) {
-      return supabaseResponse; // Let them stay on the page to pick a role!
+    if (!role) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+      role = profile?.role ?? undefined;
+      if (role) supabaseResponse.cookies.set(ROLE_COOKIE, role, {
+        maxAge: ROLE_TTL, httpOnly: true, sameSite: 'strict', path: '/',
+      });
     }
 
-    // Otherwise, they have a role, so redirect them away from auth pages
-    url.pathname = profile?.role === 'organiser' ? '/discover' : '/dashboard';
+    // Logged-in user hitting auth pages
+    if (isAuthPage) {
+      // Allow staying on signup if no role yet (role selection step)
+      if (!role && path.startsWith('/auth/signup')) return supabaseResponse;
+      url.pathname = role === 'audience' ? '/discover' : '/dashboard';
+      return redirect(supabaseResponse, url);
+    }
 
-    // 3. CRITICAL NOTE FOR REDIRECTS:
-    // If you return a completely new redirect object, your newly refreshed session cookies are lost!
-    // We must pass the updated response cookies into the redirect response context explicitly.
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.headers.getSetCookie().forEach((cookieStr) => {
-      redirectResponse.headers.append('set-cookie', cookieStr);
-    });
-    return redirectResponse;
+    // Artist hitting audience-only routes → dashboard
+    if (role === 'artist' && audiencePaths.some(p => path.startsWith(p))) {
+      url.pathname = '/dashboard';
+      return redirect(supabaseResponse, url);
+    }
+
+    // Audience hitting artist-only routes → discover
+    if (role === 'audience' && artistOnlyPaths.some(p => path.startsWith(p))) {
+      url.pathname = '/discover';
+      return redirect(supabaseResponse, url);
+    }
   }
 
   return supabaseResponse;

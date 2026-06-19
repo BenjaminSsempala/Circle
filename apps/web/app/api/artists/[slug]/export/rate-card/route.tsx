@@ -1,284 +1,262 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { renderToBuffer, Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
-import QRCode from 'qrcode';
+export const dynamic = 'force-dynamic';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import { requireArtistOwnership } from '@/lib/supabase/server';
+import { err } from '@/lib/api';
+import { getExportData } from '@/lib/services/exports';
+import { RateCardPDF } from '@/lib/exports/RateCardPDF';
+import { imageToBase64 } from '@/lib/utils/imageToBase64';
+import { renderToBuffer } from '@react-pdf/renderer';
+import { ImageResponse } from 'next/server';
+import { DEFAULT_RATE_CARD, type RateCardFillable } from '@/lib/exports/exportTypes';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Rate Card Image (1080×1080) inline JSX ──────────────────────────────────
 
-const PRIMARY = '#005440';
-const SECONDARY = '#feb56b';
-const GREY = '#64748b';
-const BORDER = '#e2e8f0';
+import { loadFontCached } from '@/lib/utils/fontCache';
 
-const styles = StyleSheet.create({
-  page: {
-    fontFamily: 'Helvetica',
-    backgroundColor: '#ffffff',
-    paddingBottom: 48,
-  },
-  header: {
-    backgroundColor: PRIMARY,
-    paddingHorizontal: 48,
-    paddingVertical: 36,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  wordmark: {
-    fontSize: 10,
-    color: SECONDARY,
-    fontFamily: 'Helvetica-Bold',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 4,
-  },
-  artistName: {
-    fontSize: 26,
-    fontFamily: 'Helvetica-Bold',
-    color: '#ffffff',
-    lineHeight: 1.2,
-  },
-  subtitle: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.6)',
-    marginTop: 4,
-  },
-  qr: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#ffffff',
-    padding: 4,
-    borderRadius: 6,
-  },
-  body: {
-    paddingHorizontal: 48,
-    paddingTop: 36,
-  },
-  sectionLabel: {
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-    color: PRIMARY,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-    paddingBottom: 6,
-  },
-  packageCard: {
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 16,
-  },
-  packageCardFeatured: {
-    borderColor: PRIMARY,
-    backgroundColor: '#f0faf7',
-  },
-  packageLeft: {
-    flex: 1,
-    gap: 4,
-  },
-  packageName: {
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: '#1e293b',
-  },
-  packageDuration: {
-    fontSize: 9,
-    color: GREY,
-  },
-  packageDesc: {
-    fontSize: 9,
-    color: '#475569',
-    lineHeight: 1.5,
-    marginTop: 4,
-  },
-  logisticsText: {
-    fontSize: 8,
-    color: PRIMARY,
-    fontFamily: 'Helvetica-Bold',
-    marginTop: 4,
-  },
-  priceBlock: {
-    alignItems: 'flex-end',
-    gap: 4,
-    minWidth: 110,
-  },
-  price: {
-    fontSize: 15,
-    fontFamily: 'Helvetica-Bold',
-    color: PRIMARY,
-  },
-  perLabel: {
-    fontSize: 9,
-    color: GREY,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 48,
-    right: 48,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    paddingTop: 14,
-  },
-  footerText: {
-    fontSize: 9,
-    color: GREY,
-  },
-  footerUrl: {
-    fontSize: 10,
-    fontFamily: 'Helvetica-Bold',
-    color: PRIMARY,
-  },
-});
-
-function formatPrice(price: number, currency: string) {
-  return `${currency} ${Number(price).toLocaleString()}`;
-}
-
-// ─── Document ─────────────────────────────────────────────────────────────────
-
-function RateCardDocument({
-  artist,
-  packages,
-  slug,
-  qrDataUrl,
+function RateCardImage({
+  name, tagline, artForms, city, profileUrl, packages, stats, socialLinks, bgData,
 }: {
-  artist: Record<string, unknown>;
-  packages: Record<string, unknown>[];
-  slug: string;
-  qrDataUrl: string;
+  name: string; tagline: string; artForms: string[]; city: string; profileUrl: string;
+  packages: { name: string; price: number; currency: string }[];
+  stats: { value: string; label: string }[];
+  socialLinks: Record<string, string>;
+  bgData: string | null;
 }) {
-  const name = String(artist.name ?? '');
-  const artForms: string[] = Array.isArray(artist.art_forms) ? artist.art_forms.map(String) : [];
-  const profileUrl = `thecircle.co/${slug}`;
-  const artFormLabel = artForms.join(' · ');
+  const topPkgs = packages.slice(0, 4);
+  const topStats = stats.filter((s) => s.value && s.label).slice(0, 4);
+  const socialLabels: Record<string, string> = {
+    instagram: 'Instagram', youtube: 'YouTube', spotify: 'Spotify',
+    tiktok: 'TikTok', twitter: 'X', website: 'Website',
+  };
+  const socials = Object.entries(socialLinks).filter(([, v]) => v?.trim()).slice(0, 4);
 
   return (
-    <Document title={`${name} — Rate Card`} author="Circle">
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.wordmark}>Circle · Rate Card</Text>
-            <Text style={styles.artistName}>{name}</Text>
-            {artFormLabel ? <Text style={styles.subtitle}>{artFormLabel}</Text> : null}
-          </View>
-          <Image src={qrDataUrl} style={styles.qr} />
-        </View>
+    <div style={{
+      width: 1080, height: 1080, display: 'flex', flexDirection: 'column',
+      background: 'linear-gradient(145deg,#0f1a14 0%,#1b2c21 50%,#0a1f16 100%)',
+      fontFamily: 'Playfair', position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Teal accent glow */}
+      <div style={{
+        position: 'absolute', bottom: -120, right: -120,
+        width: 400, height: 400, borderRadius: 200,
+        background: 'radial-gradient(circle,rgba(15,110,86,0.35) 0%,transparent 70%)',
+      }} />
 
-        {/* Packages */}
-        <View style={styles.body}>
-          <Text style={styles.sectionLabel}>Booking Packages</Text>
+      {/* The Circle badge */}
+      <div style={{
+        position: 'absolute', top: 48, right: 56,
+        display: 'flex', alignItems: 'center', gap: 8,
+      }}>
+        <div style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#84d6b9' }} />
+        <span style={{ fontSize: 22, color: 'rgba(255,255,255,0.5)', fontFamily: 'Playfair' }}>
+          The Circle
+        </span>
+      </div>
 
-          {packages.map((pkg, i) => (
-            <View
-              key={String(pkg.id)}
-              style={[styles.packageCard, i === 0 ? styles.packageCardFeatured : {}]}
-            >
-              <View style={styles.packageLeft}>
-                <Text style={styles.packageName}>{String(pkg.name)}</Text>
-                {pkg.duration ? <Text style={styles.packageDuration}>{String(pkg.duration)}</Text> : null}
-                {pkg.description ? <Text style={styles.packageDesc}>{String(pkg.description)}</Text> : null}
-                {pkg.logistics_inclusive ? (
-                  <Text style={styles.logisticsText}>✓ Transport included</Text>
-                ) : (
-                  <Text style={[styles.logisticsText, { color: GREY }]}>✗ Transport not included</Text>
-                )}
-              </View>
-              <View style={styles.priceBlock}>
-                <Text style={styles.price}>
-                  {formatPrice(Number(pkg.price), String(pkg.currency))}
-                </Text>
-                {pkg.duration ? (
-                  <Text style={styles.perLabel}>/ {String(pkg.duration).toLowerCase()}</Text>
-                ) : null}
-              </View>
-            </View>
-          ))}
+      {/* Content */}
+      <div style={{ display: 'flex', flexDirection: 'column', padding: '72px 72px 0', flex: 1 }}>
 
-          {packages.length === 0 && (
-            <Text style={{ fontSize: 11, color: GREY }}>No packages listed yet.</Text>
+        {/* Name + tagline */}
+        <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: 74, fontWeight: 700, color: '#ffffff', letterSpacing: '-2px', lineHeight: 1.05, marginBottom: 12 }}>
+            {name}
+          </div>
+          {tagline && (
+            <div style={{ fontSize: 26, color: 'rgba(255,255,255,0.55)', fontStyle: 'italic', marginBottom: 16 }}>
+              "{tagline}"
+            </div>
           )}
-        </View>
+          {/* Art form chips */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {artForms.slice(0, 3).map((f) => (
+              <span key={f} style={{
+                fontSize: 18, color: '#84d6b9', fontWeight: 600,
+                background: 'rgba(132,214,185,0.1)',
+                border: '1px solid rgba(132,214,185,0.3)',
+                borderRadius: 4, padding: '5px 14px',
+                textTransform: 'uppercase', letterSpacing: '1px',
+              }}>
+                {f}
+              </span>
+            ))}
+          </div>
+        </div>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Valid as of {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long' })} · Prices may vary
-          </Text>
-          <Text style={styles.footerUrl}>{profileUrl}</Text>
-        </View>
-      </Page>
-    </Document>
+        {/* Teal rule */}
+        <div style={{ width: 48, height: 2, backgroundColor: '#0f6e56', borderRadius: 1, marginBottom: 32 }} />
+
+        {/* Two-column mid section */}
+        <div style={{ display: 'flex', gap: 40, flex: 1 }}>
+
+          {/* Left: Packages */}
+          <div style={{ flex: '0 0 55%', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ fontSize: 14, color: '#0f6e56', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 4 }}>
+              Packages
+            </div>
+            {topPkgs.map((pkg) => (
+              <div key={pkg.name} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 8, padding: '14px 18px',
+              }}>
+                <span style={{ fontSize: 22, color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>
+                  {pkg.name}
+                </span>
+                <span style={{ fontSize: 20, color: '#84d6b9', fontWeight: 700 }}>
+                  {pkg.currency} {Number(pkg.price).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Right: Stats — no Fragment, Satori doesn't support <> */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {topStats.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ fontSize: 14, color: '#0f6e56', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 4 }}>
+                  Highlights
+                </div>
+                {topStats.map((stat, i) => (
+                  <div key={i} style={{
+                    display: 'flex', flexDirection: 'column',
+                    background: 'rgba(15,110,86,0.12)',
+                    border: '1px solid rgba(15,110,86,0.25)',
+                    borderRadius: 8, padding: '12px 16px',
+                  }}>
+                    <div style={{ fontSize: 32, color: '#84d6b9', fontWeight: 700, lineHeight: 1 }}>
+                      {stat.value}
+                    </div>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '20px 72px',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+        marginTop: 24,
+      }}>
+        <div style={{ display: 'flex', gap: 16 }}>
+          {socials.map(([p]) => (
+            <span key={p} style={{ fontSize: 18, color: 'rgba(255,255,255,0.35)' }}>
+              {socialLabels[p] ?? p}
+            </span>
+          ))}
+        </div>
+        <span style={{ fontFamily: 'Playfair', fontSize: 22, color: '#0f6e56', fontWeight: 700 }}>
+          {profileUrl}
+        </span>
+      </div>
+    </div>
   );
 }
 
-// ─── Route handler ────────────────────────────────────────────────────────────
+// ─── Route ────────────────────────────────────────────────────────────────────
 
-export async function GET(
-  _req: Request,
+export async function POST(
+  request: Request,
   { params }: { params: { slug: string } },
 ) {
-  const { slug } = params;
+  const auth = await requireArtistOwnership(params.slug);
+  if (auth.error) return err(auth.error, auth.status);
 
-  const [artistRes, pkgRes] = await Promise.all([
-    supabase.from('artists').select('*').eq('slug', slug).maybeSingle(),
-    supabase.from('packages').select('*').eq('is_active', true).order('created_at', { ascending: true }),
-  ]);
+  let body: { rcData?: Partial<RateCardFillable>; format?: 'pdf' | 'image' } = {};
+  try { body = await request.json(); } catch { /* defaults */ }
 
-  if (!artistRes.data) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  const fillable: RateCardFillable = { ...DEFAULT_RATE_CARD, ...(body.rcData ?? {}) };
+  const format = body.format ?? 'pdf';
+
+  const data = await getExportData(params.slug);
+  if (!data) return err('Not found', 404);
+
+  // Persist fillable data (non-blocking)
+  try {
+    const { createClient: anonClient } = await import('@supabase/supabase-js');
+    await anonClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    )
+      .from('artists')
+      .update({ rate_card_data: fillable })
+      .eq('slug', params.slug);
+  } catch { /* non-fatal */ }
+
+  const { artist, packages, socialLinks } = data;
+  const name      = String(artist.name ?? '');
+  const slug      = String(artist.slug ?? '');
+  const profileUrl = `thecircle.co/${slug}`;
+
+  // ── PNG Image ──────────────────────────────────────────────────────────────
+  if (format === 'image') {
+    let fontPlayfair: ArrayBuffer = new ArrayBuffer(0);
+    fontPlayfair = await loadFontCached('Playfair Display', 700) ?? new ArrayBuffer(0);
+
+    let imgBuf: ArrayBuffer;
+    try {
+      const imageResp = new ImageResponse(
+        RateCardImage({
+          name,
+          tagline: String(artist.tagline ?? ''),
+          artForms: Array.isArray(artist.art_forms) ? (artist.art_forms as string[]) : [],
+          city: String(artist.city ?? ''),
+          profileUrl,
+          packages: packages.filter((p) => !fillable.excluded_package_ids?.includes(p.id)).map((p) => ({ name: p.name, price: p.price, currency: p.currency })),
+          stats: fillable.stats,
+          socialLinks,
+          bgData: null,
+        }),
+        {
+          width: 1080, height: 1080,
+          fonts: fontPlayfair.byteLength
+            ? [{ name: 'Playfair', data: fontPlayfair, weight: 700, style: 'normal' }]
+            : [],
+        },
+      );
+      imgBuf = await imageResp.arrayBuffer();
+    } catch (e) {
+      console.error('[rate-card image] render error:', e);
+      return err('Image generation failed', 500);
+    }
+
+    return new Response(imgBuf, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Content-Disposition': `attachment; filename="${name}-rate-card.png"`,
+        'Cache-Control': 'no-store',
+      },
+    });
   }
 
-  const artist = artistRes.data;
-  const packages = (pkgRes.data ?? []).filter(
-    (p: Record<string, unknown>) => p.artist_id === artist.id,
-  );
-
-  const qrDataUrl = await QRCode.toDataURL(`https://thecircle.co/${slug}`, {
-    width: 200,
-    margin: 1,
-    color: { dark: '#005440', light: '#ffffff' },
-  });
+  // ── PDF ─────────────────────────────────────────────────────────────────────
+  const photoDataUrl = await imageToBase64(String(artist.profile_photo ?? ''));
 
   let blob: Blob;
   try {
     const buf = await renderToBuffer(
-      <RateCardDocument
-        artist={artist}
-        packages={packages}
-        slug={slug}
-        qrDataUrl={qrDataUrl}
-      />,
+      <RateCardPDF data={data} fillable={fillable} photoDataUrl={photoDataUrl} />,
     );
     const ab = new ArrayBuffer(buf.length);
     new Uint8Array(ab).set(buf);
     blob = new Blob([ab], { type: 'application/pdf' });
-  } catch (err) {
-    console.error('Rate card render error:', err);
-    return NextResponse.json({ error: 'PDF generation failed' }, { status: 500 });
+  } catch (e) {
+    console.error('[rate-card] render error:', e);
+    return err('PDF generation failed', 500);
   }
 
   return new Response(blob, {
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${slug}-rate-card.pdf"`,
+      'Content-Disposition': `attachment; filename="${name}-rate-card.pdf"`,
       'Cache-Control': 'no-store',
     },
   });
