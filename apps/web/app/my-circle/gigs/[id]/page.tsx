@@ -6,6 +6,7 @@ import type { GigPost } from '@/lib/services/gigs';
 
 type Artist = {
   id: string;
+  display_name: string | null;
   profile_photo: string | null;
   slug: string;
 };
