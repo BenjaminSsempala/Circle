@@ -5,6 +5,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { DiscoverClient } from './_components/DiscoverClient';
 import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import type { DiscoverArtist } from '@/app/components/discover/ArtistCard';
+import { calculateRankingScore } from '@/lib/utils/ranking';
 
 // Anon client for public ranking query (no RLS needed for public data)
 const anonSupabase = createAnonClient(
@@ -49,11 +50,7 @@ async function getRankedArtists(availableOn?: string): Promise<DiscoverArtist[]>
     .filter((a) => !unavailable.has(a.id))
     .map((a) => {
       const hasPackages = priceMap.has(a.id);
-      const score =
-        (a.profile_photo ? 20 : 0) +
-        (a.bio && a.bio.length > 50 ? 15 : 0) +
-        (hasPackages ? 25 : 0) +
-        ((a.completed_bookings ?? 0) * 2);
+      const score = calculateRankingScore(a, hasPackages);
 
       const priceInfo = priceMap.get(a.id);
       return {

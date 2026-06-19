@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { cache } from 'react';
+import { generateSlug } from '@/lib/utils/slug';
 
 // Deduplicate across layout + page in the same server render
 export const getArtistByUserIdCached = cache(async (userId: string) => {
@@ -19,18 +20,6 @@ export type Work = {
   thumbnail_url: string;
   metadata: { year?: number; description?: string };
 };
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function generateSlug(name: string): string {
-  const base = name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return base || `artist-${Date.now()}`;
-}
 
 // ─── Read ────────────────────────────────────────────────────────────────────
 
