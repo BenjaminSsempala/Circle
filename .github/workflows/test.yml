@@ -16,15 +16,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Vercel CLI
+        run: npm install --global vercel
 
       - name: Pull env vars from Vercel
         working-directory: apps/web
-        run: npx vercel env pull .env.local --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel env pull .env.local --environment=production --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run tests
         working-directory: apps/web
