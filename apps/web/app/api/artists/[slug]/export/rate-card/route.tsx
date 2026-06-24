@@ -163,20 +163,35 @@ function RateCardImage({
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 
+// GET — used by the direct download <a href> link in the dashboard
+export async function GET(
+  request: Request,
+  { params }: { params: { slug: string } },
+) {
+  return generateExport(request, params.slug, {});
+}
+
 export async function POST(
   request: Request,
   { params }: { params: { slug: string } },
 ) {
-  const auth = await requireArtistOwnership(params.slug);
-  if (auth.error) return err(auth.error, auth.status);
-
   let body: { rcData?: Partial<RateCardFillable>; format?: 'pdf' | 'image' } = {};
   try { body = await request.json(); } catch { /* defaults */ }
+  return generateExport(request, params.slug, body);
+}
+
+async function generateExport(
+  _request: Request,
+  slug: string,
+  body: { rcData?: Partial<RateCardFillable>; format?: 'pdf' | 'image' },
+) {
+  const auth = await requireArtistOwnership(slug);
+  if (auth.error) return err(auth.error, auth.status);
 
   const fillable: RateCardFillable = { ...DEFAULT_RATE_CARD, ...(body.rcData ?? {}) };
   const format = body.format ?? 'pdf';
 
-  const data = await getExportData(params.slug);
+  const data = await getExportData(slug);
   if (!data) return err('Not found', 404);
 
   // Persist fillable data (non-blocking)
@@ -188,13 +203,13 @@ export async function POST(
     )
       .from('artists')
       .update({ rate_card_data: fillable })
-      .eq('slug', params.slug);
+      .eq('slug', slug);
   } catch { /* non-fatal */ }
 
   const { artist, packages, socialLinks } = data;
-  const name      = String(artist.name ?? '');
-  const slug      = String(artist.slug ?? '');
-  const profileUrl = `thecircle.co/${slug}`;
+  const name      = String(artist.display_name ?? artist.name ?? '');
+  const artistSlug = String(artist.slug ?? slug);
+  const profileUrl = `thecircle.co/${artistSlug}`;
 
   // ── PNG Image ──────────────────────────────────────────────────────────────
   if (format === 'image') {

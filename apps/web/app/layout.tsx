@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from './context/AuthContext';
 
+// All pages use Supabase at request time — disable static prerendering globally.
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'The Circle',
   description: 'An Ecosystem for African artists.',
