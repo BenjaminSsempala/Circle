@@ -28,9 +28,9 @@ jobs:
       - name: Pull Vercel Environment Information
         run: |
           if [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            vercel env pull .env.local --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+            vercel env pull apps/web/.env.local --environment=production --token=${{ secrets.VERCEL_TOKEN }}
           else
-            vercel env pull .env.local --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+            vercel env pull apps/web/.env.local --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
           fi
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

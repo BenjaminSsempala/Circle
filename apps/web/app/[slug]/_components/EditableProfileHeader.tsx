@@ -233,7 +233,7 @@ export function EditableProfileHeader({
             {Array.isArray(artist.tags) && artist.tags.length > 0 && (
               <div className="flex flex-wrap gap-xs mt-xs">
                 {artist.tags.map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded text-label-mono font-label-mono font-bold">
+                  <span key={tag} className="px-3 py-1 bg-[#E1F5EE] text-primary rounded text-label-mono font-label-mono font-bold">
                     #{tag}
                   </span>
                 ))}
