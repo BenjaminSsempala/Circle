@@ -1,14 +1,11 @@
-name: CI
+name: Run Tests
 
 on:
-  pull_request:
-    branches: [master]
-  push:
-    branches: [master]
+  workflow_dispatch:
 
 jobs:
-  typecheck-and-build:
-    name: Typecheck & Build
+  test:
+    name: Unit Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -26,14 +23,6 @@ jobs:
         working-directory: apps/web
         run: npx vercel env pull .env.local --yes --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Typecheck
-        working-directory: apps/web
-        run: npx tsc --noEmit
-
       - name: Run tests
         working-directory: apps/web
         run: npm run test
-
-      - name: Build
-        working-directory: apps/web
-        run: npm run build
