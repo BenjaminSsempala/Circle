@@ -6,12 +6,12 @@ import { SavedClient } from './_components/SavedClient';
 import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import type { DiscoverArtist } from '@/app/components/discover/ArtistCard';
 
-const anonSupabase = createAnonClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
-
 export default async function SavedPage() {
+  const anonSupabase = createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login');
