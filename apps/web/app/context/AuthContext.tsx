@@ -33,9 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isMountedRef = useRef(true);
   const lastFetchedUserIdRef = useRef<string | null>(null);
   
-  // Use a ref to keep the Supabase client stable across renders
+  // Use a ref to keep the Supabase client stable across renders.
+  // createClient() returns null when NEXT_PUBLIC_SUPABASE_URL is absent (e.g. at build time).
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
+
+  // If Supabase is not configured (build-time SSR), render children immediately without auth
+  if (!supabase) {
+    return <AuthContext.Provider value={{ session: null, user: null, loading: false, isAuthenticated: false, signOut: async () => {}, refetchProfile: async () => {} }}>{children}</AuthContext.Provider>;
+  }
 
   /**
    * Helper function to fetch profile data and update state.
