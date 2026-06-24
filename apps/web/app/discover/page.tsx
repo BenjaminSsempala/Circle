@@ -7,13 +7,14 @@ import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import type { DiscoverArtist } from '@/app/components/discover/ArtistCard';
 import { calculateRankingScore } from '@/lib/utils/ranking';
 
-// Anon client for public ranking query (no RLS needed for public data)
-const anonSupabase = createAnonClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
-
 async function getRankedArtists(availableOn?: string): Promise<DiscoverArtist[]> {
+  // Create client inside the function so it's never evaluated at module init time
+  // (avoids "supabaseUrl is required" during Next.js static page collection)
+  const anonSupabase = createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
   // Fetch artists + their active packages in parallel
   const [{ data: artists }, { data: packages }] = await Promise.all([
     anonSupabase.from('artists').select('*').limit(100),
