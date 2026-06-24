@@ -25,6 +25,9 @@ jobs:
       - name: Pull env vars from Vercel
         working-directory: apps/web
         run: npx vercel env pull .env.local --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Typecheck
         working-directory: apps/web
