@@ -107,7 +107,7 @@ export default function PackageOnboardingPage() {
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center border-b border-primary-container/10">
         <div className="flex items-center gap-xs">
-          <span className="text-headline-md font-headline-md tracking-tight text-primary">Circle</span>
+          <span className="text-headline-md font-headline-md tracking-tight text-primary">Engero</span>
         </div>
         <div className="hidden md:flex items-center gap-sm">
           <span className="text-label-mono font-label-mono text-on-surface-variant">Step 2 of 3</span>

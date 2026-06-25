@@ -99,7 +99,7 @@ export function DashboardShell({ artistName, artistSlug, artistPhoto, children }
         {/* Logo */}
         <div className="px-6 py-6 border-b border-outline-variant/20">
           <Link href="/" className="text-headline-md font-headline-md text-primary tracking-tight">
-            Circle
+            Engero
           </Link>
         </div>
 

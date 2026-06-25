@@ -49,7 +49,7 @@ export default function Home() {
         </div>
         <div className="hero-inner">
           <div className="hero-label">The infrastructure for African art</div>
-          <h1 className="hero-h1">Your art.<br /><em>Your income.</em><br />Your Engero.</h1>
+          <h1 className="hero-h1">Your story.<br />Your art.<br /><em>Your income.</em></h1>
           <p className="hero-sub">The platform where artists get booked, get paid, get professional and build communities.</p>
           <div className="hero-ctas">
             <a href="/auth/signup?type=artist" className="btn btn-primary">Join as an artist</a>

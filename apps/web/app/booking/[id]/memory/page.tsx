@@ -36,7 +36,7 @@ export default async function MemoryPage({ params }: { params: { id: string } })
     <div className="bg-[#F5F3EF] min-h-screen font-sans">
       <nav className="bg-white shadow-sm sticky top-0 z-10 w-full border-b border-primary/10">
         <div className="flex justify-between items-center w-full px-4 h-16 max-w-xl mx-auto">
-          <Link href="/" className="text-lg font-bold text-primary">Circle</Link>
+          <Link href="/" className="text-lg font-bold text-primary">Engero</Link>
           <div className="flex items-center gap-3">
             <Link href={`/booking/${params.id}`} className="text-xs font-mono uppercase tracking-[0.2em] text-primary border border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">
               Back to booking

@@ -792,7 +792,7 @@ export default function SocialsOnboardingPage() {
 
       {/* Header */}
       <header className="w-full py-6 px-margin-mobile md:px-margin-desktop flex justify-between items-center">
-        <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
+        <div className="text-headline-md font-headline-md text-primary tracking-tight">Engero</div>
         <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-label-mono font-label-mono">
           Step 3 of 3
         </div>

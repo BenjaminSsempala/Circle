@@ -255,7 +255,7 @@ export default function ArtistOnboardingPage() {
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
       <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center border-b border-primary-container/10">
-        <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
+        <div className="text-headline-md font-headline-md text-primary tracking-tight">Engero</div>
         <div className="hidden md:flex items-center gap-base">
           <span className="text-label-mono font-label-mono text-primary bg-primary-container/10 px-3 py-1 rounded-full">
             Step 1 of 3
