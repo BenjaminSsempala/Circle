@@ -359,7 +359,7 @@ export default function ArtistOnboardingPage() {
                     required
                   />
                   <p className="text-caption font-caption text-on-surface-variant">
-                    Shown on your profile and across The Circle.
+                    Shown on your profile and across Engero.
                   </p>
                 </div>
 

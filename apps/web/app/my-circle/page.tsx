@@ -103,7 +103,7 @@ export default async function MyCirclePage() {
       <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-outline-variant/30">
         <nav className="flex justify-between items-center w-full px-4 md:px-10 h-16 max-w-6xl mx-auto">
           <div className="flex items-center gap-6">
-            <Link href="/" className="text-lg font-bold text-primary">Circle</Link>
+            <Link href="/" className="text-lg font-bold text-primary">Engero</Link>
             <div className="hidden md:flex gap-6">
               <Link href="/discover" className="text-sm text-on-surface-variant hover:text-primary transition-colors">Explore</Link>
               <span className="text-sm text-primary font-semibold border-b-2 border-primary pb-0.5">My Circle</span>
@@ -278,7 +278,7 @@ export default async function MyCirclePage() {
 
       <footer className="bg-white border-t border-outline-variant/30 py-8 px-4 md:px-10 mt-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="text-lg font-bold text-primary">Circle</span>
+          <span className="text-lg font-bold text-primary">Engero</span>
           <div className="flex gap-6">
             {['Privacy', 'Terms', 'Support'].map((item) => (
               <a key={item} href="#" className="text-sm text-on-surface-variant hover:text-primary transition-colors">{item}</a>

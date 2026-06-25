@@ -45,7 +45,7 @@ export async function GET(
   const artForms   = (Array.isArray(artist.art_forms) ? artist.art_forms : []) as string[];
   const discipline = artForms[0] ?? '';
   const location   = [city, country].filter(Boolean).join(', ');
-  const profileUrl = `thecircle.co/${slug}`;
+  const profileUrl = `engero.art/${slug}`;
   const handle     = `/${slug}`;
 
   const cheapest = packages.reduce<typeof packages[0] | null>(
@@ -161,7 +161,7 @@ export async function GET(
               <path d="M5 0C5 3.5 3 4.8 3 7A2 2 0 007 7C7 4.8 5 3.5 5 0z" fill="rgba(255,255,255,0.8)" opacity="0.75" />
               <circle cx="5" cy="10" r="1.5" fill="rgba(255,255,255,0.8)" opacity="0.75" />
             </svg>
-            <span style={{ fontFamily: mono, fontSize: p(10), color: 'rgba(255,255,255,0.65)', letterSpacing: '0.18em', display: 'flex' }}>circle</span>
+            <span style={{ fontFamily: mono, fontSize: p(10), color: 'rgba(255,255,255,0.65)', letterSpacing: '0.18em', display: 'flex' }}>engero</span>
           </div>
         </div>
 
@@ -236,7 +236,7 @@ export async function GET(
                 <path d="M5 0C5 3.5 3 4.8 3 7A2 2 0 007 7C7 4.8 5 3.5 5 0z" fill="rgba(255,255,255,0.25)" opacity="0.75" />
                 <circle cx="5" cy="10" r="1.5" fill="rgba(255,255,255,0.25)" opacity="0.75" />
               </svg>
-              <span style={{ fontFamily: mono, fontSize: p(9.5), color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>{`thecircle.co${handle}`}</span>
+              <span style={{ fontFamily: mono, fontSize: p(9.5), color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>{`engero.art${handle}`}</span>
             </div>
           </div>
         </div>

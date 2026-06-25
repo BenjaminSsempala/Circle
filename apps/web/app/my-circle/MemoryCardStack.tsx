@@ -39,7 +39,7 @@ function CardFace({ m }: { m: MemoryCardData }) {
     <div className="w-full h-full relative rounded-2xl overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-[#002E23] via-[#005440] to-[#0a7a60]" />
       <div className="absolute bottom-1/2 -right-8 rotate-90 text-[6px] font-mono tracking-widest opacity-10 text-white select-none whitespace-nowrap pointer-events-none">
-        THE CIRCLE · thecircle.co
+        ENGERO · engero.art
       </div>
       <div className="absolute inset-0 z-10 p-5 flex flex-col justify-between text-white">
         <span className="font-mono text-[8px] uppercase tracking-widest opacity-50">You experienced</span>

@@ -43,14 +43,14 @@ function RateCardImage({
         background: 'radial-gradient(circle,rgba(15,110,86,0.35) 0%,transparent 70%)',
       }} />
 
-      {/* The Circle badge */}
+      {/* Engero badge */}
       <div style={{
         position: 'absolute', top: 48, right: 56,
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
         <div style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#84d6b9' }} />
         <span style={{ fontSize: 22, color: 'rgba(255,255,255,0.5)', fontFamily: 'Playfair' }}>
-          The Circle
+          Engero
         </span>
       </div>
 
@@ -209,7 +209,7 @@ async function generateExport(
   const { artist, packages, socialLinks } = data;
   const name      = String(artist.display_name ?? artist.name ?? '');
   const artistSlug = String(artist.slug ?? slug);
-  const profileUrl = `thecircle.co/${artistSlug}`;
+  const profileUrl = `engero.art/${artistSlug}`;
 
   // ── PNG Image ──────────────────────────────────────────────────────────────
   if (format === 'image') {

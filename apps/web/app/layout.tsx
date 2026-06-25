@@ -6,7 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'The Circle',
+  title: 'Engero',
   description: 'An Ecosystem for African artists.',
 };
 

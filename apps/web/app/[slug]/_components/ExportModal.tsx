@@ -175,7 +175,7 @@ function EPKPreview({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingTop: 3 }}>
                 <FlameIcon size={10} color={TEAL} />
-                <span style={{ fontSize: 7, fontFamily: MONO, color: TEAL, letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.6 }}>The Circle</span>
+                <span style={{ fontSize: 7, fontFamily: MONO, color: TEAL, letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.6 }}>Engero</span>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -313,7 +313,7 @@ function EPKPreview({
           <FlameRule margin="5px 0 6px" />
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 5, opacity: 0.3 }}>
             <FlameIcon size={9} color={TEAL} />
-            <span style={{ fontSize: 7, fontFamily: MONO, color: TEAL, letterSpacing: '0.2em', textTransform: 'uppercase' as const }}>circle · thecircle.co · electronic press kit</span>
+            <span style={{ fontSize: 7, fontFamily: MONO, color: TEAL, letterSpacing: '0.2em', textTransform: 'uppercase' as const }}>engero · engero.art · electronic press kit</span>
           </div>
         </div>
       </div>

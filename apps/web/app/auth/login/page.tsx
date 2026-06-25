@@ -75,7 +75,7 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Welcome Back" subtitle="Log in to your Circle profile." showImage>
+    <AuthLayout title="Welcome Back" subtitle="Log in to your Engero profile." showImage>
       {error && <ErrorBanner message={error} />}
 
       {/* Google: outside the form so it never triggers form validation */}
@@ -96,7 +96,7 @@ export default function LoginPage() {
           <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
           <input
             type="email" value={email} onChange={e => setEmail(e.target.value)}
-            placeholder="artist@circle.com" className="w-full" required
+            placeholder="artist@engero.art" className="w-full" required
           />
         </div>
 

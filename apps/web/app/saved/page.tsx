@@ -54,7 +54,7 @@ export default async function SavedPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <nav className="bg-surface border-b border-outline-variant/30 sticky top-0 z-50">
         <div className="max-w-[1440px] mx-auto px-4 md:px-10 h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
+          <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Engero</Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/discover" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Explore</Link>
             <Link href="/my-circle" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My Circle</Link>
@@ -80,7 +80,7 @@ export default async function SavedPage() {
 
       <footer className="border-t border-outline-variant/20 py-8 px-4 md:px-10">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-caption font-caption text-on-surface-variant">© 2026 Circle · Connecting African Artistry.</p>
+          <p className="text-caption font-caption text-on-surface-variant">© 2026 Engero · Connecting African Artistry.</p>
           <div className="flex gap-6">
             {['Privacy', 'Terms', 'Support', 'Contact'].map((item) => (
               <a key={item} href="#" className="text-caption font-caption text-on-surface-variant hover:text-primary transition-colors">{item}</a>

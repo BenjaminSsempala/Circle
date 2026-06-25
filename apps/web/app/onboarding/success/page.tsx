@@ -102,8 +102,8 @@ export default function SuccessPage() {
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const profileUrl = artistSlug
-    ? `thecircle.co/${artistSlug}`
-    : 'thecircle.co/your-profile';
+    ? `engero.art/${artistSlug}`
+    : 'engero.art/your-profile';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(profileUrl);
@@ -138,7 +138,7 @@ export default function SuccessPage() {
 
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md border-b border-primary-container/10 px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center">
-        <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
+        <div className="text-headline-md font-headline-md text-primary tracking-tight">Engero</div>
         <div className="text-label-mono font-label-mono bg-primary/10 text-primary px-3 py-1 rounded-full flex items-center gap-1.5">
           <span>✓</span>
           <span>You&apos;re all set</span>
@@ -150,7 +150,7 @@ export default function SuccessPage() {
         <div className="lg:col-span-1 flex flex-col space-y-lg">
           <div className="space-y-sm">
             <span className="text-label-mono font-label-mono text-secondary bg-secondary-fixed/30 px-3 py-1 rounded-full uppercase tracking-wider inline-block">
-              Welcome to the Circle
+              Welcome to Engero
             </span>
             <h1 className="text-headline-xl font-headline-xl md:text-headline-xl text-primary leading-tight">
               Your profile is live!
@@ -242,7 +242,7 @@ export default function SuccessPage() {
           )}
           <div className="bg-primary-container/5 rounded-xl p-md border border-primary-container/10 max-w-xs text-center">
             <p className="text-body-md font-body-md text-on-surface-variant italic">
-              "Your journey on Circle has just begun. Every step you take brings you closer to
+              "Your journey on Engero has just begun. Every step you take brings you closer to
               building the creative career you deserve."
             </p>
           </div>

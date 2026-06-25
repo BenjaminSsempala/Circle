@@ -54,7 +54,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
       <nav className="bg-surface shadow-sm sticky top-0 z-50 w-full border-b border-outline-variant/30">
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
           <div className="flex items-center gap-gutter">
-            <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
+            <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Engero</Link>
             <div className="hidden md:flex gap-md items-center">
               <Link href="/discover" className="text-on-surface-variant font-medium text-body-md hover:text-primary transition-colors">Explore</Link>
             </div>
@@ -162,7 +162,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
 
       {/* Footer */}
       <footer className="bg-surface-container border-t border-outline-variant w-full py-lg px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-base mt-auto">
-        <div className="text-body-md font-body-md font-bold text-primary">Circle</div>
+        <div className="text-body-md font-body-md font-bold text-primary">Engero</div>
         <div className="flex gap-md">
           {['Privacy', 'Terms', 'Support', 'Contact'].map((item) => (
             <a key={item} href="#" className="text-body-md font-body-md text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100">{item}</a>

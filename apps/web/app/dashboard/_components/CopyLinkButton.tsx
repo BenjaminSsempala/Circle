@@ -7,7 +7,7 @@ export function CopyLinkButton({ slug }: { slug: string }) {
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(`https://thecircle.co/${slug}`);
+      await navigator.clipboard.writeText(`https://engero.art/${slug}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

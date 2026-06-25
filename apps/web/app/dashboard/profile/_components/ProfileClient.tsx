@@ -94,7 +94,7 @@ function SlugField({ value, onChange }: { value: string; onChange: (v: string) =
       <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Your link</label>
       <div className="flex items-center border border-outline-variant/40 rounded-lg overflow-hidden focus-within:border-primary">
         <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant text-sm border-r border-outline-variant/30 whitespace-nowrap">
-          thecircle.co/
+          engero.art/
         </span>
         <input
           value={value}
@@ -233,7 +233,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
               <div>
                 <label className={labelClass}>Display Name</label>
                 <input value={form.display_name} onChange={(e) => update('display_name', e.target.value)} className={inputClass} placeholder="Your artist name" />
-                <p className="text-caption font-caption text-on-surface-variant mt-1">Shown on your profile and across The Circle.</p>
+                <p className="text-caption font-caption text-on-surface-variant mt-1">Shown on your profile and across Engero.</p>
               </div>
               <div>
                 <label className={`${labelClass} flex items-center gap-1.5`}>

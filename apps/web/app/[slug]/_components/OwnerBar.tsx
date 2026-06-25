@@ -28,7 +28,7 @@ function triggerDownload(url: string, filename: string) {
 
 function SharePanel({ slug, onClose }: { slug: string; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const profileUrl = `thecircle.co/${slug}`;
+  const profileUrl = `engero.art/${slug}`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(`https://${profileUrl}`);

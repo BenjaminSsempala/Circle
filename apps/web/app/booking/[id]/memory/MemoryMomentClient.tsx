@@ -49,7 +49,7 @@ function MemoryCard({
         </div>
       </div>
       <div className="absolute bottom-1/2 -right-10 rotate-90 text-[9px] font-mono tracking-widest opacity-20 text-white select-none">
-        THE CIRCLE · thecircle.co
+        ENGERO · engero.art
       </div>
     </div>
   );
@@ -107,7 +107,7 @@ export function MemoryMomentClient({
         backgroundColor: null,
       });
       const link = document.createElement('a');
-      link.download = `circle-memory-${artistName.toLowerCase().replace(/\s+/g, '-')}.png`;
+      link.download = `engero-memory-${artistName.toLowerCase().replace(/\s+/g, '-')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } finally {
@@ -116,7 +116,7 @@ export function MemoryMomentClient({
   }
 
   if (submitted) {
-    const waText = `I just experienced ${packageName} with ${artistName} through The Circle. Worth every moment. thecircle.co/${artistSlug}`;
+    const waText = `I just experienced ${packageName} with ${artistName} through Engero. Worth every moment. engero.art/${artistSlug}`;
     return (
       <div className="w-full max-w-[480px] flex flex-col items-center gap-6">
         <MemoryCard cardRef={cardRef} artistName={artistName} packageName={packageName} eventDate={eventDate} mood={mood} />

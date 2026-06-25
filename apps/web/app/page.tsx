@@ -31,7 +31,7 @@ export default function Home() {
     <>
       {/* NAV */}
       <nav className="nav">
-        <div className="nav-logo">The Circle</div>
+        <div className="nav-logo">Engero</div>
         <div className="nav-links">
           <a href="#how">How it works</a>
           <a href="/discover">Explore artists</a>
@@ -49,7 +49,7 @@ export default function Home() {
         </div>
         <div className="hero-inner">
           <div className="hero-label">The infrastructure for African art</div>
-          <h1 className="hero-h1">Your art.<br /><em>Your income.</em><br />Your circle.</h1>
+          <h1 className="hero-h1">Your art.<br /><em>Your income.</em><br />Your Engero.</h1>
           <p className="hero-sub">The platform where artists get booked, get paid, get professional and build communities.</p>
           <div className="hero-ctas">
             <a href="/auth/signup?type=artist" className="btn btn-primary">Join as an artist</a>
@@ -65,8 +65,8 @@ export default function Home() {
 
       {/* TWIN PROBLEMS */}
       <section className="split" id="organiser">
-        <div className="split-label">Who it's for</div>
-        <h2 className="split-heading">Two problems.<br />One circle.</h2>
+        <div className="split-label">Who it&apos;s for</div>
+        <h2 className="split-heading">Two problems.<br />One Engero.</h2>
         <div className="split-grid">
 
           {/* Artist card */}
@@ -78,11 +78,11 @@ export default function Home() {
             <ul className="card-features">
               <li><span className="check">✓</span> One link replaces your website, Linktree, and Portfolio</li>
               <li><span className="check">✓</span> Priced packages: Define your products and their worth</li>
-              <li><span className="check">✓</span> Auto-generated contracts: Protect your payments and work</li>
-              <li><span className="check">✓</span> Escrow: your money is safe before you even arrive</li>
+              <li><span className="check">✓</span> Auto-generated contracts: Protect your work and your terms</li>
+              <li><span className="check">✓</span> Booking agreements: clear terms before you arrive</li>
               <li><span className="check">✓</span> YouTube, TikTok, Spotify: all in one portfolio</li>
             </ul>
-            <a href="/auth/signup" className="btn btn-card-artist">Get my Circle profile →</a>
+            <a href="/auth/signup" className="btn btn-card-artist">Get my Engero profile →</a>
           </div>
 
           {/* Organiser card */}
@@ -94,8 +94,8 @@ export default function Home() {
             <ul className="card-features">
               <li><span className="check">✓</span> Filter by artform, budget, and availability</li>
               <li><span className="check">✓</span> See completed bookings and verified reviews</li>
-              <li><span className="check">✓</span> Book with escrow: if they don't show, you're refunded</li>
-              <li><span className="check">✓</span> Auto-generated contracts: Protect your payments and bookings</li>
+              <li><span className="check">✓</span> Booking agreements: know exactly what&apos;s agreed, upfront</li>
+              <li><span className="check">✓</span> Auto-generated contracts: Protect your booking and your terms</li>
               <li><span className="check">✓</span> From solo artists to full lineups: one platform</li>
             </ul>
             <a href="/discover" className="btn btn-card-org">Browse artists now →</a>
@@ -112,25 +112,20 @@ export default function Home() {
             <div className="step reveal" ref={addRef}>
               <div className="step-n">01</div>
               <div className="step-title">Build your profile</div>
-              <p className="step-desc">Add your details <br/> Connect YouTube, Spotify, TikTok. <br/> Add your packages, prices and upcoming events. <br/> Get one shareable link: thecircle.co/you.</p>
+              <p className="step-desc">Add your details. Connect YouTube, Spotify, TikTok. Add your packages, prices and upcoming events. Get one shareable link: engero.art/you.</p>
               <div className="step-arrow">→</div>
             </div>
             <div className="step reveal" ref={addRef}>
               <div className="step-n">02</div>
               <div className="step-title">Get booked safely</div>
-              <p className="step-desc">A client books your package. You get notified. A contract auto-generates. They pay into escrow before you even show up.</p>
+              <p className="step-desc">A client books your package. You get notified. A contract auto-generates. Once signed, payment is arranged directly between you.</p>
               <div className="step-arrow">→</div>
             </div>
             <div className="step reveal" ref={addRef}>
               <div className="step-n">03</div>
               <div className="step-title">Become a Professional</div>
-              <p className="step-desc"> Get access to professional tools, opportunities and resources.</p>
+              <p className="step-desc">Get access to professional tools, opportunities and resources.</p>
             </div>
-            {/* <div className="step reveal" ref={addRef}>
-              <div className="step-n">04</div>
-              <div className="step-title">Perform. Get paid.</div>
-              <p className="step-desc">You perform. Both parties confirm. Your money releases: directly to your mobile money. No more "we'll see tomorrow".</p>
-            </div> */}
           </div>
         </div>
       </section>
@@ -141,7 +136,7 @@ export default function Home() {
           <div className="preview-text reveal" ref={addRef}>
             <div className="pill">Build your own website</div>
             <h2 className="preview-h">A profile link<br />that works  as hard<br />as you.</h2>
-            <p className="preview-body">When you send someone your Circle link, they see your full professional profile: portfolio, packages, services and products, reviews, and a "Book" button. No friction. Just your art, presented properly.</p>
+            <p className="preview-body">When you send someone your Engero link, they see your full professional profile: portfolio, packages, services and products, reviews, and a &ldquo;Book&rdquo; button. No friction. Just your art, presented properly.</p>
           </div>
           <div className="profile-mock reveal" ref={addRef}>
             <div className="mock-hero">
@@ -149,7 +144,7 @@ export default function Home() {
             </div>
             <div className="mock-body">
               <div className="mock-name">Benj</div>
-              <div className="mock-sub">thecircle.co/benj &nbsp;·&nbsp; Kampala, UG</div>
+              <div className="mock-sub">engero.art/benj &nbsp;·&nbsp; Kampala, UG</div>
               <div className="mock-tags">
                 <span className="mock-tag">Poet</span>
                 <span className="mock-tag">Spoken Word</span>
@@ -182,17 +177,17 @@ export default function Home() {
       <section className="trust">
         <div className="trust-inner">
           <h2 className="trust-h reveal" ref={addRef}>Built on trust.<br />Not promises.</h2>
-          <p className="trust-sub reveal" ref={addRef}>Every booking on The Circle is protected. Every contract is auto-generated. Every payment is held until you confirm it's done.</p>
+          <p className="trust-sub reveal" ref={addRef}>Every booking on Engero comes with a real agreement. Every contract is auto-generated. Every booking is tracked from request to completion.</p>
           <div className="trust-grid">
             <div className="trust-card reveal" ref={addRef}>
-              <div className="trust-icon">🔒</div>
-              <div className="trust-title">Escrow payments</div>
-              <p className="trust-desc">Money is held by The Circle before the gig. Released only when both parties confirm. If the artist no-shows, you get a full refund.</p>
+              <div className="trust-icon">📋</div>
+              <div className="trust-title">Clear agreements</div>
+              <p className="trust-desc">Every booking generates a proper agreement covering price, date, and terms. Print, sign, and you&apos;re both protected by what&apos;s in writing.</p>
             </div>
             <div className="trust-card reveal" ref={addRef}>
               <div className="trust-icon">📄</div>
               <div className="trust-title">Auto-generated contracts</div>
-              <p className="trust-desc">Every booking generates a pre-filled, legally sound contract. Both parties sign digitally before any money moves. No lawyers needed.</p>
+              <p className="trust-desc">Every booking generates a pre-filled, legally sound agreement. Both parties sign before the gig. No lawyers needed.</p>
             </div>
             <div className="trust-card reveal" ref={addRef}>
               <div className="trust-icon">⭐</div>
@@ -247,9 +242,9 @@ export default function Home() {
         <div className="cta-ring"></div>
         <div className="cta-inner">
           <h2 className="cta-h reveal" ref={addRef}>Your art<br />deserves a<br /><em>proper home.</em></h2>
-          <p className="cta-sub reveal" ref={addRef}>Join the first 50 artists on The Circle. Build your profile, set your prices, and start getting booked: safely.</p>
+          <p className="cta-sub reveal" ref={addRef}>Join the first 50 artists on Engero. Build your profile, set your prices, and start getting booked: safely.</p>
           <div className="hero-ctas reveal" ref={addRef}>
-            <a href="/auth/signup" className="btn btn-primary">Join as an artist; it's free</a>
+            <a href="/auth/signup" className="btn btn-primary">Join as an artist; it&apos;s free</a>
             <a href="/auth/login" className="btn btn-secondary">Log in</a>
           </div>
           <p className="cta-note">Get Professional. Get Paid!</p>
@@ -258,14 +253,14 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer>
-        <div className="footer-logo">The Circle</div>
+        <div className="footer-logo">Engero</div>
         <div className="footer-links">
           <a href="#">About</a>
           <a href="#">For Artists</a>
           <a href="#">For Organisers</a>
           <a href="#">Privacy</a>
         </div>
-        <div className="footer-copy">© 2026 The Circle</div>
+        <div className="footer-copy">© 2026 Engero</div>
       </footer>
     </>
   );

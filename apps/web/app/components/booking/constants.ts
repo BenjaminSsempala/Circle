@@ -12,7 +12,7 @@ export const STATE_LABELS: Record<string, { label: string; color: string; bg: st
   AUDIENCE_UPLOADED: { label: 'Signed copy received, awaiting countersignature', color: '#005440', bg: 'rgba(0,84,64,0.07)' },
   CONTRACT_SIGNED:   { label: 'Locked In', color: '#198551', bg: 'rgba(25,133,81,0.08)' },
   PAYMENT_PENDING:   { label: 'Payment pending', color: AMBER, bg: 'rgba(217,134,32,0.1)' },
-  PAYMENT_HELD:      { label: 'Payment held in escrow', color: '#198551', bg: 'rgba(25,133,81,0.08)' },
+  PAYMENT_HELD:      { label: 'Payment held per the signed agreement', color: '#198551', bg: 'rgba(25,133,81,0.08)' },
   GIG_ACTIVE:        { label: 'Booking confirmed', color: '#198551', bg: 'rgba(25,133,81,0.08)' },
   CHECKED_IN:        { label: 'Artist checked in', color: '#198551', bg: 'rgba(25,133,81,0.08)' },
   CONFIRMING:        { label: 'Awaiting completion confirmation', color: AMBER, bg: 'rgba(217,134,32,0.1)' },

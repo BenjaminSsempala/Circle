@@ -147,7 +147,7 @@ export default function SignupPage() {
     <AuthLayout
       title={
         step === 'credentials'
-          ? 'Join the Circle'
+          ? 'Join Engero'
           : step === 'email-confirmation'
             ? 'Confirm Your Email'
             : 'What brings you here?'
@@ -188,7 +188,7 @@ export default function SignupPage() {
               <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="artist@circle.com" className="w-full" required
+                placeholder="artist@engero.art" className="w-full" required
               />
             </div>
 

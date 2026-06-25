@@ -132,10 +132,10 @@ export function ContractPDF({
   const rendered = buildContractSections(contract);
 
   return (
-    <Document title={`Contract ${rendered.reference}`} author="The Circle">
+    <Document title={`Contract ${rendered.reference}`} author="Engero">
       <Page size="A4" style={s.page}>
         <View style={s.titleBar}>
-          <Text style={s.brandLine}>The Circle · Booking Agreement</Text>
+          <Text style={s.brandLine}>Engero · Booking Agreement</Text>
           <Text style={s.docTitle}>{rendered.typeTitle}</Text>
           <View style={s.metaRow}>
             <View><Text style={s.metaLabel}>Reference</Text><Text style={s.metaValue}>{rendered.reference}</Text></View>
@@ -186,7 +186,7 @@ export function ContractPDF({
         </View>
 
         <View style={s.footer}>
-          <Text style={s.footerText}>Facilitated by The Circle — thecircle.co · {rendered.reference}</Text>
+          <Text style={s.footerText}>Facilitated by Engero — engero.art · {rendered.reference}</Text>
         </View>
       </Page>
     </Document>

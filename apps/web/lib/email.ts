@@ -28,7 +28,7 @@ export async function sendEmail({
   html: string;
 }) {
   const { error } = await getResend().emails.send({
-    from: 'The Circle <onboarding@resend.dev>', // swap to notifications@yourdomain.co once domain is verified
+    from: 'Engero <onboarding@resend.dev>', // swap to notifications@yourdomain.co once domain is verified
     to: "benjspoetry@gmail.com", //temporarily hardcoded to my email for testing, should be `to` once verified
     subject,
     html,
@@ -51,7 +51,7 @@ export async function sendArtistWelcomeEmail({
   artistName: string;
   artistSlug: string;
 }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thecircle.co';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://engero.art';
   const firstName = artistName.split(' ')[0];
 
   const html = renderTemplate(loadTemplate('artist-welcome.html'), {
@@ -62,9 +62,9 @@ export async function sendArtistWelcomeEmail({
   });
 
   const { error } = await getResend().emails.send({
-    from:    'The Circle <onboarding@resend.dev>', // swap to welcome@yourdomain.co once domain is verified
+    from:    'Engero <onboarding@resend.dev>', // swap to welcome@yourdomain.co once domain is verified
     to,
-    subject: `Welcome to The Circle, ${firstName} 🎭`,
+    subject: `Welcome to Engero, ${firstName} 🎭`,
     html,
   });
 
