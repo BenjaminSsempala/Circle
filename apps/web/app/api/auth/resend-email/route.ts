@@ -25,12 +25,16 @@ async function sendConfirmationEmail(email: string, actionLink: string) {
 }
 
 // POST /api/auth/resend-email
-// Body: { email }
+// Body: { email, password }
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
 
   if (!body?.email) {
     return err('email is required', 422);
+  }
+
+  if (!body?.password) {
+    return err('password is required', 422);
   }
 
   const supabase = createServiceClient();
@@ -39,6 +43,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabase.auth.admin.generateLink({
     type: 'signup',
     email: body.email,
+    password: body.password,
     options: {
       redirectTo: `${siteUrl}/api/auth/confirm`,
     },

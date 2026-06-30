@@ -89,7 +89,7 @@ export default function SignupPage() {
       const res = await fetch('/api/auth/resend-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
