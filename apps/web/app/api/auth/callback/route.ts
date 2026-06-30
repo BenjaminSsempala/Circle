@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 
 // Supabase redirects to /api/auth/callback after Google OAuth
 // This route exchanges the code for a session then sends the
@@ -21,11 +22,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/auth/login?error=missing_code`);
   }
 
-  const supabase = await createClient();
-  const { data: { user }, error: exchangeError } =
-    await supabase.auth.exchangeCodeForSession(code);
+  const cookieStore = await cookies();
+  const cookiesToSetList: { name: string; value: string; options: any }[] = [];
 
-  if (exchangeError || !user) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+            cookiesToSetList.push({ name, value, options });
+          });
+        },
+      },
+    },
+  );
+
+  const {
+    data: { session, user },
+    error: exchangeError,
+  } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (exchangeError || !session || !user) {
     return NextResponse.redirect(
       `${origin}/auth/login?error=${encodeURIComponent(exchangeError?.message ?? 'unknown')}`,
     );
@@ -41,15 +64,20 @@ export async function GET(request: NextRequest) {
   // No profile or no role yet → role selection first.
   // The DB trigger creates a profile row with role = null on signup,
   // so we must check for null role explicitly, not just missing profile.
-  if (!profile || !profile.role) {
-    return NextResponse.redirect(`${origin}/auth/signup?step=role`);
+  let redirectPath = '/auth/signup?step=role';
+
+  if (profile?.role) {
+    if (!profile.onboarding_complete) {
+      redirectPath = profile.role === 'audience' ? '/discover' : '/onboarding/artist';
+    } else {
+      redirectPath = profile.role === 'audience' ? '/discover' : '/dashboard';
+    }
   }
 
-  if (!profile.onboarding_complete) {
-    const dest = profile.role === 'audience' ? '/discover' : '/onboarding/artist';
-    return NextResponse.redirect(`${origin}${dest}`);
-  }
+  const response = NextResponse.redirect(`${origin}${redirectPath}`);
+  cookiesToSetList.forEach(({ name, value, options }) => {
+    response.cookies.set(name, value, options);
+  });
 
-  const home = profile.role === 'audience' ? '/discover' : '/dashboard';
-  return NextResponse.redirect(`${origin}${home}`);
+  return response;
 }

@@ -182,16 +182,16 @@ export default function Home() {
               <div className="mock-avatar"></div>
             </div>
             <div className="mock-body">
-              <div className="mock-name">Benj</div>
-              <div className="mock-sub">engero.art/benj &nbsp;·&nbsp; Kampala, UG</div>
+              <div className="mock-name">Nia Mirembe</div>
+              <div className="mock-sub">engero.art/nia-mirembe &nbsp;·&nbsp; Kampala, UG</div>
               <div className="mock-tags">
                 <span className="mock-tag">Poet</span>
-                <span className="mock-tag">Spoken Word</span>
+                <span className="mock-tag">Actor</span>
                 <span className="mock-tag">Dancer</span>
               </div>
               <div className="mock-pkg">
                 <span className="mock-pkg-name">30 minute Poetry Set</span>
-                <span className="mock-pkg-price">UGX 100,000</span>
+                <span className="mock-pkg-price">UGX 250,000</span>
               </div>
               <div className="mock-pkg">
                 <span className="mock-pkg-name">Corporate Opening Set</span>
@@ -202,10 +202,10 @@ export default function Home() {
                 <span className="mock-pkg-price">UGX 50,000/hour</span>
               </div>
               <div className="mock-pkg">
-                <span className="mock-pkg-name">Open Mic</span>
-                <span className="mock-pkg-price">2 free poems</span>
+                <span className="mock-pkg-name">Book Collection</span>
+                <span className="mock-pkg-price">Starting at UGX 30,000</span>
               </div>
-              <a href="#signup" className="mock-btn">Book Benj</a>
+              <a href="#signup" className="mock-btn">Book Nia</a>
               <div className="mock-no-auth">No account required to view this profile</div>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function Home() {
       <section className="trust">
         <div className="trust-inner">
           <h2 className="trust-h reveal" ref={addRef}>Built on trust.<br />Not promises.</h2>
-          <p className="trust-sub reveal" ref={addRef}>Every booking on Engero comes with a real agreement. Every contract is auto-generated. Every booking is tracked from request to completion.</p>
+          <p className="trust-sub reveal" ref={addRef}>Every booking on Engero comes with a real agreement. You secure the client, We prepare your contract. Every booking can be tracked from request to completion.</p>
           <div className="trust-grid">
             <div className="trust-card reveal" ref={addRef}>
               <div className="trust-icon">📋</div>
@@ -226,12 +226,12 @@ export default function Home() {
             <div className="trust-card reveal" ref={addRef}>
               <div className="trust-icon">📄</div>
               <div className="trust-title">Auto-generated contracts</div>
-              <p className="trust-desc">Every booking generates a pre-filled, legally sound agreement. Both parties sign before the gig. No lawyers needed.</p>
+              <p className="trust-desc">Every booking generates a pre-filled, legally sound agreement. Both parties sign before the gig.</p>
             </div>
             <div className="trust-card reveal" ref={addRef}>
               <div className="trust-icon">⭐</div>
               <div className="trust-title">Verified reviews</div>
-              <p className="trust-desc">Reviews are only left after a completed, paid booking. No fake stars. No unverified opinions. Real work, real feedback.</p>
+              <p className="trust-desc">Reviews are left after a completed, paid booking. Get feedback from your community. Real work, real feedback.</p>
             </div>
           </div>
         </div>
