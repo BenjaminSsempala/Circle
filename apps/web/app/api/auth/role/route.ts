@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) return err('Unauthorised: please sign in first', 401);
 
-  const fullName = body.fullName || user.user_metadata?.full_name || '';
+  const fullName = body.displayName || user.user_metadata?.display_name || '';
   const result = await setUserRole(user.id, body.role, fullName);
   if (!result.ok) return err(result.error, result.status);
 

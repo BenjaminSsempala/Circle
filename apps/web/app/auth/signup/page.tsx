@@ -121,12 +121,14 @@ export default function SignupPage() {
         return;
       }
 
+      const profileName = name || session.user.user_metadata?.full_name || '';
       const { error: dbError } = await supabase
         .from('profiles')
         .upsert({
           id: session.user.id,
           role,
-          full_name: name || session.user.user_metadata?.full_name || '',
+          display_name: profileName,
+          legal_name: profileName,
           onboarding_complete: false,
         });
 

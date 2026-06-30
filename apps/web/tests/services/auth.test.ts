@@ -4,8 +4,12 @@ import { makeChain, makeMockClient } from '@/lib/test-utils/supabase';
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }));
+vi.mock('@/lib/supabase/service', () => ({ createServiceClient: vi.fn() }));
+vi.mock('@/lib/email', () => ({ sendEmail: vi.fn() }));
 
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
+import { sendEmail } from '@/lib/email';
 import {
   signUpWithEmail,
   signInWithEmail,
@@ -15,6 +19,8 @@ import {
 } from '@/lib/services/auth';
 
 const mockCreateClient = createClient as unknown as ReturnType<typeof vi.fn>;
+const mockCreateServiceClient = createServiceClient as unknown as ReturnType<typeof vi.fn>;
+const mockSendEmail = sendEmail as unknown as ReturnType<typeof vi.fn>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -24,6 +30,7 @@ function makeAuthClient(overrides: Partial<{
   signOutResult: unknown;
   resetResult: unknown;
   profileRow: unknown;
+  generateLinkResult: unknown;
 }> = {}) {
   const profileChain = makeChain({ data: overrides.profileRow ?? null, error: null });
   const client = {
@@ -34,6 +41,9 @@ function makeAuthClient(overrides: Partial<{
       ),
       signOut: vi.fn().mockResolvedValue(overrides.signOutResult ?? { error: null }),
       resetPasswordForEmail: vi.fn().mockResolvedValue(overrides.resetResult ?? { error: null }),
+      admin: {
+        generateLink: vi.fn().mockResolvedValue(overrides.generateLinkResult ?? { data: { properties: null, user: null }, error: null }),
+      },
     },
     from: vi.fn((table: string) => {
       if (table === 'profiles') return profileChain;
@@ -50,19 +60,28 @@ describe('signUpWithEmail', () => {
 
   it('returns ok:true with userId on success', async () => {
     const client = makeAuthClient({
-      signUpResult: { data: { user: { id: 'user-abc' } }, error: null },
+      generateLinkResult: {
+        data: {
+          properties: { action_link: 'https://example.com/confirm?token=abc' },
+          user: { id: 'user-abc' },
+        },
+        error: null,
+      },
     });
-    mockCreateClient.mockResolvedValue(client);
+    mockCreateServiceClient.mockReturnValue(client);
+    mockSendEmail.mockResolvedValue({ ok: true });
+
     const result = await signUpWithEmail('test@example.com', 'password123', 'Test User');
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.userId).toBe('user-abc');
+    expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: 'test@example.com', html: expect.any(String) }));
   });
 
   it('returns ok:false with error message on auth failure', async () => {
     const client = makeAuthClient({
-      signUpResult: { data: {}, error: { message: 'Email already in use' } },
+      generateLinkResult: { data: { properties: null, user: null }, error: { message: 'Email already in use' } },
     });
-    mockCreateClient.mockResolvedValue(client);
+    mockCreateServiceClient.mockReturnValue(client);
     const result = await signUpWithEmail('existing@example.com', 'password', 'Name');
     expect(result.ok).toBe(false);
     expect((result as { ok: false; error: string }).error).toMatch(/Email already in use/);

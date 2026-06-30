@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const { error: resendError } = await supabase.auth.resend({
       type: 'signup',
       email: body.email,
-      options: { emailRedirectTo: `${siteUrl}/auth/confirm` },
+      options: { emailRedirectTo: `${siteUrl}/api/auth/confirm` },
     });
 
     if (!resendError) {

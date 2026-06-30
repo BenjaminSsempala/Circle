@@ -68,14 +68,14 @@ export default function ArtistOnboardingPage() {
       .then(({ artist }) => {
         if (!artist) {
           // No artist row yet — pre-fill display_name from profile only
-          if (user.display_name ?? user.full_name) {
-            setFormData((prev) => ({ ...prev, displayName: user.display_name ?? user.full_name }));
+          if (user.display_name ) {
+            setFormData((prev) => ({ ...prev, displayName: user.display_name }));
           }
           return;
         }
         setFormData((prev) => ({
           ...prev,
-          displayName: artist.display_name || (user.display_name ?? user.full_name) || '',
+          displayName: artist.display_name || user.display_name|| '',
           legalName: artist.legal_name || '',
           tagline: artist.tagline || '',
           artForm: artist.art_forms?.[0] || '',
@@ -400,7 +400,7 @@ export default function ArtistOnboardingPage() {
                   </label>
                   <div className="flex items-center border border-outline-variant/40 rounded-lg overflow-hidden focus-within:border-primary bg-surface">
                     <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant text-sm border-r border-outline-variant/30 whitespace-nowrap">
-                      circle.co/
+                      engero.art/
                     </span>
                     <input
                       type="text"
