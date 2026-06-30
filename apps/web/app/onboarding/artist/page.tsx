@@ -396,7 +396,7 @@ export default function ArtistOnboardingPage() {
                     htmlFor="slug"
                     className="text-label-mono font-label-mono text-on-surface-variant uppercase tracking-wider text-xs"
                   >
-                    Your Circle link
+                    Your Engero link
                   </label>
                   <div className="flex items-center border border-outline-variant/40 rounded-lg overflow-hidden focus-within:border-primary bg-surface">
                     <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant text-sm border-r border-outline-variant/30 whitespace-nowrap">
@@ -643,7 +643,7 @@ export default function ArtistOnboardingPage() {
           {/* Privacy Note */}
           <div className="mt-gutter flex items-center justify-center gap-2 opacity-50">
             <span className="text-xs font-caption text-on-surface-variant">
-              ✓ Your profile data is secured within the Circle ecosystem.
+              ✓ Your profile data is secured within our Engero ecosystem.
             </span>
           </div>
         </div>
