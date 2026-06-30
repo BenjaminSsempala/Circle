@@ -119,9 +119,14 @@ export function ProfileClient({ artist }: { artist: Artist }) {
   const [saveError, setSaveError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(artist.profile_photo ?? '');
+  
+  // 🔥 Track the baseline saved photo state dynamically inside state memory
+  const [currentSavedPhoto, setCurrentSavedPhoto] = useState(artist.profile_photo ?? '');
+  
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const dirty = isDirty(form, saved) || photoUrl !== (artist.profile_photo ?? '');
+  // Compare photoUrl to the state-backed currentSavedPhoto variable
+  const dirty = isDirty(form, saved) || photoUrl !== currentSavedPhoto;
 
   function update(key: keyof FormState, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -146,7 +151,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
         slug: form.slug,
       };
 
-      if (photoUrl !== (artist.profile_photo ?? '')) body.profile_photo = photoUrl;
+      if (photoUrl !== currentSavedPhoto) body.profile_photo = photoUrl;
 
       const socials: Record<string, string> = {};
       const socialKeys = ['instagram', 'youtube', 'tiktok', 'spotify', 'soundcloud', 'twitter', 'linkedin', 'website'] as const;
@@ -167,17 +172,19 @@ export function ProfileClient({ artist }: { artist: Artist }) {
         setSaveError(d.error ?? 'Save failed');
         return;
       }
+      
       setSaved({ ...form });
+      setCurrentSavedPhoto(photoUrl); // 🔥 Sync state to dismiss save bar immediately
     } catch {
       setSaveError('Network error');
     } finally {
       setSaving(false);
     }
-  }, [form, photoUrl, artist.profile_photo]);
+  }, [form, photoUrl, currentSavedPhoto]);
 
   function handleDiscard() {
     setForm(saved);
-    setPhotoUrl(artist.profile_photo ?? '');
+    setPhotoUrl(currentSavedPhoto);
   }
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -370,7 +377,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
                 </p>
               )}
               <Link
-                href={`/${artist.slug}`}
+                href={`/${form.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full border border-primary/30 text-primary text-sm font-semibold py-2.5 rounded-xl hover:bg-primary/5 transition-colors"
@@ -393,20 +400,23 @@ export function ProfileClient({ artist }: { artist: Artist }) {
 
       {/* Floating save bar */}
       {dirty && (
-        <div className="fixed bottom-0 left-0 right-0 md:left-60 bg-surface border-t border-outline-variant/30 p-4 flex items-center justify-between gap-4 z-30 shadow-lg">
-          <p className="text-caption font-caption text-on-surface-variant hidden sm:block">You have unsaved changes.</p>
+        <div className="fixed bottom-0 left-0 right-0 lg:left-64 bg-surface border-t border-outline-variant/30 px-4 py-3 sm:py-4 flex items-center justify-between gap-4 z-50 shadow-2xl safe-bottom">
+          <p className="text-caption font-caption text-on-surface-variant hidden sm:block">
+            You have unsaved changes.
+          </p>
           {saveError && <p className="text-error text-sm flex-1">{saveError}</p>}
-          <div className="flex gap-3 ml-auto">
+          
+          <div className="flex gap-3 w-full sm:w-auto justify-end">
             <button
               onClick={handleDiscard}
-              className="border border-outline-variant/40 text-on-surface px-4 py-2 rounded-lg text-label-mono font-label-mono text-sm hover:bg-surface-container transition-colors"
+              className="flex-1 sm:flex-initial text-center border border-outline-variant/40 text-on-surface px-4 py-2.5 rounded-lg text-label-mono font-label-mono text-sm hover:bg-surface-container transition-colors"
             >
               Discard
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-primary text-on-primary px-6 py-2 rounded-lg text-label-mono font-label-mono text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex-1 sm:flex-initial text-center bg-primary text-on-primary px-6 py-2.5 rounded-lg text-label-mono font-label-mono text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {saving ? 'Saving…' : 'Save changes'}
             </button>

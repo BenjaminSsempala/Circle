@@ -280,7 +280,7 @@ export default async function DashboardPage() {
               {[
                 { label: 'Edit profile', href: '/dashboard/profile', icon: '✏️' },
                 { label: 'Packages', href: '/dashboard/packages', icon: '📦' },
-                { label: 'Availability', href: '/dashboard/availability', icon: '📅' },
+                { label: 'View profile', href: artist ? `/${artist.slug}` : '/dashboard/profile', icon: '👤' },
               ].map((l) => (
                 <Link
                   key={l.href}

@@ -276,21 +276,10 @@ export function OwnerBar({
             )}
           </div>
 
-          {/* View profile (mobile only) */}
-          <Link
-            href={`/${slug}`}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-surface text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-colors sm:hidden"
-          >
-            View profile
-          </Link>
+         
 
-          {/* Dashboard */}
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 text-xs font-semibold bg-primary text-on-primary px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
-          >
-            Dashboard
-          </Link>
+
+          
         </div>
       </div>
     </div>
