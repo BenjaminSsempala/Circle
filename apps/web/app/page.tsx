@@ -230,8 +230,8 @@ export default function Home() {
             </div>
             <div className="trust-card reveal" ref={addRef}>
               <div className="trust-icon">⭐</div>
-              <div className="trust-title">Verified reviews</div>
-              <p className="trust-desc">Reviews are left after a completed, paid booking. Get feedback from your community. Real work, real feedback.</p>
+              <div className="trust-title">Reviews and Feedback</div>
+              <p className="trust-desc">Reviews are left after a completed, paid booking. Get real feedback from your community.</p>
             </div>
           </div>
         </div>
@@ -251,18 +251,18 @@ export default function Home() {
             <div className="nudge-card nudge-card-1">
               <div className="nudge-avatar"></div>
               <div className="nudge-info">
-                <div className="nudge-name">Kampala Poets</div>
+                <div className="nudge-name">Poets from Kampala</div>
                 <div className="nudge-tag">Spoken Word · Poetry</div>
               </div>
-              <div className="nudge-price">From UGX 100k</div>
+              <div className="nudge-price">From UGX 350k</div>
             </div>
             <div className="nudge-card nudge-card-2">
               <div className="nudge-avatar"></div>
               <div className="nudge-info">
-                <div className="nudge-name">Visual Artists</div>
+                <div className="nudge-name">Visual Artists from Nairobi</div>
                 <div className="nudge-tag">Illustration · Design</div>
               </div>
-              <div className="nudge-price">From UGX 150k</div>
+              <div className="nudge-price">From KSH 10,000</div>
             </div>
             <div className="nudge-card nudge-card-3">
               <div className="nudge-avatar"></div>
@@ -270,7 +270,7 @@ export default function Home() {
                 <div className="nudge-name">Live Musicians</div>
                 <div className="nudge-tag">Performance · Events</div>
               </div>
-              <div className="nudge-price">From UGX 200k</div>
+              <div className="nudge-price">From USD 150</div>
             </div>
             <a href="/discover" className="nudge-see-all">See all artists →</a>
           </div>
