@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import { MemoryCardStack } from './MemoryCardStack';
 import type { MemoryCardData } from './MemoryCardStack';
+import NavbarCircleClient from './NavBarCircleClient';
 
 const MOOD_EMOJI: Record<string, string> = {
   magical: '✨', meaningful: '❤️', energetic: '🎉', professional: '🤝', inspiring: '🌱',
@@ -68,7 +69,6 @@ export default async function MyCirclePage() {
   const bookings = (completedRes.data ?? []) as unknown as BookingRow[];
   const savedData = savedRes.data ?? [];
 
-  // Memory cards: bookings that have a mood review, in chronological order
   const memories: MemoryCardData[] = bookings
     .filter((b) => {
       const review = Array.isArray(b.reviews) ? b.reviews[0] : null;
@@ -97,48 +97,27 @@ export default async function MyCirclePage() {
   const isEmpty = bookings.length === 0 && savedData.length === 0;
 
   return (
-    <div className="bg-[#F5F3EF] min-h-screen font-sans text-on-surface">
+    <div className="bg-[#F5F3EF] min-h-screen flex flex-col font-sans text-on-surface">
+      {/* Responsive Header Component */}
+      <NavbarCircleClient accountMenu={<AccountMenu />} />
 
-      {/* Nav */}
-      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-outline-variant/30">
-        <nav className="flex justify-between items-center w-full px-4 md:px-10 h-16 max-w-6xl mx-auto">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-lg font-bold text-primary">Engero</Link>
-            <div className="hidden md:flex gap-6">
-              <Link href="/discover" className="text-sm text-on-surface-variant hover:text-primary transition-colors">Explore</Link>
-              <span className="text-sm text-primary font-semibold border-b-2 border-primary pb-0.5">My Circle</span>
-              <Link href="/bookings" className="text-sm text-on-surface-variant hover:text-primary transition-colors">My bookings</Link>
-              <Link href="/my-circle/gigs" className="text-sm text-on-surface-variant hover:text-primary transition-colors">My Gig Posts</Link>
-
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/discover" className="hidden sm:block text-xs font-mono uppercase tracking-[0.2em] text-primary border border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">
-              Discover artists
-            </Link>
-            <AccountMenu />
-          </div>
-        </nav>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 md:px-10 py-12">
-        <div className="flex gap-16 items-start">
-
-          {/* ── Left: main content ── */}
-          <div className="flex-1 min-w-0 flex flex-col gap-10">
-
-            {/* Hero */}
+      {/* Main Content Area - Expands vertically to keep footer at the bottom */}
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12 flex flex-col justify-center">
+        <div className="w-full flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
+          
+          {/* Left Block */}
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-8 md:gap-10">
             {isEmpty ? (
-              <div className="flex flex-col items-center text-center gap-6 py-8">
+              <div className="flex flex-col items-center text-center gap-6 py-12 px-4 my-auto">
                 <div className="w-20 h-20 rounded-full bg-[#E1F5EE] flex items-center justify-center text-4xl">✦</div>
                 <div>
                   <h1 className="font-playfair text-3xl md:text-4xl font-bold text-on-surface mb-3">Your Circle starts here.</h1>
-                  <p className="text-on-surface-variant text-base max-w-md mx-auto leading-relaxed">
+                  <p className="text-on-surface-variant text-sm sm:text-base max-w-md mx-auto leading-relaxed">
                     Every artist you book, every experience you have: they all live here. Your personal record of meaningful moments.
                   </p>
                 </div>
-                <Link href="/discover">
-                  <button className="bg-primary text-white px-8 py-3.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity">
+                <Link href="/discover" className="w-full sm:w-auto">
+                  <button className="w-full sm:w-auto bg-primary text-white px-8 py-3.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity">
                     Find your first artist →
                   </button>
                 </Link>
@@ -148,40 +127,39 @@ export default async function MyCirclePage() {
               <h1 className="font-playfair text-3xl md:text-4xl font-bold text-on-surface">My Circle</h1>
             )}
 
-            {/* Stats */}
+            {/* Stats Breakdown Grid */}
             {stats.length > 0 && (
-              <div className={`grid gap-4 ${stats.length === 1 ? 'grid-cols-1 max-w-xs' : stats.length === 2 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
+              <div className={`grid gap-4 w-full ${stats.length === 1 ? 'grid-cols-1 max-w-xs' : stats.length === 2 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
                 {stats.map((stat) => (
-                  <div key={stat.label} className="bg-white border border-outline-variant/30 rounded-xl p-5">
+                  <div key={stat.label} className="bg-white border border-outline-variant/30 rounded-xl p-4 sm:p-5">
                     <p className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-1">{stat.label}</p>
-                    <p className="text-4xl font-bold text-primary">{stat.value}</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-primary">{stat.value}</p>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Mobile: card stack shown inline between stats and saved */}
-            {!isEmpty && (
-              <div className="lg:hidden flex justify-center py-2">
+            {/* Mobile Cards Interleaved Position */}
+            {!isEmpty && memories.length > 0 && (
+              <div className="lg:hidden flex justify-center py-2 w-full overflow-hidden">
                 <MemoryCardStack memories={memories} />
               </div>
             )}
 
-            {/* Saved artists */}
+            {/* Saved Block */}
             {savedData.length > 0 && (
-              <div>
+              <div className="w-full">
                 <div className="flex justify-between items-end mb-4">
-                  <h2 className="text-sm font-mono uppercase tracking-widest text-on-surface-variant">Saved artists</h2>
+                  <h2 className="text-xs sm:text-sm font-mono uppercase tracking-widest text-on-surface-variant">Saved artists</h2>
                   <Link href="/saved" className="text-xs font-mono uppercase tracking-widest text-primary hover:opacity-70">See all →</Link>
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-2">
+                <div className="flex gap-5 overflow-x-auto pb-2 no-scrollbar">
                   {savedData.map((s) => {
                     const a = (s as unknown as { artists: { id: string; display_name: string; profile_photo: string | null; slug: string } | null }).artists;
                     if (!a) return null;
                     return (
                       <Link key={s.artist_id} href={`/${a.slug}`} className="flex-shrink-0 flex flex-col items-center gap-1.5 group">
                         {a.profile_photo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={a.profile_photo} alt={a.display_name} className="w-14 h-14 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-all" />
                         ) : (
                           <div className="w-14 h-14 rounded-full bg-primary/10 border-2 border-transparent group-hover:border-primary transition-all" />
@@ -194,10 +172,10 @@ export default async function MyCirclePage() {
               </div>
             )}
 
-            {/* Experience timeline */}
+            {/* Timeline Segment */}
             {bookings.length > 0 && (
-              <div className="flex flex-col gap-8">
-                <h2 className="text-sm font-mono uppercase tracking-widest text-on-surface-variant">Experiences</h2>
+              <div className="flex flex-col gap-6 md:gap-8 w-full">
+                <h2 className="text-xs sm:text-sm font-mono uppercase tracking-widest text-on-surface-variant">Experiences</h2>
                 {Object.entries(monthGroups).map(([month, indices]) => (
                   <div key={month} className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
@@ -216,7 +194,7 @@ export default async function MyCirclePage() {
                         <Link
                           key={b.id}
                           href={hasMemory ? `/booking/${b.id}/memory` : `/booking/${b.id}`}
-                          className="bg-white border border-outline-variant/30 rounded-xl p-4 flex gap-4 hover:shadow-sm hover:border-primary/20 transition-all group"
+                          className="bg-white border border-outline-variant/30 rounded-xl p-4 flex gap-4 hover:shadow-sm hover:border-primary/20 transition-all group w-full"
                         >
                           <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-xl flex flex-col items-center justify-center text-white">
                             <span className="text-[9px] font-mono opacity-60 leading-none uppercase">{mon}</span>
@@ -225,7 +203,6 @@ export default async function MyCirclePage() {
                           <div className="flex-grow min-w-0 self-center">
                             <div className="flex items-center gap-2 mb-0.5">
                               {a?.profile_photo ? (
-                                // eslint-disable-next-line @next/next/no-img-element
                                 <img src={a.profile_photo} alt={a.display_name} className="w-5 h-5 rounded-full object-cover flex-shrink-0" />
                               ) : (
                                 <div className="w-5 h-5 rounded-full bg-primary/10 flex-shrink-0" />
@@ -248,15 +225,15 @@ export default async function MyCirclePage() {
               </div>
             )}
 
-            {/* Discover nudge */}
+            {/* Footer Discover Widget Promotion Box */}
             {!isEmpty && (
-              <div className="bg-[#E1F5EE] rounded-xl p-6 flex items-center justify-between gap-4">
+              <div className="bg-[#E1F5EE] rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
                 <div>
                   <p className="font-semibold text-sm text-primary mb-0.5">Ready for another experience?</p>
                   <p className="text-xs text-on-surface-variant">Browse artists and book something new.</p>
                 </div>
-                <Link href="/discover" className="flex-shrink-0">
-                  <button className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
+                <Link href="/discover" className="w-full sm:w-auto">
+                  <button className="w-full sm:w-auto bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity text-center">
                     Explore →
                   </button>
                 </Link>
@@ -264,24 +241,24 @@ export default async function MyCirclePage() {
             )}
           </div>
 
-          {/* ── Right: sticky card stack (desktop only) ── */}
-          {!isEmpty && (
+          {/* Right Desktop Sticky Frame */}
+          {!isEmpty && memories.length > 0 && (
             <div className="hidden lg:block w-[260px] flex-shrink-0">
               <div className="sticky top-24 pt-2">
                 <MemoryCardStack memories={memories} />
               </div>
             </div>
           )}
-
         </div>
       </main>
 
-      <footer className="bg-white border-t border-outline-variant/30 py-8 px-4 md:px-10 mt-10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="text-lg font-bold text-primary">Engero</span>
-          <div className="flex gap-6">
+      {/* Sealed Viewport Footer Bottom Component */}
+      <footer className="bg-white border-t border-outline-variant/30 py-6 md:py-8 px-4 sm:px-6 md:px-10 w-full shrink-0">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+          <span className="text-base sm:text-lg font-bold text-primary">Engero</span>
+          <div className="flex gap-6 text-sm">
             {['Privacy', 'Terms', 'Support'].map((item) => (
-              <a key={item} href="#" className="text-sm text-on-surface-variant hover:text-primary transition-colors">{item}</a>
+              <a key={item} href="#" className="text-on-surface-variant hover:text-primary transition-colors">{item}</a>
             ))}
           </div>
         </div>

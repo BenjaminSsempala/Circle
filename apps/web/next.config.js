@@ -10,6 +10,7 @@ const nextConfig = {
       '@react-pdf/reconciler',
       'canvas',
     ],
+    instrumentationHook: true,
   },
 };
 

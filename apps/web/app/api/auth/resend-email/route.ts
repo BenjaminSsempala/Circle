@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import { ok, err } from '@/lib/api';
 import { createServiceClient } from '@/lib/supabase/service';
 import { sendEmail } from '@/lib/email';
+import { logger, withAxiom } from '@/lib/axiom/server';
 
 async function sendConfirmationEmail(email: string, actionLink: string) {
   const html = `
@@ -26,17 +27,21 @@ async function sendConfirmationEmail(email: string, actionLink: string) {
 
 // POST /api/auth/resend-email
 // Body: { email, password }
-export async function POST(req: NextRequest) {
+export const POST = withAxiom(async (req: NextRequest) => {
+  const context = { endpoint: '/api/auth/resend-email', method: 'POST' };
   const body = await req.json().catch(() => null);
 
   if (!body?.email) {
+    logger.warn('Email resend validation failed: Missing email parameter', { ...context });
     return err('email is required', 422);
   }
 
   if (!body?.password) {
+    logger.warn('Email resend validation failed: Missing password parameter', { ...context, email: body.email });
     return err('password is required', 422);
   }
 
+  logger.info('Initiating administrative confirmation link generation', { ...context, email: body.email });
   const supabase = createServiceClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -50,18 +55,32 @@ export async function POST(req: NextRequest) {
   });
 
   if (error) {
+    logger.error('Supabase admin confirmation link generation failed', { 
+      ...context, 
+      email: body.email, 
+      error: error.message 
+    });
     return err(error.message || 'Failed to generate confirmation link', 400);
   }
 
   const actionLink = data?.properties?.action_link;
   if (!actionLink) {
+    logger.error('Supabase link property generation anomaly: Missing action link payload', { ...context, email: body.email });
     return err('Failed to generate confirmation link', 500);
   }
 
+  logger.info('Dispatching outbound confirmation email transaction', { ...context, email: body.email });
   const { ok: emailOk, error: emailError } = await sendConfirmationEmail(body.email, actionLink);
+  
   if (!emailOk) {
+    logger.error('Outbound mail transport delivery failure', { 
+      ...context, 
+      email: body.email, 
+      error: emailError ?? 'Unknown mail transport exception' 
+    });
     return err(emailError ?? 'Failed to send confirmation email', 500);
   }
 
+  logger.info('Confirmation email delivery queued successfully', { ...context, email: body.email });
   return ok({ message: 'Confirmation email resent. Check your inbox.' }, 200);
-}
+});

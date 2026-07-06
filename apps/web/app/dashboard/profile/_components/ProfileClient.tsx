@@ -304,10 +304,10 @@ export function ProfileClient({ artist }: { artist: Artist }) {
                   <input value={form.country} onChange={(e) => update('country', e.target.value)} className={inputClass} placeholder="Kenya" />
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <label className={labelClass}>Active Since</label>
                 <input type="number" value={form.actives_since} onChange={(e) => update('actives_since', e.target.value)} className={inputClass} placeholder="2018" />
-              </div>
+              </div> */}
             </div>
           </section>
 

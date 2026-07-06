@@ -17,6 +17,8 @@ Auth:
 
 Profile page    
 - Reintroduce QR codes, on profile as sharable, on epk and rate card too.
+- confirm socials links for different social in ui
+- add click to expand dp on artist profile
 
 Export
 - EPK 2 pages has a bug
@@ -29,3 +31,4 @@ Deployment
 
 Audience
 - Add phonenumber to audience
+- My circle page footer is misplaced
