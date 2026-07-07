@@ -12,7 +12,7 @@ Tech-Debt
 4. Create simple onboarding flow for users if they havent visited a page before
 
 Auth:
-- Cookie error still present
+- Cookie error still present?
 - Confirmation email is ugly ux
 
 Profile page    
@@ -21,7 +21,11 @@ Profile page
 - add click to expand dp on artist profile
 
 Export
-- EPK 2 pages has a bug
+- EPK 2 pages has a bug and needs design work
+- Design rate card also needs work, 2 pages and 1, stats are missing
+- Image and pdf are completely different. We can allow differnt styles of export
+- Yt is broken on profile card export, shows just channel instead of channel name
+
 
 Packages:
 - Add an info page that shows what types of creative packages we can add, 
@@ -31,4 +35,3 @@ Deployment
 
 Audience
 - Add phonenumber to audience
-- My circle page footer is misplaced

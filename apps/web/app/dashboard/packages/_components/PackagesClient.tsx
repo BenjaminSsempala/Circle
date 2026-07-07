@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { ExportModal } from '@/app/[slug]/_components/ExportModal';
 
 type ProductType = 'service' | 'digital' | 'merchandise';
 
@@ -476,14 +477,16 @@ function PackageDrawer({
 
 export function PackagesClient({
   initialPackages,
-  artistSlug,
+  artist,
 }: {
   initialPackages: Package[];
-  artistSlug: string;
+  artist: any;
 }) {
+  const artistSlug = artist.slug;
   const [packages, setPackages] = useState<Package[]>(initialPackages);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<Package | null>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   function openAdd() {
     setEditing(null);
@@ -580,15 +583,15 @@ export function PackagesClient({
 
       {/* Export rate card */}
       <div className="mt-8 pt-6 border-t border-outline-variant/20">
-        <Link
-          href={`/api/artists/${artistSlug}/export/rate-card`}
-          className="inline-flex items-center gap-2 text-primary text-label-mono font-label-mono text-sm hover:underline"
+        <button
+          onClick={() => setExportModalOpen(true)}
+          className="inline-flex items-center gap-2 text-primary text-label-mono font-label-mono text-sm hover:underline bg-transparent border-0 cursor-pointer p-0"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           Export rate card PDF
-        </Link>
+        </button>
       </div>
 
       {/* Package drawer */}
@@ -598,6 +601,39 @@ export function PackagesClient({
           onClose={closeDrawer}
           artistSlug={artistSlug}
           onSaved={handleSaved}
+        />
+      )}
+
+      {/* Export modal */}
+      {exportModalOpen && (
+        <ExportModal
+          mode="rate-card"
+          slug={artist.slug}
+          artistName={artist.name}
+          hasPhoto={!!artist.profile_photo}
+          hasBio={!!artist.bio}
+          hasTagline={!!artist.tagline}
+          artistPhoto={artist.profile_photo ?? null}
+          artistTagline={artist.tagline ?? null}
+          artistBio={artist.bio ?? null}
+          artistCity={artist.city ?? null}
+          artistCountry={artist.country ?? null}
+          artForms={Array.isArray(artist.art_forms) ? artist.art_forms : []}
+          artistTags={Array.isArray(artist.tags) ? artist.tags : null}
+          socialLinks={artist.social_links ?? {}}
+          selectedWorks={(Array.isArray(artist.selected_works) ? artist.selected_works : []) as any[]}
+          packages={packages.map((p) => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            currency: p.currency,
+            duration: p.duration ?? null,
+            description: p.description ?? null,
+            logistics_inclusive: p.logistics_inclusive,
+          }))}
+          savedEPK={artist.epk_data ?? null}
+          savedRC={artist.rate_card_data ?? null}
+          onClose={() => setExportModalOpen(false)}
         />
       )}
     </>
