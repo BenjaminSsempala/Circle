@@ -1,0 +1,76 @@
+name: CI/CD Production Release
+
+on:
+  workflow_dispatch:
+jobs:
+  push-to-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Generate Release Notes (Find Included PRs)
+        id: release_notes
+        run: |
+          echo "Fetching differences between production and staging..."
+          git fetch origin production:production --quiet
+          
+          # Get a beautifully formatted list of PRs merged into staging since last production sync
+          PR_LIST=$(git log origin/production..origin/staging --merges --oneline --grep="Merge pull request" --format="* %s")
+          
+          if [ -z "$PR_LIST" ]; then
+            # Fallback if squashed commits were used instead of explicit merge commits
+            PR_LIST=$(git log origin/production..origin/staging --oneline --format="* %s" | grep -E '#[0-9]+')
+          fi
+          
+          if [ -z "$PR_LIST" ]; then
+             PR_LIST="* Direct commits or minor updates found. No explicit pull request titles parsed."
+          fi
+
+          # Clear multiline output parsing strings safely for GitHub Actions outputs
+          EOF=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64)
+          echo "prs<<$EOF" >> $GITHUB_OUTPUT
+          echo "$PR_LIST" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: Log PRs to GitHub Actions Console
+        run: |
+          echo "========================================="
+          echo "🚀 PULL REQUESTS BEING MERGED TO PRODUCTION:"
+          echo "========================================="
+          echo "${{ steps.release_notes.outputs.prs }}"
+          echo "========================================="
+
+      - name: Create and Automatically Merge Production PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if there are actual diffs between staging and production
+          DIFF_COUNT=$(git rev-list --count origin/production..origin/staging)
+          if [ "$DIFF_COUNT" -eq "0" ]; then
+            echo "Production branch is already perfectly up to date with Staging."
+            exit 0
+          fi
+
+          PR_BODY="### 🚀 Automated Production Release
+          This PR merges the latest updates from \`staging\` into \`production\`.
+
+          #### 📦 Features & Fixes included in this release:
+          ${{ steps.release_notes.outputs.prs }}"
+
+          echo "Creating Pull Request..."
+          PR_URL=$(gh pr create \
+            --base production \
+            --head staging \
+            --title "Release: Sync Staging to Production 🚀" \
+            --body "$PR_BODY")
+          
+          echo "PR Created successfully: $PR_URL"
+          
+          echo "Merging Pull Request immediately..."
+          gh pr merge "$PR_URL" --merge --delete-branch=false
