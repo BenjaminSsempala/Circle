@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { getArtistByUserIdCached } from '@/lib/services/artists';
-import { CopyLinkButton } from './_components/CopyLinkButton';
+import { ExportButton } from './_components/ExportButton';
+import { DashboardClient } from './_components/DashboardClient';
 
 function greeting() {
   const h = new Date().getHours();
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
   const artist = artistResult.ok ? artistResult.artist : null;
 
   const { data: packages } = artist
-    ? await supabase.from('packages').select('id').eq('artist_id', artist.id).eq('is_active', true)
+    ? await supabase.from('packages').select('id,name,price,currency,duration,description,logistics_inclusive').eq('artist_id', artist.id).eq('is_active', true)
     : { data: [] };
 
   // Bookings – table may not exist yet, so catch the error gracefully
@@ -92,7 +93,7 @@ export default async function DashboardPage() {
 
   const firstName = (artist?.display_name ?? artist?.name ?? '').split(' ')[0] || 'there';
 
-  return (
+  const dashboardContent = (
     <div className="p-6 md:p-10 max-w-5xl mx-auto w-full">
       {/* Greeting */}
       <div className="mb-8">
@@ -292,12 +293,18 @@ export default async function DashboardPage() {
                 </Link>
               ))}
               {artist && (
-                <CopyLinkButton slug={artist.slug} />
+                <ExportButton slug={artist.slug} />
               )}
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <DashboardClient artist={artist} packages={packages ?? []}>
+      {dashboardContent}
+    </DashboardClient>
   );
 }

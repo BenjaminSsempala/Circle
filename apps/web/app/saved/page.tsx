@@ -28,14 +28,14 @@ export default async function SavedPage() {
   if (savedIds.length > 0) {
     const [{ data: artistRows }, { data: packages }] = await Promise.all([
       anonSupabase.from('artists').select('*').in('id', savedIds),
-      anonSupabase.from('packages').select('artist_id, price, currency').eq('is_active', true).in('artist_id', savedIds),
+      anonSupabase.from('packages').select('artist_id, name, price, currency').eq('is_active', true).in('artist_id', savedIds),
     ]);
 
-    const priceMap = new Map<string, { min: number; currency: string }>();
+    const priceMap = new Map<string, { min: number; currency: string; name: string }>();
     for (const pkg of packages ?? []) {
       const existing = priceMap.get(pkg.artist_id);
       if (!existing || pkg.price < existing.min) {
-        priceMap.set(pkg.artist_id, { min: pkg.price, currency: pkg.currency ?? 'UGX' });
+        priceMap.set(pkg.artist_id, { min: pkg.price, currency: pkg.currency ?? 'UGX', name: pkg.name });
       }
     }
 
@@ -47,6 +47,7 @@ export default async function SavedPage() {
         tags: a.tags ?? [], city: a.city, country: a.country,
         completed_bookings: a.completed_bookings ?? 0,
         min_price: priceInfo?.min, currency: priceInfo?.currency,
+        min_package_name: priceInfo?.name,
       };
     });
   }

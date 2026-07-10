@@ -19,7 +19,31 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      // Refresh token is missing or invalid — clear the session
+      supabaseResponse.cookies.delete('sb-access-token');
+      supabaseResponse.cookies.delete('sb-refresh-token');
+      // Also clear the project-scoped SSR auth token
+      const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
+      if (projectRef) {
+        supabaseResponse.cookies.delete(`sb-${projectRef}-auth-token`);
+      }
+    } else {
+      user = data.user;
+    }
+  } catch (error) {
+    // Unexpected exception — also clear session as precaution
+    supabaseResponse.cookies.delete('sb-access-token');
+    supabaseResponse.cookies.delete('sb-refresh-token');
+    const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
+    if (projectRef) {
+      supabaseResponse.cookies.delete(`sb-${projectRef}-auth-token`);
+    }
+  }
+
   const url = request.nextUrl.clone();
   const path = url.pathname;
 

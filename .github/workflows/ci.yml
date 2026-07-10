@@ -28,11 +28,12 @@ jobs:
         working-directory: apps/web
         run: |
           if [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            vercel env pull .env.local --environment=production --yes --token=${{ secrets.VERCEL_TOKEN }}
+            vercel env pull .env.local --environment=production --yes --token="$VERCEL_TOKEN"
           else
-            vercel env pull .env.local --environment=preview --yes --token=${{ secrets.VERCEL_TOKEN }}
+            vercel env pull .env.local --environment=preview --yes --token="$VERCEL_TOKEN"
           fi
         env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 

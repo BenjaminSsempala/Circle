@@ -31,7 +31,19 @@ export async function createClient() {
 
 export async function requireArtistOwnership(slug: string) {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  
+  let user = null;
+  let authError = null;
+  
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data?.user ?? null;
+    authError = result.error;
+  } catch (error) {
+    // Refresh token is missing or invalid
+    authError = error as any;
+
+  }
 
   if (authError || !user) {
     return { error: 'Unauthorized', status: 401 as const, artist: null };
