@@ -38,8 +38,15 @@ Deployment
 Audience
 - Add phonenumber to audience
 
-Wandia
-- Font 
-- Onboarding
-- How to create packages
-- WHat draws the audience in? what draws the artist in?
+Wandia Feedback:
+- Make legalname optional
+- Hidde profiles at will for artists
+- Examples of packages? what packages are?
+- On artist profile, change currency to auto?
+- Adding payment details? Do we add them?
+- Upcoming Blackouts? Blockades? Unavailable Days?
+- Events Time: Make it a range? From 7am to 10pm. Add payment details
+- What would draw the artist in? What features? -payment at the click of a button, how do i get paid?
+- Comments on artists work/ packages/services... Rate the artist. Lice feedback
+- Font change the font to less calculatorly
+- Tutorial of sorts
