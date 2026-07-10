@@ -68,7 +68,7 @@ export function ContractDocument({ contract }: { contract: Contract }) {
     <div className="rounded-xl border border-primary/10 bg-white overflow-hidden">
       {/* Document header */}
       <div className="px-6 py-5 border-b border-primary/10 bg-primary/[0.02]">
-        <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-primary mb-1.5">The Circle · Booking Agreement</div>
+        <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-primary mb-1.5">Engero · Booking Agreement</div>
         <h2 className="font-bold text-lg text-on-surface">{rendered.typeTitle}</h2>
         <div className="flex gap-6 mt-2">
           <div>
@@ -140,7 +140,7 @@ export function ContractDocument({ contract }: { contract: Contract }) {
             </div>
           </div>
           <div className="mt-4 text-center font-mono text-[9px] text-on-surface-variant tracking-wider uppercase">
-            Facilitated by The Circle — thecircle.co · {rendered.reference}
+            Facilitated by Engero · engero.art · {rendered.reference}
           </div>
         </div>
       </div>

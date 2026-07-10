@@ -60,11 +60,11 @@ export async function PATCH(
   const { booking } = result;
   const { data: artistData } = await createServiceClient()
     .from('artists')
-    .select('name, city, country')
+    .select('legal_name, city, country')
     .eq('id', booking.artist_id)
     .maybeSingle();
 
-  const artist = artistData ?? { name: '', city: null, country: null };
+  const artist = artistData ?? { legal_name: '', city: null, country: null };
   const audience = { name: booking.audience_name ?? '', email: booking.audience_email ?? '' };
 
   const pdfUrl = await generateContractPDF(updated as Contract, booking, artist, audience);

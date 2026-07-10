@@ -140,7 +140,7 @@ function YouTubePreview({ url }: { url: string }) {
     setFetchDone(false);
 
     if (videoId) {
-      // Direct thumbnail — no API key needed
+      // Direct thumbnail: no API key needed
       setThumbnail(`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`);
     }
 
@@ -495,7 +495,7 @@ const PLATFORMS: {
     category: 'Audio',
     Logo: SoundCloudLogo,
     bgColor: '#FF550015',
-    description: 'Your audio collection, demos, and original tracks — all surfaced on your profile.',
+    description: 'Your audio collection, demos, and original tracks: all surfaced on your profile.',
     placeholder: 'https://soundcloud.com/yourname',
     Preview: SoundCloudPreview,
   },
@@ -574,7 +574,7 @@ function PlatformCard({
   const isConnected = state === 'connected';
   const isEditing = state === 'editing';
 
-  // Resolve the URL to open — ensure it's absolute
+  // Resolve the URL to open: ensure it's absolute
   const openUrl = url.startsWith('http') ? url : url ? `https://${url}` : '#';
 
   const handleCardClick = () => {
@@ -600,7 +600,7 @@ function PlatformCard({
         </div>
 
         {isConnected ? (
-          /* Pencil edit button — stops propagation so it doesn't open the URL */
+          /* Pencil edit button: stops propagation so it doesn't open the URL */
           <button
             onClick={(e) => { e.stopPropagation(); onStartEditing(); }}
             title="Edit link"
@@ -661,7 +661,7 @@ function PlatformCard({
 
       {/* CTA button */}
       {isConnected ? (
-        /* Connected button is part of the clickable card — no separate onClick needed */
+        /* Connected button is part of the clickable card: no separate onClick needed */
         <div
           onClick={(e) => e.stopPropagation()} // let card handle it
           className="w-full py-3 px-4 bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 group-hover:opacity-90 transition-opacity"
@@ -792,7 +792,7 @@ export default function SocialsOnboardingPage() {
 
       {/* Header */}
       <header className="w-full py-6 px-margin-mobile md:px-margin-desktop flex justify-between items-center">
-        <div className="text-headline-md font-headline-md text-primary tracking-tight">Circle</div>
+        <div className="text-headline-md font-headline-md text-primary tracking-tight">Engero</div>
         <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-label-mono font-label-mono">
           Step 3 of 3
         </div>

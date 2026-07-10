@@ -199,7 +199,7 @@ export function AddWorkModal({
           {/* Error */}
           {error && <div className="rounded-lg bg-error/10 border border-error/20 px-3 py-2 text-sm text-error">{error}</div>}
 
-          {/* Step 1 — Type */}
+          {/* Step 1: Type */}
           <div className="grid grid-cols-4 gap-2">
             {TYPE_OPTIONS.map((opt) => (
               <button
@@ -264,7 +264,7 @@ export function AddWorkModal({
                       )}
                       {fetchFailed && (
                         <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
-                          Couldn't load preview automatically — paste a thumbnail URL below.
+                          Couldn't load preview automatically: paste a thumbnail URL below.
                         </div>
                       )}
                       <div className="flex flex-col gap-1">

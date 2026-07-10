@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 
 interface Profile {
   id: string;
-  full_name: string;
+  display_name?: string;
+  legal_name?: string;
   role?: 'artist' | 'organiser';
   onboarding_complete?: boolean;
 }
@@ -31,9 +32,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isMountedRef = useRef(true);
   const lastFetchedUserIdRef = useRef<string | null>(null);
   
-  // Use a ref to keep the Supabase client stable across renders
+  // Use a ref to keep the Supabase client stable across renders.
+  // createClient() returns null when NEXT_PUBLIC_SUPABASE_URL is absent (e.g. at build time).
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
+
+  // If Supabase is not configured (build-time SSR), render children immediately without auth
+  if (!supabase) {
+    return <AuthContext.Provider value={{ session: null, user: null, loading: false, isAuthenticated: false, signOut: async () => {}, refetchProfile: async () => {} }}>{children}</AuthContext.Provider>;
+  }
 
   /**
    * Helper function to fetch profile data and update state.
@@ -83,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Fallback to basic user info from session metadata if DB fetch fails
         setUser({
           id: userId,
-          full_name: currentSession.user.user_metadata?.full_name || '',
+          display_name: currentSession.user.user_metadata?.display_name || '',
           role: undefined,
           onboarding_complete: false,
         });
@@ -91,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('AuthContext: Profile loaded with role:', profile.role);
         setUser({
           id: profile.id,
-          full_name: profile.full_name || '',
+          display_name: profile.display_name || '',
           role: profile.role || undefined,
           onboarding_complete: profile.onboarding_complete || false,
         });
@@ -99,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('AuthContext: No profile row found in DB.');
         setUser({
           id: userId,
-          full_name: currentSession.user.user_metadata?.full_name || '',
+          display_name: currentSession.user.user_metadata?.display_name || '',
           role: undefined,
           onboarding_complete: false,
         });

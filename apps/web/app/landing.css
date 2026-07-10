@@ -296,7 +296,7 @@ body {
   margin-top: 2px;
 }
 
-/* SPLIT SECTION — twin problems */
+/* SPLIT SECTION: twin problems */
 .split {
   padding: 100px 24px;
   max-width: 1100px;
@@ -883,5 +883,525 @@ footer {
     flex-direction: column;
     gap: 16px;
     text-align: center;
+  }
+}
+
+/* ── DISCOVER NUDGE ─────────────────────────────────────────── */
+.discover-nudge {
+  background: #f5f3ef;
+  padding: 96px 64px;
+}
+
+.discover-nudge-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.discover-nudge-h {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #1b1c19;
+  line-height: 1.2;
+  margin: 0 0 16px;
+}
+
+.discover-nudge-h em {
+  color: #005440;
+  font-style: italic;
+}
+
+.discover-nudge-sub {
+  font-size: 15px;
+  color: #3f4944;
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+.discover-nudge-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nudge-card {
+  background: #fff;
+  border: 1px solid #e4e2dd;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.nudge-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border-color: #bec9c3;
+}
+
+.nudge-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #005440, #086b53);
+  opacity: 0.3;
+}
+
+.nudge-card-1 .nudge-avatar { background: linear-gradient(135deg, #005440, #0a7a60); opacity: 0.6; }
+.nudge-card-2 .nudge-avatar { background: linear-gradient(135deg, #2d2520, #5a4a40); opacity: 0.5; }
+.nudge-card-3 .nudge-avatar { background: linear-gradient(135deg, #1a3a2a, #005440); opacity: 0.55; }
+
+.nudge-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nudge-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1b1c19;
+  line-height: 1.2;
+}
+
+.nudge-tag {
+  font-size: 11px;
+  color: #6f7a74;
+  margin-top: 2px;
+}
+
+.nudge-price {
+  font-size: 11px;
+  font-weight: 600;
+  color: #005440;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+
+.nudge-see-all {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #005440;
+  text-decoration: none;
+  padding: 8px 0;
+  transition: opacity 0.2s;
+}
+
+.nudge-see-all:hover { opacity: 0.7; }
+
+@media (max-width: 768px) {
+  .discover-nudge {
+    padding: 64px 16px;
+  }
+
+  .discover-nudge-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .discover-nudge-h {
+    font-size: 28px;
+  }
+}
+
+/* ── BRIDGING LINE subtext ──────────────────────────────────────────────── */
+.split-subtext {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--gray);
+  text-align: center;
+  margin-top: -40px;
+  margin-bottom: 56px;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* ── CARD FEATURES — mixed-height bullets ───────────────────────────────── */
+.card-features li {
+  align-items: flex-start; /* override center so checkmark sits at top on wrapped lines */
+}
+.card-features li span:last-child {
+  flex: 1;
+  line-height: 1.55;
+}
+.card-features li strong {
+  font-weight: 600;
+}
+.split-card-artist .card-features li strong {
+  color: var(--teal-mid);
+}
+.split-card-org .card-features li strong {
+  color: var(--teal);
+}
+
+/* ── THE JOURNEY — circular orbit ──────────────────────────────────────── */
+.journey {
+  background: var(--mist);
+  padding: 80px 24px;
+}
+
+.journey-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Desktop orbit */
+.journey-orbit-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.journey-orbit {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  max-width: 100%;
+}
+
+.journey-orbit-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Each step node: centred at its % position */
+.journey-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 148px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 12px 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.jn-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.jn-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 5px;
+}
+
+.jn-desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Centre decoration */
+.journey-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.journey-center-ring {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--teal-lt);
+  background: var(--mist);
+}
+
+/* Mobile: 2×3 grid, orbit hidden */
+.journey-mobile-grid {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.jm-step {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px 16px;
+}
+
+/* ── EVERY ARTIST DESERVES A CIRCLE ────────────────────────────────────── */
+.artist-circle {
+  background: var(--ink);
+  color: #fff;
+  padding: 120px 24px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.artist-circle-rings {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.acr {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.acr-1 { width: 300px; height: 300px; }
+.acr-2 { width: 540px; height: 540px; }
+.acr-3 { width: 800px; height: 800px; }
+
+.artist-circle-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.artist-circle-h {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+
+.artist-circle-body {
+  font-size: 17px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 16px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.artist-circle-closing {
+  margin-top: 36px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--teal-mid);
+  text-transform: uppercase;
+}
+
+/* ── FOR AUDIENCES — extra closing line ─────────────────────────────────── */
+.discover-nudge-closing {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--gray);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* ── OPPORTUNITIES TEASE ────────────────────────────────────────────────── */
+.opportunities {
+  background: var(--chalk);
+  padding: 100px 24px;
+  text-align: center;
+}
+
+.opportunities-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.opportunities-body {
+  font-size: 16px;
+  color: var(--gray);
+  line-height: 1.75;
+  margin-top: -36px;
+  margin-bottom: 40px;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.opp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.opp-chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--gray);
+  border: 1.5px dashed var(--border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.opp-soon {
+  font-size: 13px;
+  color: var(--gray);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* ── MOBILE RESPONSIVE ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .split-subtext {
+    margin-top: -24px;
+    margin-bottom: 40px;
+  }
+
+  .journey {
+    padding: 56px 16px;
+  }
+  .journey-orbit-wrap { display: none; }
+  .journey-mobile-grid { display: grid; }
+
+  .artist-circle {
+    padding: 80px 16px;
+  }
+
+  .acr-2 { width: 340px; height: 340px; }
+  .acr-3 { width: 560px; height: 560px; }
+
+  .opportunities {
+    padding: 64px 16px;
+  }
+
+  .opportunities-body {
+    margin-top: -20px;
+  }
+}
+
+/* ── CIRCLE + OPPORTUNITIES merged ─────────────────────────────────────── */
+.circle-opp {
+  background: var(--ink);
+  color: #fff;
+  padding: 96px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Concentric rings — same as old artist-circle */
+.circle-opp-rings {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* anchor rings to the left column */
+  padding-left: 18%;
+  pointer-events: none;
+}
+
+.circle-opp-grid {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 0.55fr;
+  gap: 0 48px;
+  align-items: center;
+}
+
+/* Left column */
+.circle-opp-main {
+  /* inherits artist-circle text styles */
+}
+
+/* Vertical divider */
+.circle-opp-divider {
+  width: 1px;
+  height: 220px;
+  background: rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+/* Right column — de-emphasised */
+.circle-opp-aside {
+  opacity: 0.75;
+}
+
+.opp-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-mid);
+  margin-bottom: 14px;
+}
+
+.opp-aside-h {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 14px;
+  color: rgba(255,255,255,0.85);
+}
+
+.opp-aside-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+
+.opp-chips-sm {
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.circle-opp .opp-chip {
+  border-color: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  padding: 4px 12px;
+}
+
+.circle-opp .opp-soon {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+}
+
+@media (max-width: 768px) {
+  .circle-opp {
+    padding: 64px 16px;
+  }
+  .circle-opp-grid {
+    grid-template-columns: 1fr;
+    gap: 40px 0;
+  }
+  .circle-opp-divider {
+    width: 48px;
+    height: 1px;
+  }
+  .circle-opp-rings {
+    padding-left: 0;
   }
 }

@@ -1,5 +1,5 @@
 # Auth Setup Guide
-## The Circle — Supabase + Google OAuth
+## Engero — Supabase + Google OAuth
 
 ---
 
@@ -7,7 +7,7 @@
 
 1. Go to https://supabase.com and sign in (free account is fine for MVP)
 2. Click **New project**
-3. Name it `the-circle`, pick the closest region (choose **EU West** or **US East** — no East Africa region yet)
+3. Name it `engero`, pick the closest region (choose **EU West** or **US East** — no East Africa region yet)
 4. Set a strong database password and save it somewhere safe
 5. Wait ~2 minutes for the project to spin up
 
@@ -70,12 +70,12 @@ This creates:
 1. Create a new project (or use existing)
 2. Go to **APIs & Services → OAuth consent screen**
    - User type: **External**
-   - Fill in app name ("The Circle"), support email, developer email
+   - Fill in app name ("Engero"), support email, developer email
    - Save
 3. Go to **APIs & Services → Credentials → Create Credentials → OAuth Client ID**
    - Application type: **Web application**
-   - Name: `The Circle`
-   - Authorised JavaScript origins: `http://localhost:3000` (add your production URL later)
+   - Name: `Engero`
+   - Authorised JavaScript origins: `http://localhost:3000` (add `https://engero.art` for production)
    - Authorised redirect URIs: `https://your-project-ref.supabase.co/auth/v1/callback`
      (get this exact URL from Supabase: **Authentication → Providers → Google → Callback URL**)
 4. Click **Create** — copy the **Client ID** and **Client Secret**
@@ -89,10 +89,10 @@ This creates:
 ## Step 6: Set the redirect URL in Supabase
 
 1. Go to **Authentication → URL Configuration**
-2. Set **Site URL** to `http://localhost:3000` (update to your Vercel URL after deploy)
+2. Set **Site URL** to `http://localhost:3000` (update to `https://engero.art` after deploy)
 3. Under **Redirect URLs**, add:
    - `http://localhost:3000/auth/callback`
-   - `https://your-vercel-url.vercel.app/auth/callback` (add after deploy)
+   - `https://engero.art/auth/callback` (add after deploy)
 
 ---
 

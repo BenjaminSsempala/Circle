@@ -138,7 +138,7 @@ function WorkCard({
         </div>
       )}
 
-      {/* Type icon — centred */}
+      {/* Type icon: centred */}
       <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
         {!work.thumbnail_url && work.provider === 'tiktok'    ? <TikTokIcon />    :
        !work.thumbnail_url && work.provider === 'instagram' ? <InstagramIcon /> :
@@ -151,7 +151,7 @@ function WorkCard({
           {work.category}
         </span>
         {isOwner && !deleting && (
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+          <div className="flex gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
             {onMoveUp && (
               <button onClick={onMoveUp} disabled={reordering} className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 transition-colors backdrop-blur-sm disabled:opacity-40" title="Move up">
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -265,7 +265,7 @@ export function SelectedWorksGrid({
         {isOwner && (
           <div className="flex items-center gap-3">
             {atLimit && (
-              <span className="text-xs text-on-surface-variant">6 / 6 — delete one to add more</span>
+              <span className="text-xs text-on-surface-variant">6 / 6: delete one to add more</span>
             )}
             {!atLimit && (
               <button

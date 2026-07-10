@@ -45,14 +45,14 @@ export async function GET(
   const artForms   = (Array.isArray(artist.art_forms) ? artist.art_forms : []) as string[];
   const discipline = artForms[0] ?? '';
   const location   = [city, country].filter(Boolean).join(', ');
-  const profileUrl = `thecircle.co/${slug}`;
+  const profileUrl = `engero.art/${slug}`;
   const handle     = `/${slug}`;
 
   const cheapest = packages.reduce<typeof packages[0] | null>(
     (m, p) => (!m || p.price < m.price ? p : m), null,
   );
 
-  // Stats — use saved rate card stats if available, otherwise derive
+  // Stats: use saved rate card stats if available, otherwise derive
   type StatEntry = { value: string; label: string };
   const savedStats = (artist.rate_card_data as { stats?: StatEntry[] } | null)?.stats ?? [];
   const stats: { v: string; l: string }[] = savedStats
@@ -84,7 +84,7 @@ export async function GET(
     loadFont('JetBrains Mono', 500),
   ]);
 
-  // Only pass fonts that loaded — empty ArrayBuffers crash ImageResponse
+  // Only pass fonts that loaded: empty ArrayBuffers crash ImageResponse
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fonts: any[] = [];
   if (fontJakarta) fonts.push({ name: 'Jakarta', data: fontJakarta, weight: 800, style: 'normal' });
@@ -95,7 +95,7 @@ export async function GET(
   const sans  = fontJakarta ? 'Jakarta' : 'sans-serif';
   const mono  = fontMono    ? 'Mono'    : 'monospace';
 
-  // Social icon SVG paths — use <g> not fragments; Satori doesn't support <>
+  // Social icon SVG paths: use <g> not fragments; Satori doesn't support <>
   function socialPath(type: string, color: string) {
     const s = { stroke: color, strokeWidth: '2.4', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, fill: 'none' };
     if (type === 'instagram') return (
@@ -161,7 +161,7 @@ export async function GET(
               <path d="M5 0C5 3.5 3 4.8 3 7A2 2 0 007 7C7 4.8 5 3.5 5 0z" fill="rgba(255,255,255,0.8)" opacity="0.75" />
               <circle cx="5" cy="10" r="1.5" fill="rgba(255,255,255,0.8)" opacity="0.75" />
             </svg>
-            <span style={{ fontFamily: mono, fontSize: p(10), color: 'rgba(255,255,255,0.65)', letterSpacing: '0.18em', display: 'flex' }}>circle</span>
+            <span style={{ fontFamily: mono, fontSize: p(10), color: 'rgba(255,255,255,0.65)', letterSpacing: '0.18em', display: 'flex' }}>engero</span>
           </div>
         </div>
 
@@ -209,7 +209,7 @@ export async function GET(
             </div>
           )}
 
-          {/* Social chips — icon + handle */}
+          {/* Social chips: icon + handle */}
           {activeSocials.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: p(7), marginBottom: p(20) }}>
               {activeSocials.map(({ key, handle }) => (
@@ -236,7 +236,7 @@ export async function GET(
                 <path d="M5 0C5 3.5 3 4.8 3 7A2 2 0 007 7C7 4.8 5 3.5 5 0z" fill="rgba(255,255,255,0.25)" opacity="0.75" />
                 <circle cx="5" cy="10" r="1.5" fill="rgba(255,255,255,0.25)" opacity="0.75" />
               </svg>
-              <span style={{ fontFamily: mono, fontSize: p(9.5), color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>{`thecircle.co${handle}`}</span>
+              <span style={{ fontFamily: mono, fontSize: p(9.5), color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>{`engero.art${handle}`}</span>
             </div>
           </div>
         </div>

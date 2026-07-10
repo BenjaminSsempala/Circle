@@ -19,29 +19,35 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      # 1. Installs Vercel CLI immediately
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      # 2. Pulls environment information directly into apps/web/.env.local
+      - name: Pull Vercel Environment Information
+        working-directory: apps/web
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            vercel env pull .env.local --environment=production --yes --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel env pull .env.local --environment=preview --yes --token=${{ secrets.VERCEL_TOKEN }}
+          fi
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # 3. Clean install all dependencies with env context ready
       - name: Install dependencies
         run: npm ci
 
       - name: Typecheck
         working-directory: apps/web
         run: npx tsc --noEmit
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_SITE_URL: http://localhost:3000
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+
+      - name: Run tests
+        working-directory: apps/web
+        run: npm run test
 
       - name: Build
         working-directory: apps/web
         run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_SITE_URL: http://localhost:3000
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}

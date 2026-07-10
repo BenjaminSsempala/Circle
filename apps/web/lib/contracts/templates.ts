@@ -114,7 +114,7 @@ function entireAgreementSection(n: number): ContractSection {
     title: 'ENTIRE AGREEMENT',
     body: [
       "This Agreement constitutes the entire agreement between the parties with respect to its subject matter and supersedes all prior negotiations, representations, or agreements. Any amendments to this Agreement must be made in writing and agreed to by both parties.",
-      "This Agreement has been facilitated by The Circle platform (thecircle.co). The Circle is not a party to this Agreement and assumes no liability for the performance or non-performance of either party's obligations hereunder.",
+      "This Agreement has been facilitated by Engero platform (engero.art). Engero is not a party to this Agreement and assumes no liability for the performance or non-performance of either party's obligations hereunder.",
     ].join('\n\n'),
   };
 }
@@ -151,7 +151,7 @@ function performanceSections(c: ContractContent): ContractSection[] {
       body: [
         'The Artist agrees to:',
         '(a) Arrive at the venue no less than thirty (30) minutes prior to the agreed performance time to allow for preparation and sound checks where applicable;',
-        "(b) Deliver the performance for the agreed duration in a professional manner consistent with the standard described in the Artist's profile on The Circle platform;",
+        "(b) Deliver the performance for the agreed duration in a professional manner consistent with the standard described in the Artist's profile on Engero platform;",
         '(c) Conduct themselves professionally throughout the engagement, including in interactions with the Client, guests, and venue staff;',
         '(d) Communicate any significant changes to the agreed set, format, or logistics to the Client no less than 48 hours in advance where possible.',
       ].join('\n\n'),
@@ -261,7 +261,7 @@ function digitalDeliverySections(c: ContractContent): ContractSection[] {
       body: [
         'The Artist agrees to:',
         '(a) Create the deliverable described above in accordance with the requirements communicated by the Client at the time of booking;',
-        '(b) Deliver the completed work to the Client by the agreed Delivery Date via The Circle platform or such other method as agreed between the parties;',
+        '(b) Deliver the completed work to the Client by the agreed Delivery Date via Engero platform or such other method as agreed between the parties;',
         '(c) Notify the Client no less than forty-eight (48) hours in advance if the Delivery Date cannot be met, and propose a revised delivery timeline;',
         "(d) Incorporate one (1) round of reasonable revisions at no additional charge, where the Client's revision request is consistent with the original brief and does not constitute a fundamental change to the agreed deliverable.",
       ].join('\n\n'),
@@ -473,7 +473,7 @@ export function buildContractSections(contract: Contract): RenderedContract {
     `${c.parties.audience.name} (${c.parties.audience.email})`,
     '(hereinafter referred to as "the Client")',
     '',
-    'This Agreement is facilitated by The Circle platform (thecircle.co) and constitutes a binding agreement between the Artist and the Client upon signature by both parties.',
+    'This Agreement is facilitated by Engero platform (engero.art) and constitutes a binding agreement between the Artist and the Client upon signature by both parties.',
   ].join('\n');
 
   let typeSections: ContractSection[];

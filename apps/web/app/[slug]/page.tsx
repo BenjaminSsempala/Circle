@@ -10,6 +10,8 @@ import { PackagesSection } from './_components/PackagesSection';
 import { SelectedWorksGrid } from './_components/SelectedWorksGrid';
 import { EventsSection } from './_components/EventsSection';
 import type { Work } from '@/lib/services/artists';
+import { ProfileCircleNotes } from '@/app/components/profile/ProfileCircleNotes';
+import { AccountMenu } from '@/app/components/nav/AccountMenu';
 
 export default async function ArtistProfilePage({ params }: { params: { slug: string } }) {
   const [result, supabase] = await Promise.all([
@@ -30,6 +32,21 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
   ]);
   const isOwner = !!user && user.id === artist.user_id;
 
+  const { data: reviewsData } = await (await createClient()).from('reviews').select('mood,comment,stars,rater_id').eq('ratee_id', artist.user_id).not('mood', 'is', null).not('comment', 'is', null).limit(6);
+  const reviews = reviewsData ?? [];
+
+  // Fetch first names for reviewers separately (no FK exists from rater_id to profiles)
+  let raterNames: Record<string, string> = {};
+  if (reviews.length > 0) {
+    const { data: raterProfiles } = await (await createClient())
+      .from('profiles')
+      .select('id, display_name')
+      .in('id', reviews.map((r) => r.rater_id));
+    raterNames = Object.fromEntries(
+      (raterProfiles ?? []).map((p) => [p.id, (p.display_name ?? '').trim().split(' ')[0] || 'Audience'])
+    );
+  }
+
   return (
     <div className="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col">
 
@@ -37,7 +54,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
       <nav className="bg-surface shadow-sm sticky top-0 z-50 w-full border-b border-outline-variant/30">
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-7xl mx-auto">
           <div className="flex items-center gap-gutter">
-            <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
+            <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Engero</Link>
             <div className="hidden md:flex gap-md items-center">
               <Link href="/discover" className="text-on-surface-variant font-medium text-body-md hover:text-primary transition-colors">Explore</Link>
             </div>
@@ -47,11 +64,16 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
               <Link href="/dashboard" className="text-label-mono font-label-mono text-primary border border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
                 Dashboard
               </Link>
+            ) : user ? (
+              <Link href="/my-circle" className="text-label-mono font-label-mono text-primary border border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
+                My Circle
+              </Link>
             ) : (
               <Link href="/auth/signup" className="text-label-mono font-label-mono text-primary border border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
                 Get started
               </Link>
             )}
+            {user && <AccountMenu />}
           </div>
         </div>
       </nav>
@@ -82,7 +104,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
       {/* Main */}
       <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-10 py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
 
-        {/* Left column — events */}
+        {/* Left column: events */}
         <div className="md:col-span-3 relative order-last md:order-first">
           <div className="sticky top-24">
             <EventsSection
@@ -93,7 +115,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
           </div>
         </div>
 
-        {/* Centre column — main content */}
+        {/* Centre column: main content */}
         <div className="md:col-span-6 flex flex-col gap-lg">
           <EditableProfileHeader
             artist={{
@@ -115,9 +137,11 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
             works={(Array.isArray(artist.selected_works) ? artist.selected_works : []) as Work[]}
             isOwner={isOwner}
           />
+
+          <ProfileCircleNotes reviews={reviews} raterNames={raterNames} />
         </div>
 
-        {/* Right column — packages */}
+        {/* Right column: packages */}
         <div className="md:col-span-3 relative">
           <div className="sticky top-24">
             <PackagesSection
@@ -138,7 +162,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
 
       {/* Footer */}
       <footer className="bg-surface-container border-t border-outline-variant w-full py-lg px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-base mt-auto">
-        <div className="text-body-md font-body-md font-bold text-primary">Circle</div>
+        <div className="text-body-md font-body-md font-bold text-primary">Engero</div>
         <div className="flex gap-md">
           {['Privacy', 'Terms', 'Support', 'Contact'].map((item) => (
             <a key={item} href="#" className="text-body-md font-body-md text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100">{item}</a>

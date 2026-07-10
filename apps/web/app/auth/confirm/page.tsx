@@ -38,7 +38,7 @@ export default function AuthConfirmPage() {
         return redirect(supabase);
       }
 
-      // Neither — something went wrong
+      // Neither: something went wrong
       setErrorMsg('Confirmation link is invalid or has expired. Please request a new one.');
       setStatus('error');
     }

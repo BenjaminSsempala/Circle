@@ -44,7 +44,7 @@ export function RatingForm({
           ))}
         </div>
         {comment && <p className="text-sm text-on-surface-variant italic">&ldquo;{comment}&rdquo;</p>}
-        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Review submitted — thank you</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Review submitted: thank you</div>
       </div>
     );
   }
@@ -89,7 +89,7 @@ export function RatingForm({
         onChange={(e) => setComment(e.target.value)}
         maxLength={300}
         rows={3}
-        placeholder="Optional — share what made it great or what could be better…"
+        placeholder="Optional: share what made it great or what could be better…"
         className="w-full bg-white border border-primary/15 rounded-lg px-3.5 py-2.5 font-sans text-sm text-on-surface outline-none focus:border-primary/40 resize-none"
       />
       {error && <div className="font-sans text-sm text-[#c0392b]">{error}</div>}

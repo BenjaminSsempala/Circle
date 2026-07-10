@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { ExportModal } from '@/app/[slug]/_components/ExportModal';
 
 type ProductType = 'service' | 'digital' | 'merchandise';
 
@@ -159,15 +160,13 @@ function PackageCard({
         </span>
       </div>
 
-      {/* Logistics */}
-      <div className="flex items-center gap-1.5 text-caption font-caption">
-        <span className={pkg.logistics_inclusive ? 'text-primary' : 'text-on-surface-variant'}>
-          {pkg.logistics_inclusive ? '✓' : '✗'}
-        </span>
-        <span className="text-on-surface-variant">
-          Transport {pkg.logistics_inclusive ? 'included' : 'not included'}
-        </span>
-      </div>
+      {/* Logistics: only show when included */}
+      {pkg.logistics_inclusive && (
+        <div className="flex items-center gap-1.5 text-caption font-caption">
+          <span className="text-primary">✓</span>
+          <span className="text-on-surface-variant">Transport included</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -293,9 +292,9 @@ function PackageDrawer({
               ))}
             </div>
             <p className="text-caption font-caption text-on-surface-variant mt-1.5">
-              {form.productType === 'service' && 'Live performances, workshops, sessions — contract always required.'}
-              {form.productType === 'digital' && 'Birthday messages, custom videos, digital art — no contract needed by default.'}
-              {form.productType === 'merchandise' && 'Physical goods — audience sees your contact card to arrange purchase.'}
+              {form.productType === 'service' && 'Live performances, workshops, sessions: contract always required.'}
+              {form.productType === 'digital' && 'Birthday messages, custom videos, digital art: no contract needed by default.'}
+              {form.productType === 'merchandise' && 'Physical goods: audience sees your contact card to arrange purchase.'}
             </p>
           </div>
 
@@ -394,7 +393,7 @@ function PackageDrawer({
                 </p>
               </div>
               <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.logisticsInclusive ? 'bg-primary' : 'bg-outline-variant'}`}>
-                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.logisticsInclusive ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.logisticsInclusive ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
               </div>
             </button>
           </div>
@@ -421,12 +420,12 @@ function PackageDrawer({
                 </p>
               </div>
               <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.autoAccept ? 'bg-primary' : 'bg-outline-variant'}`}>
-                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.autoAccept ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.autoAccept ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
               </div>
             </button>
           </div>
 
-          {/* Contract required — hide for merchandise */}
+          {/* Contract required: hide for merchandise */}
           {form.productType !== 'merchandise' && (
             <div>
               <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Contract</p>
@@ -453,7 +452,7 @@ function PackageDrawer({
                   </p>
                 </div>
                 <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.contractRequired ? 'bg-primary' : 'bg-outline-variant'}`}>
-                  <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.contractRequired ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'}`} />
+                  <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.contractRequired ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
                 </div>
               </button>
             </div>
@@ -478,14 +477,16 @@ function PackageDrawer({
 
 export function PackagesClient({
   initialPackages,
-  artistSlug,
+  artist,
 }: {
   initialPackages: Package[];
-  artistSlug: string;
+  artist: any;
 }) {
+  const artistSlug = artist.slug;
   const [packages, setPackages] = useState<Package[]>(initialPackages);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<Package | null>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   function openAdd() {
     setEditing(null);
@@ -582,15 +583,15 @@ export function PackagesClient({
 
       {/* Export rate card */}
       <div className="mt-8 pt-6 border-t border-outline-variant/20">
-        <Link
-          href={`/api/artists/${artistSlug}/export/rate-card`}
-          className="inline-flex items-center gap-2 text-primary text-label-mono font-label-mono text-sm hover:underline"
+        <button
+          onClick={() => setExportModalOpen(true)}
+          className="inline-flex items-center gap-2 text-primary text-label-mono font-label-mono text-sm hover:underline bg-transparent border-0 cursor-pointer p-0"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           Export rate card PDF
-        </Link>
+        </button>
       </div>
 
       {/* Package drawer */}
@@ -600,6 +601,39 @@ export function PackagesClient({
           onClose={closeDrawer}
           artistSlug={artistSlug}
           onSaved={handleSaved}
+        />
+      )}
+
+      {/* Export modal */}
+      {exportModalOpen && (
+        <ExportModal
+          mode="rate-card"
+          slug={artist.slug}
+          artistName={artist.name}
+          hasPhoto={!!artist.profile_photo}
+          hasBio={!!artist.bio}
+          hasTagline={!!artist.tagline}
+          artistPhoto={artist.profile_photo ?? null}
+          artistTagline={artist.tagline ?? null}
+          artistBio={artist.bio ?? null}
+          artistCity={artist.city ?? null}
+          artistCountry={artist.country ?? null}
+          artForms={Array.isArray(artist.art_forms) ? artist.art_forms : []}
+          artistTags={Array.isArray(artist.tags) ? artist.tags : null}
+          socialLinks={artist.social_links ?? {}}
+          selectedWorks={(Array.isArray(artist.selected_works) ? artist.selected_works : []) as any[]}
+          packages={packages.map((p) => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            currency: p.currency,
+            duration: p.duration ?? null,
+            description: p.description ?? null,
+            logistics_inclusive: p.logistics_inclusive,
+          }))}
+          savedEPK={artist.epk_data ?? null}
+          savedRC={artist.rate_card_data ?? null}
+          onClose={() => setExportModalOpen(false)}
         />
       )}
     </>

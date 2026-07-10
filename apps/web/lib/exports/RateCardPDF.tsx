@@ -105,7 +105,7 @@ export function RateCardPDF({
   const city      = String(artist.city ?? '');
   const country   = String(artist.country ?? '');
   const location  = [city, country].filter(Boolean).join(', ');
-  const profileUrl = `thecircle.co/${slug}`;
+  const profileUrl = `engero.art/${slug}`;
   const stats = fillable.stats.filter((s) => s.value.trim() && s.label.trim());
   const packages = allPackages.filter((p) => !fillable.excluded_package_ids?.includes(p.id));
 
@@ -115,7 +115,7 @@ export function RateCardPDF({
     .filter((k) => fillable.social_handles[k]?.trim() || socialLinks[k]?.trim());
 
   return (
-    <Document title={`${name} – Rate Card`} author="The Circle">
+    <Document title={`${name} – Rate Card`} author="Engero">
       <Page size="A5" style={s.page}>
 
         {/* ── Dark teal header ── */}
@@ -228,7 +228,7 @@ export function RateCardPDF({
           {/* Footer watermark */}
           <View style={s.footerWm}>
             <FlameSvg size={9} color={TEAL} />
-            <Text style={s.footerTxt}>circle · {profileUrl}</Text>
+            <Text style={s.footerTxt}>engero · {profileUrl}</Text>
           </View>
         </View>
       </Page>

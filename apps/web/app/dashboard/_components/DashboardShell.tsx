@@ -15,6 +15,15 @@ const NAV = [
     ),
   },
   {
+    label: 'Gig Feed',
+    href: '/dashboard/gigs',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+      </svg>
+    ),
+  },
+  {
     label: 'Bookings',
     href: '/dashboard/bookings',
     icon: (
@@ -80,17 +89,37 @@ export function DashboardShell({ artistName, artistSlug, artistPhoto, children }
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/auth/login');
+    router.refresh(); // Refresh the page to update the auth state
+    window.location.href = '/auth/login';
+    // router.push('/auth/login');
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* ── Sidebar ── */}
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* ── Mobile Top Header Bar ── */}
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-surface border-b border-outline-variant/30 sticky top-0 z-50">
+        <Link href="/" className="text-headline-sm font-headline-md text-primary tracking-tight">
+          Engero
+        </Link>
+        
+        {/* Quick-action Logout for Mobile */}
+        <button
+          onClick={handleLogout}
+          className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors"
+          aria-label="Log out"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </button>
+      </header>
+
+      {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex flex-col w-60 shrink-0 bg-surface border-r border-outline-variant/30 sticky top-0 h-screen">
         {/* Logo */}
         <div className="px-6 py-6 border-b border-outline-variant/20">
           <Link href="/" className="text-headline-md font-headline-md text-primary tracking-tight">
-            Circle
+            Engero
           </Link>
         </div>
 
@@ -142,7 +171,7 @@ export function DashboardShell({ artistName, artistSlug, artistPhoto, children }
           ))}
         </nav>
 
-        {/* Log out */}
+        {/* Log out (Desktop) */}
         <div className="p-3 border-t border-outline-variant/20">
           <button
             onClick={handleLogout}

@@ -2,6 +2,8 @@ import { Resend } from 'resend';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+export const SENDER_EMAIL = 'Engero <info@engero.art>';
+
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY ?? process.env.NEXT_PUBLIC_RESEND_API_KEY);
 }
@@ -28,8 +30,8 @@ export async function sendEmail({
   html: string;
 }) {
   const { error } = await getResend().emails.send({
-    from: 'The Circle <onboarding@resend.dev>', // swap to notifications@yourdomain.co once domain is verified
-    to: "benjspoetry@gmail.com", //temporarily hardcoded to my email for testing, should be `to` once verified
+    from: SENDER_EMAIL,
+    to,
     subject,
     html,
   });
@@ -51,7 +53,7 @@ export async function sendArtistWelcomeEmail({
   artistName: string;
   artistSlug: string;
 }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thecircle.co';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://engero.art';
   const firstName = artistName.split(' ')[0];
 
   const html = renderTemplate(loadTemplate('artist-welcome.html'), {
@@ -62,9 +64,9 @@ export async function sendArtistWelcomeEmail({
   });
 
   const { error } = await getResend().emails.send({
-    from:    'The Circle <onboarding@resend.dev>', // swap to welcome@yourdomain.co once domain is verified
+    from:    SENDER_EMAIL,
     to,
-    subject: `Welcome to The Circle, ${firstName} 🎭`,
+    subject: `Welcome to Engero, ${firstName} 🎭`,
     html,
   });
 

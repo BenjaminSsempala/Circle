@@ -5,13 +5,14 @@ import { createClient as createAnonClient } from '@supabase/supabase-js';
 import { SavedClient } from './_components/SavedClient';
 import { AccountMenu } from '@/app/components/nav/AccountMenu';
 import type { DiscoverArtist } from '@/app/components/discover/ArtistCard';
-
-const anonSupabase = createAnonClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import NavbarSavedClient from './_components/NavbarSavedClient';
 
 export default async function SavedPage() {
+  const anonSupabase = createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login');
@@ -41,7 +42,7 @@ export default async function SavedPage() {
     artists = (artistRows ?? []).map((a) => {
       const priceInfo = priceMap.get(a.id);
       return {
-        id: a.id, slug: a.slug, name: a.name, bio: a.bio,
+        id: a.id, slug: a.slug, name: a.display_name ?? a.name, bio: a.bio,
         profile_photo: a.profile_photo, art_forms: a.art_forms ?? [],
         tags: a.tags ?? [], city: a.city, country: a.country,
         completed_bookings: a.completed_bookings ?? 0,
@@ -52,21 +53,13 @@ export default async function SavedPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <nav className="bg-surface border-b border-outline-variant/30 sticky top-0 z-50">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-10 h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="text-headline-md font-headline-md font-bold text-primary">Circle</Link>
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/discover" className="text-on-surface-variant text-sm hover:text-primary transition-colors">Explore</Link>
-            <Link href="/saved" className="text-on-surface font-semibold text-sm border-b-2 border-primary pb-0.5">Saved</Link>
-            <Link href="/bookings" className="text-on-surface-variant text-sm hover:text-primary transition-colors">My bookings</Link>
-          </div>
-          <AccountMenu />
-        </div>
-      </nav>
+      {/* Mobile-Responsive Navigation Component */}
+      <NavbarSavedClient accountMenu={<AccountMenu />} />
 
-      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-10 py-8 w-full">
-        <div className="flex items-center gap-3 mb-8">
-          <h1 className="text-headline-lg font-headline-lg text-on-surface">Saved artists</h1>
+      {/* Main Container — flex-1 ensures it pushes the footer to the bottom */}
+      <main className="flex-1 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8 w-full">
+        <div className="flex items-center gap-3 mb-6 md:mb-8">
+          <h1 className="text-headline-md sm:text-headline-lg font-headline-lg text-on-surface">Saved artists</h1>
           {savedIds.length > 0 && (
             <span className="bg-primary text-on-primary text-xs font-bold px-2.5 py-1 rounded-full">
               {savedIds.length}
@@ -77,12 +70,13 @@ export default async function SavedPage() {
         <SavedClient initialArtists={artists} initialSavedIds={savedIds} />
       </main>
 
-      <footer className="border-t border-outline-variant/20 py-8 px-4 md:px-10">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-caption font-caption text-on-surface-variant">© 2026 Circle · Connecting African Artistry.</p>
-          <div className="flex gap-6">
+      {/* Fixed Footer Responsive Layout */}
+      <footer className="border-t border-outline-variant/20 py-6 md:py-8 px-4 sm:px-6 md:px-10 shrink-0">
+        <div className="max-w-[1440px] mx-auto flex flex-col-reverse sm:flex-row gap-4 justify-between items-center text-center sm:text-left">
+          <p className="text-xs md:text-caption font-caption text-on-surface-variant">© 2026 Engero · Connecting African Artistry.</p>
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
             {['Privacy', 'Terms', 'Support', 'Contact'].map((item) => (
-              <a key={item} href="#" className="text-caption font-caption text-on-surface-variant hover:text-primary transition-colors">{item}</a>
+              <a key={item} href="#" className="text-xs md:text-caption font-caption text-on-surface-variant hover:text-primary transition-colors">{item}</a>
             ))}
           </div>
         </div>

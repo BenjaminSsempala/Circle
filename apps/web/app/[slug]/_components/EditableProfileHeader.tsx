@@ -54,6 +54,7 @@ export function EditableProfileHeader({
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null); // 🔥 Added error tracker
   const [draft, setDraft] = useState({
     name: initial.name,
     tagline: initial.tagline ?? '',
@@ -71,6 +72,15 @@ export function EditableProfileHeader({
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setPhotoError(null); // Clear errors before processing a new selection
+
+    // 🔥 5MB File size constraint validation rule (5 * 1024 * 1024 bytes)
+    const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) {
+      setPhotoError('Image size must be smaller than 5MB.');
+      return;
+    }
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
@@ -92,7 +102,11 @@ export function EditableProfileHeader({
         body: JSON.stringify({ profile_photo: data.secure_url }),
       });
       setArtist((prev) => ({ ...prev, profile_photo: data.secure_url }));
-    } finally {
+    } 
+    catch {
+      setPhotoError('Failed to upload image. Please try again.');
+    }
+    finally {
       setUploadingPhoto(false);
     }
   };
@@ -126,147 +140,166 @@ export function EditableProfileHeader({
   };
 
   return (
-    <section className="flex flex-col md:flex-row items-center md:items-start gap-lg">
-      {/* Avatar */}
-      <div className="relative flex-shrink-0">
-        <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-primary-container/20 flex items-center justify-center">
-          {artist.profile_photo ? (
-            <img src={artist.profile_photo} alt={artist.name} className="w-full h-full object-cover" />
-          ) : (
-            <svg viewBox="0 0 24 24" className="w-16 h-16 text-primary/30" fill="none" stroke="currentColor" strokeWidth={1}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+    <div className="w-full flex flex-col gap-4">
+      {/* 🔥 Top Display Error Banner for User Feedback */}
+      {photoError && (
+        <div className="w-full flex items-center justify-between px-4 py-3 bg-error-container text-on-error-container rounded-lg border border-error/20 text-sm font-medium animate-fade-in">
+          <div className="flex items-center gap-2">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 text-error shrink-0" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
             </svg>
-          )}
-          {uploadingPhoto && (
-            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            </div>
+            <span>{photoError}</span>
+          </div>
+          <button onClick={() => setPhotoError(null)} className="text-on-error-container/70 hover:text-on-error-container p-1 transition-colors">
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      <section className="flex flex-col md:flex-row items-center md:items-start gap-lg">
+        {/* Avatar */}
+        <div className="relative flex-shrink-0">
+          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-primary-container/20 flex items-center justify-center">
+            {artist.profile_photo ? (
+              <img src={artist.profile_photo} alt={artist.name} className="w-full h-full object-cover" />
+            ) : (
+              <svg viewBox="0 0 24 24" className="w-16 h-16 text-primary/30" fill="none" stroke="currentColor" strokeWidth={1}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+            )}
+            {uploadingPhoto && (
+              <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
+          {isOwner && (
+            <label className="absolute bottom-1 right-1 w-8 h-8 bg-primary text-on-primary rounded-full flex items-center justify-center cursor-pointer shadow-md hover:opacity-90 transition-opacity">
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+              </svg>
+              <input type="file" accept="image/*" className="sr-only" onChange={handlePhotoChange} disabled={uploadingPhoto} />
+            </label>
           )}
         </div>
-        {isOwner && (
-          <label className="absolute bottom-1 right-1 w-8 h-8 bg-primary text-on-primary rounded-full flex items-center justify-center cursor-pointer shadow-md hover:opacity-90 transition-opacity">
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-            </svg>
-            <input type="file" accept="image/*" className="sr-only" onChange={handlePhotoChange} disabled={uploadingPhoto} />
-          </label>
-        )}
-      </div>
 
-      {/* Info */}
-      <div className="flex flex-col items-center md:items-start gap-sm pt-md flex-1">
-        {editing ? (
-          /* ── Edit form ── */
-          <div className="w-full flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tagline <span className="text-on-surface-variant/50 normal-case font-normal">· one line, optional</span></label>
-              <input
-                value={draft.tagline}
-                onChange={(e) => setDraft((p) => ({ ...p, tagline: e.target.value }))}
-                placeholder="e.g. Spoken word poet blending tradition and technology"
-                className="w-full"
-                maxLength={120}
-              />
-            </div>
+        {/* Info */}
+        <div className="flex flex-col items-center md:items-start gap-sm pt-md flex-1">
+          {editing ? (
+            /* ── Edit form ── */
+            <div className="w-full flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tagline <span className="text-on-surface-variant/50 normal-case font-normal">· one line, optional</span></label>
+                <input
+                  value={draft.tagline}
+                  onChange={(e) => setDraft((p) => ({ ...p, tagline: e.target.value }))}
+                  placeholder="e.g. Spoken word poet blending tradition and technology"
+                  className="w-full"
+                  maxLength={120}
+                />
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Name</label>
-                <input value={draft.name} onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))} className="w-full" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Name</label>
+                  <input value={draft.name} onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))} className="w-full" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Art Form</label>
+                  <select value={draft.artForm} onChange={(e) => setDraft((p) => ({ ...p, artForm: e.target.value }))} className="w-full">
+                    <option value="">Select</option>
+                    {ART_FORM_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">City</label>
+                  <input value={draft.city} onChange={(e) => setDraft((p) => ({ ...p, city: e.target.value }))} className="w-full" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Country</label>
+                  <input value={draft.country} onChange={(e) => setDraft((p) => ({ ...p, country: e.target.value }))} className="w-full" />
+                </div>
+                <div className="flex flex-col gap-1 sm:col-span-2">
+                  <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tags (comma-separated)</label>
+                  <input value={draft.tagsRaw} onChange={(e) => setDraft((p) => ({ ...p, tagsRaw: e.target.value }))} placeholder="e.g. Poet, Digital Artist" className="w-full" />
+                </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Art Form</label>
-                <select value={draft.artForm} onChange={(e) => setDraft((p) => ({ ...p, artForm: e.target.value }))} className="w-full">
-                  <option value="">Select</option>
-                  {ART_FORM_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">City</label>
-                <input value={draft.city} onChange={(e) => setDraft((p) => ({ ...p, city: e.target.value }))} className="w-full" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Country</label>
-                <input value={draft.country} onChange={(e) => setDraft((p) => ({ ...p, country: e.target.value }))} className="w-full" />
-              </div>
-              <div className="flex flex-col gap-1 sm:col-span-2">
-                <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tags (comma-separated)</label>
-                <input value={draft.tagsRaw} onChange={(e) => setDraft((p) => ({ ...p, tagsRaw: e.target.value }))} placeholder="e.g. Poet, Digital Artist" className="w-full" />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-1">
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold hover:opacity-90 disabled:opacity-60">
-                {saving ? 'Saving…' : 'Save changes'}
-              </button>
-              <button onClick={() => setEditing(false)} className="px-4 py-2 text-sm text-on-surface-variant hover:text-primary transition-colors">
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* ── Read view ── */
-          <>
-            <div className="flex items-center gap-2 group">
-              <h1 className="text-headline-xl font-headline-xl text-on-surface font-bold">{artist.name}</h1>
-              {isOwner && (
-                <button onClick={() => setEditing(true)} className="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-md">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
+              <div className="flex gap-2 mt-1">
+                <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold hover:opacity-90 disabled:opacity-60">
+                  {saving ? 'Saving…' : 'Save changes'}
                 </button>
-              )}
+                <button onClick={() => setEditing(false)} className="px-4 py-2 text-sm text-on-surface-variant hover:text-primary transition-colors">
+                  Cancel
+                </button>
+              </div>
             </div>
-
-            {(artFormLabel || artist.city) && (
-              <div className="text-body-lg font-body-lg text-on-surface-variant font-medium">
-                {[artFormLabel, artist.city && artist.country ? `${artist.city}, ${artist.country}` : artist.city].filter(Boolean).join(' · ')}
+          ) : (
+            /* ── Read view ── */
+            <>
+              <div className="flex items-center gap-2 group">
+                <h1 className="text-headline-xl font-headline-xl text-on-surface font-bold">{artist.name}</h1>
+                {isOwner && (
+                  <button onClick={() => setEditing(true)} className="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-md">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                )}
               </div>
-            )}
 
-            {artist.tagline && (
-              <p className="text-body-md font-body-md text-on-surface-variant italic mt-1">
-                {artist.tagline}
-              </p>
-            )}
+              {(artFormLabel || artist.city) && (
+                <div className="text-body-lg font-body-lg text-on-surface-variant font-medium">
+                  {[artFormLabel, artist.city && artist.country ? `${artist.city}, ${artist.country}` : artist.city].filter(Boolean).join(' · ')}
+                </div>
+              )}
 
-            {Array.isArray(artist.tags) && artist.tags.length > 0 && (
-              <div className="flex flex-wrap gap-xs mt-xs">
-                {artist.tags.map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded text-label-mono font-label-mono font-bold">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
+              {artist.tagline && (
+                <p className="text-body-md font-body-md text-on-surface-variant italic mt-1">
+                  {artist.tagline}
+                </p>
+              )}
 
-            {connectedSocials.length > 0 && (
-              <div className="flex items-center gap-sm mt-sm flex-wrap">
-                {connectedSocials.map(([platform, url]) => {
-                  const meta = SOCIAL_META[platform as SocialKey];
-                  if (!meta) return null;
-                  return (
-                    <a key={platform} href={url} target="_blank" rel="noopener noreferrer" title={meta.label}
-                      className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
-                      <svg viewBox="0 0 24 24" className="w-5 h-5">
-                        {platform === 'instagram' && (
-                          <defs>
-                            <linearGradient id="ig-ph" x1="0%" y1="100%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="#f09433" />
-                              <stop offset="100%" stopColor="#bc1888" />
-                            </linearGradient>
-                          </defs>
-                        )}
-                        <path fill={meta.fill} d={meta.path} />
-                      </svg>
-                    </a>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </section>
+              {Array.isArray(artist.tags) && artist.tags.length > 0 && (
+                <div className="flex flex-wrap gap-xs mt-xs">
+                  {artist.tags.map((tag) => (
+                    <span key={tag} className="px-3 py-1 bg-[#E1F5EE] text-primary rounded text-label-mono font-label-mono font-bold">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {connectedSocials.length > 0 && (
+                <div className="flex items-center gap-sm mt-sm flex-wrap">
+                  {connectedSocials.map(([platform, url]) => {
+                    const meta = SOCIAL_META[platform as SocialKey];
+                    if (!meta) return null;
+                    return (
+                      <a key={platform} href={url} target="_blank" rel="noopener noreferrer" title={meta.label}
+                        className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+                        <svg viewBox="0 0 24 24" className="w-5 h-5">
+                          {platform === 'instagram' && (
+                            <defs>
+                              <linearGradient id="ig-ph" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#f09433" />
+                                <stop offset="100%" stopColor="#bc1888" />
+                              </linearGradient>
+                            </defs>
+                          )}
+                          <path fill={meta.fill} d={meta.path} />
+                        </svg>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }

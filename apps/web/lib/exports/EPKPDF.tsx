@@ -154,7 +154,7 @@ export function EPKPDF({
   const tags: string[]     = Array.isArray(artist.tags) ? artist.tags as string[] : [];
   const discipline = artForms[0] ?? '';
   const location   = [city, country].filter(Boolean).join(', ');
-  const profileUrl = `thecircle.co/${slug}`;
+  const profileUrl = `engero.art/${slug}`;
 
   // Works — use profile selected_works filtered by excluded_work_ids
   const filteredWorks = works.filter((w) => !fillable.excluded_work_ids?.includes(w.id)).slice(0, 3);
@@ -176,7 +176,7 @@ export function EPKPDF({
   ].filter(([, v]) => v.trim()) as [string, string][];
 
   return (
-    <Document title={`${name} – EPK`} author="The Circle">
+    <Document title={`${name} – EPK`} author="Engero">
       <Page size="A4" style={s.page}>
 
         {/* Page header — fixed flow element: repeats on every page and reserves 32px of space */}
@@ -204,7 +204,7 @@ export function EPKPDF({
                 </View>
                 <View style={s.circleWm}>
                   <FlameSvg size={9} color={TEAL} />
-                  <Text style={s.wmText}>The Circle</Text>
+                  <Text style={s.wmText}>Engero</Text>
                 </View>
               </View>
               <View style={s.metaRow}>

@@ -12,8 +12,11 @@ export async function POST(
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return err('Unauthorized', 401);
 
-  const { stars, comment } = await req.json();
-  if (!stars || stars < 1 || stars > 5) return err('stars must be 1–5', 400);
+  const { stars, mood, comment } = await req.json();
+  const VALID_MOODS = ['magical', 'meaningful', 'energetic', 'professional', 'inspiring'];
+  if (!stars && !mood) return err('stars or mood required', 400);
+  if (stars && (stars < 1 || stars > 5)) return err('stars must be 1–5', 400);
+  if (mood && !VALID_MOODS.includes(mood)) return err('Invalid mood', 400);
 
   const svc = createServiceClient();
 
@@ -35,17 +38,15 @@ export async function POST(
     .maybeSingle();
   if (aErr || !artist) return err('Artist not found', 404);
 
-  const { error: insertErr } = await svc.from('reviews').insert({
+  const { error: upsertErr } = await svc.from('reviews').upsert({
     booking_id: params.id,
     rater_id: user.id,
     ratee_id: artist.user_id,
-    stars,
+    stars: stars ?? null,
+    mood: mood ?? null,
     comment: comment ?? null,
-  });
-  if (insertErr) {
-    if (insertErr.code === '23505') return err('You have already reviewed this booking', 409);
-    return err(insertErr.message, 500);
-  }
+  }, { onConflict: 'booking_id,rater_id' });
+  if (upsertErr) return err(upsertErr.message, 500);
 
   return ok({ ok: true });
 }

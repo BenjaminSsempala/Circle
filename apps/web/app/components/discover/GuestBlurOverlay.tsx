@@ -53,7 +53,7 @@ export function GuestBlurOverlay() {
 
   return (
     <div className="relative col-span-full mt-4">
-      {/* Blur backdrop over remaining cards — positioned via CSS */}
+      {/* Blur backdrop over remaining cards: positioned via CSS */}
       <div className="absolute inset-x-0 -top-32 h-32 bg-gradient-to-b from-transparent to-background pointer-events-none z-10" />
 
       <div className="relative z-20 flex flex-col items-center text-center py-12 px-6">

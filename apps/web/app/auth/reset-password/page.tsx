@@ -199,7 +199,7 @@ export default function ResetPasswordPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="artist@circle.com"
+            placeholder="artist@engero.art"
             className="w-full"
             required
           />

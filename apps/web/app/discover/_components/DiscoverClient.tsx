@@ -38,14 +38,18 @@ function matchesArtFormFilter(artForms: string[], filterLabel: string): boolean 
 interface Props {
   artists: DiscoverArtist[];
   isGuest: boolean;
+  isArtist: boolean;
   initialSavedIds: string[];
   showOccasionBanner: boolean;
+  inviteToGig?: { id: string; title: string };
 }
 
-export function DiscoverClient({ artists, isGuest, initialSavedIds, showOccasionBanner }: Props) {
+export function DiscoverClient({ artists, isGuest, isArtist, initialSavedIds, showOccasionBanner, inviteToGig }: Props) {
   const params = useSearchParams();
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set(initialSavedIds));
   const [showBanner, setShowBanner] = useState(showOccasionBanner);
+  const [inviteCount, setInviteCount] = useState(0);
+  const [invitedIds, setInvitedIds] = useState<Set<string>>(new Set());
 
   const artForm = params.get('artForm') ?? '';
   const budgetMin = Number(params.get('budgetMin') ?? 0);
@@ -100,6 +104,17 @@ export function DiscoverClient({ artists, isGuest, initialSavedIds, showOccasion
     }
   }
 
+  async function handleInvite(artistId: string) {
+    if (!inviteToGig) return;
+    await fetch(`/api/gigs/${inviteToGig.id}/invite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artistId }),
+    });
+    setInvitedIds((prev) => new Set(prev).add(artistId));
+    setInviteCount((c) => c + 1);
+  }
+
   const visibleArtists = isGuest ? filtered.slice(0, GUEST_VISIBLE) : filtered;
   const blurredArtists = isGuest ? filtered.slice(GUEST_VISIBLE) : [];
 
@@ -107,16 +122,38 @@ export function DiscoverClient({ artists, isGuest, initialSavedIds, showOccasion
     <>
       {showBanner && <OccasionBanner onDismiss={() => setShowBanner(false)} />}
 
+      {/* Invite-to-gig banner */}
+      {inviteToGig && (
+        <div className="mb-4 bg-[#E1F5EE] border border-primary/20 rounded-xl px-5 py-3.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            </svg>
+            <div>
+              <span className="text-sm font-semibold text-primary">Inviting artists to: </span>
+              <span className="text-sm text-primary/80">{inviteToGig.title}</span>
+            </div>
+          </div>
+          <span className="flex-shrink-0 font-mono text-xs text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+            {inviteCount} invited
+          </span>
+        </div>
+      )}
+
       <FilterBar totalCount={filtered.length} />
 
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {visibleArtists.map((artist) => (
           <ArtistCard
             key={artist.id}
             artist={artist}
             isSaved={savedIds.has(artist.id)}
             isGuest={isGuest}
+            isArtist={isArtist}
             onSaveToggle={() => toggleSave(artist.id)}
+            inviteMode={!!inviteToGig}
+            invited={invitedIds.has(artist.id)}
+            onInvite={() => handleInvite(artist.id)}
           />
         ))}
 

@@ -89,7 +89,7 @@ export default function SignupPage() {
       const res = await fetch('/api/auth/resend-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
@@ -121,12 +121,14 @@ export default function SignupPage() {
         return;
       }
 
+      const profileName = name || session.user.user_metadata?.full_name || '';
       const { error: dbError } = await supabase
         .from('profiles')
         .upsert({
           id: session.user.id,
           role,
-          full_name: name || session.user.user_metadata?.full_name || '',
+          display_name: profileName,
+          legal_name: profileName,
           onboarding_complete: false,
         });
 
@@ -147,7 +149,7 @@ export default function SignupPage() {
     <AuthLayout
       title={
         step === 'credentials'
-          ? 'Join the Circle'
+          ? 'Join Engero'
           : step === 'email-confirmation'
             ? 'Confirm Your Email'
             : 'What brings you here?'
@@ -166,7 +168,7 @@ export default function SignupPage() {
       {/* ── Step 1: Credentials ── */}
       {step === 'credentials' && (
         <>
-          {/* Google — outside the form so it never triggers form validation */}
+          {/* Google: outside the form so it never triggers form validation */}
           <GoogleButton label="Sign up with Google" onClick={handleGoogleSignup} />
 
           <div className="relative flex items-center py-4">
@@ -188,7 +190,7 @@ export default function SignupPage() {
               <label className="block text-label-mono font-label-mono text-on-surface-variant mb-2">EMAIL ADDRESS</label>
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="artist@circle.com" className="w-full" required
+                placeholder="artist@engero.art" className="w-full" required
               />
             </div>
 

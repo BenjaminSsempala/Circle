@@ -41,16 +41,17 @@ function RateCardImage({
         position: 'absolute', bottom: -120, right: -120,
         width: 400, height: 400, borderRadius: 200,
         background: 'radial-gradient(circle,rgba(15,110,86,0.35) 0%,transparent 70%)',
+        display: 'flex',
       }} />
 
-      {/* The Circle badge */}
+      {/* Engero badge */}
       <div style={{
         position: 'absolute', top: 48, right: 56,
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
-        <div style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#84d6b9' }} />
+        <div style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#84d6b9', display: 'flex' }} />
         <span style={{ fontSize: 22, color: 'rgba(255,255,255,0.5)', fontFamily: 'Playfair' }}>
-          The Circle
+          Engero
         </span>
       </div>
 
@@ -59,12 +60,12 @@ function RateCardImage({
 
         {/* Name + tagline */}
         <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 74, fontWeight: 700, color: '#ffffff', letterSpacing: '-2px', lineHeight: 1.05, marginBottom: 12 }}>
+          <div style={{ fontSize: 74, fontWeight: 700, color: '#ffffff', letterSpacing: '-2px', lineHeight: 1.05, marginBottom: 12, display: 'flex' }}>
             {name}
           </div>
           {tagline && (
-            <div style={{ fontSize: 26, color: 'rgba(255,255,255,0.55)', fontStyle: 'italic', marginBottom: 16 }}>
-              "{tagline}"
+            <div style={{ fontSize: 26, color: 'rgba(255,255,255,0.55)', fontStyle: 'italic', marginBottom: 16, display: 'flex' }}>
+              {`"${tagline}"`}
             </div>
           )}
           {/* Art form chips */}
@@ -84,14 +85,14 @@ function RateCardImage({
         </div>
 
         {/* Teal rule */}
-        <div style={{ width: 48, height: 2, backgroundColor: '#0f6e56', borderRadius: 1, marginBottom: 32 }} />
+        <div style={{ width: 48, height: 2, backgroundColor: '#0f6e56', borderRadius: 1, marginBottom: 32, display: 'flex' }} />
 
         {/* Two-column mid section */}
         <div style={{ display: 'flex', gap: 40, flex: 1 }}>
 
           {/* Left: Packages */}
           <div style={{ flex: '0 0 55%', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ fontSize: 14, color: '#0f6e56', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, color: '#0f6e56', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 4, display: 'flex' }}>
               Packages
             </div>
             {topPkgs.map((pkg) => (
@@ -111,11 +112,11 @@ function RateCardImage({
             ))}
           </div>
 
-          {/* Right: Stats — no Fragment, Satori doesn't support <> */}
+          {/* Right: Stats: no Fragment, Satori doesn't support <> */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {topStats.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ fontSize: 14, color: '#0f6e56', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 4 }}>
+                <div style={{ fontSize: 14, color: '#0f6e56', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 4, display: 'flex' }}>
                   Highlights
                 </div>
                 {topStats.map((stat, i) => (
@@ -125,10 +126,10 @@ function RateCardImage({
                     border: '1px solid rgba(15,110,86,0.25)',
                     borderRadius: 8, padding: '12px 16px',
                   }}>
-                    <div style={{ fontSize: 32, color: '#84d6b9', fontWeight: 700, lineHeight: 1 }}>
+                    <div style={{ fontSize: 32, color: '#84d6b9', fontWeight: 700, lineHeight: 1, display: 'flex' }}>
                       {stat.value}
                     </div>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '1px', display: 'flex' }}>
                       {stat.label}
                     </div>
                   </div>
@@ -163,20 +164,35 @@ function RateCardImage({
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 
+// GET — used by the direct download <a href> link in the dashboard
+export async function GET(
+  request: Request,
+  { params }: { params: { slug: string } },
+) {
+  return generateExport(request, params.slug, {});
+}
+
 export async function POST(
   request: Request,
   { params }: { params: { slug: string } },
 ) {
-  const auth = await requireArtistOwnership(params.slug);
-  if (auth.error) return err(auth.error, auth.status);
-
   let body: { rcData?: Partial<RateCardFillable>; format?: 'pdf' | 'image' } = {};
   try { body = await request.json(); } catch { /* defaults */ }
+  return generateExport(request, params.slug, body);
+}
+
+async function generateExport(
+  _request: Request,
+  slug: string,
+  body: { rcData?: Partial<RateCardFillable>; format?: 'pdf' | 'image' },
+) {
+  const auth = await requireArtistOwnership(slug);
+  if (auth.error) return err(auth.error, auth.status);
 
   const fillable: RateCardFillable = { ...DEFAULT_RATE_CARD, ...(body.rcData ?? {}) };
   const format = body.format ?? 'pdf';
 
-  const data = await getExportData(params.slug);
+  const data = await getExportData(slug);
   if (!data) return err('Not found', 404);
 
   // Persist fillable data (non-blocking)
@@ -188,13 +204,13 @@ export async function POST(
     )
       .from('artists')
       .update({ rate_card_data: fillable })
-      .eq('slug', params.slug);
+      .eq('slug', slug);
   } catch { /* non-fatal */ }
 
   const { artist, packages, socialLinks } = data;
-  const name      = String(artist.name ?? '');
-  const slug      = String(artist.slug ?? '');
-  const profileUrl = `thecircle.co/${slug}`;
+  const name      = String(artist.display_name ?? artist.name ?? '');
+  const artistSlug = String(artist.slug ?? slug);
+  const profileUrl = `engero.art/${artistSlug}`;
 
   // ── PNG Image ──────────────────────────────────────────────────────────────
   if (format === 'image') {

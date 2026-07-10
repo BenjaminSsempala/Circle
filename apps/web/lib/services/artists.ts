@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { cache } from 'react';
+import { generateSlug } from '@/lib/utils/slug';
 
 // Deduplicate across layout + page in the same server render
 export const getArtistByUserIdCached = cache(async (userId: string) => {
@@ -20,19 +21,15 @@ export type Work = {
   metadata: { year?: number; description?: string };
 };
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function generateSlug(name: string): string {
-  const base = name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return base || `artist-${Date.now()}`;
-}
-
 // ─── Read ────────────────────────────────────────────────────────────────────
+
+// Normalise raw DB row to always have display_name (works both pre- and post-migration).
+// Before migration the column is still called `name`; after it becomes `display_name`.
+function normaliseArtist<T>(raw: T): T & { display_name: string; name: string } {
+  const r = raw as Record<string, unknown>;
+  const display_name = (r.display_name ?? '') as string;
+  return Object.assign({}, raw, { display_name, name: display_name });
+}
 
 export async function getArtistBySlug(slug: string) {
   const supabase = await createClient();
@@ -60,7 +57,8 @@ export async function getArtistBySlug(slug: string) {
       .maybeSingle(),
   ]);
 
-  return { ok: true as const, artist: { ...artist, account_email: profile?.email ?? null }, packages: packages ?? [] };
+  const normalised = normaliseArtist({ ...artist, account_email: profile?.email ?? null });
+  return { ok: true as const, artist: normalised, packages: packages ?? [] };
 }
 
 export async function getArtistByUserId(userId: string) {
@@ -73,7 +71,7 @@ export async function getArtistByUserId(userId: string) {
     .maybeSingle();
 
   if (error) return { ok: false as const, error: error.message };
-  return { ok: true as const, artist: data };
+  return { ok: true as const, artist: data ? normaliseArtist(data) : null };
 }
 
 // ─── Upsert artist profile (Step 1) ─────────────────────────────────────────
@@ -81,7 +79,8 @@ export async function getArtistByUserId(userId: string) {
 export async function upsertArtistProfile(
   userId: string,
   data: {
-    name: string;
+    displayName: string;
+    legalName: string;
     tagline?: string;
     artForm: string;
     otherArtForm?: string;
@@ -106,7 +105,8 @@ export async function upsertArtistProfile(
     .maybeSingle();
 
   const payload: Record<string, unknown> = {
-    name: data.name,
+    display_name: data.displayName,
+    legal_name: data.legalName,
     art_forms: primaryArtForm ? [primaryArtForm] : [],
     tags: data.tags ?? [],
     city: data.city,
@@ -133,7 +133,7 @@ export async function upsertArtistProfile(
   }
 
   // INSERT — use custom slug if provided and valid, otherwise auto-generate
-  let slug = data.customSlug?.trim() || generateSlug(data.name);
+  let slug = data.customSlug?.trim() || generateSlug(data.displayName);
 
   const { data: slugConflict } = await supabase
     .from('artists')
@@ -200,7 +200,8 @@ export async function createPackage(
 export async function patchArtistProfile(
   userId: string,
   fields: Partial<{
-    name: string;
+    display_name: string;
+    legal_name: string;
     tagline: string;
     bio: string;
     tags: string[];
@@ -212,9 +213,10 @@ export async function patchArtistProfile(
   }>
 ) {
   const supabase = await createClient();
+  const patch = { ...fields };
   const { error } = await supabase
     .from('artists')
-    .update(fields)
+    .update(patch)
     .eq('user_id', userId);
 
   if (error) return { ok: false as const, error: error.message };

@@ -34,7 +34,11 @@ export function AuthLayout({
 
           {/* Branding Overlay */}
           <div className="absolute top-12 left-12 z-20">
-            <h1 className="text-headline-md font-headline-md text-white tracking-tight">Circle</h1>
+            {/* Link to home page */}
+            <Link href="/" className="text-white hover:text-primary">
+              <h1 className="text-headline-md font-headline-md text-white tracking-tight">Engero</h1>
+            </Link>
+            
             <p className="text-body-md font-body-md text-primary-fixed mt-2 opacity-90 max-w-xs">
               Your professional home for your craft.
             </p>
@@ -44,10 +48,10 @@ export function AuthLayout({
           <div className="absolute bottom-12 left-12 right-12 z-20">
             <div className="glass-effect p-8 rounded-xl border border-white/20">
               <p className="text-body-lg font-body-lg text-white italic">
-                "Circle is more than a platform; it's where your art finds its audience."
+                "Engero is the professional home for African artists."
               </p>
               <p className="text-label-mono font-label-mono text-secondary-fixed mt-4 uppercase tracking-widest">
-                — Artist, Nairobi
+               Wandia, Nairobi
               </p>
             </div>
           </div>

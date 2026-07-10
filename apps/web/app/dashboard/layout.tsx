@@ -10,7 +10,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // Run profile check and artist lookup in parallel
   const [{ data: profile }, artistResult] = await Promise.all([
-    supabase.from('profiles').select('role, full_name').eq('id', user.id).maybeSingle(),
+    supabase.from('profiles').select('role, display_name').eq('id', user.id).maybeSingle(),
     getArtistByUserIdCached(user.id),
   ]);
 
@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <DashboardShell
-      artistName={artist?.name ?? profile?.full_name ?? ''}
+      artistName={artist?.display_name ?? profile?.display_name ?? ''}
       artistSlug={artist?.slug ?? ''}
       artistPhoto={artist?.profile_photo ?? null}
     >

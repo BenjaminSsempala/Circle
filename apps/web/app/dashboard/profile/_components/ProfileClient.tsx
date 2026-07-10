@@ -7,7 +7,8 @@ import { uploadToCloudinary } from '@/lib/upload';
 type Artist = {
   id: string;
   slug: string;
-  name: string;
+  display_name: string;
+  legal_name: string;
   tagline: string | null;
   bio: string | null;
   profile_photo: string | null;
@@ -20,7 +21,8 @@ type Artist = {
 };
 
 type FormState = {
-  name: string;
+  display_name: string;
+  legal_name: string;
   tagline: string;
   bio: string;
   art_forms: string;
@@ -42,7 +44,8 @@ type FormState = {
 function artistToForm(a: Artist): FormState {
   const sl = a.social_links ?? {};
   return {
-    name: a.name,
+    display_name: a.display_name,
+    legal_name: a.legal_name,
     tagline: a.tagline ?? '',
     bio: a.bio ?? '',
     art_forms: (a.art_forms ?? []).join(', '),
@@ -91,7 +94,7 @@ function SlugField({ value, onChange }: { value: string; onChange: (v: string) =
       <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Your link</label>
       <div className="flex items-center border border-outline-variant/40 rounded-lg overflow-hidden focus-within:border-primary">
         <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant text-sm border-r border-outline-variant/30 whitespace-nowrap">
-          thecircle.co/
+          engero.art/
         </span>
         <input
           value={value}
@@ -116,9 +119,14 @@ export function ProfileClient({ artist }: { artist: Artist }) {
   const [saveError, setSaveError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(artist.profile_photo ?? '');
+  
+  // 🔥 Track the baseline saved photo state dynamically inside state memory
+  const [currentSavedPhoto, setCurrentSavedPhoto] = useState(artist.profile_photo ?? '');
+  
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const dirty = isDirty(form, saved) || photoUrl !== (artist.profile_photo ?? '');
+  // Compare photoUrl to the state-backed currentSavedPhoto variable
+  const dirty = isDirty(form, saved) || photoUrl !== currentSavedPhoto;
 
   function update(key: keyof FormState, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -132,7 +140,8 @@ export function ProfileClient({ artist }: { artist: Artist }) {
       const tags = form.tags.split(',').map((s) => s.trim()).filter(Boolean);
 
       const body: Record<string, unknown> = {
-        name: form.name,
+        display_name: form.display_name,
+        legal_name: form.legal_name,
         tagline: form.tagline,
         bio: form.bio,
         art_forms: artForms,
@@ -142,7 +151,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
         slug: form.slug,
       };
 
-      if (photoUrl !== (artist.profile_photo ?? '')) body.profile_photo = photoUrl;
+      if (photoUrl !== currentSavedPhoto) body.profile_photo = photoUrl;
 
       const socials: Record<string, string> = {};
       const socialKeys = ['instagram', 'youtube', 'tiktok', 'spotify', 'soundcloud', 'twitter', 'linkedin', 'website'] as const;
@@ -163,17 +172,19 @@ export function ProfileClient({ artist }: { artist: Artist }) {
         setSaveError(d.error ?? 'Save failed');
         return;
       }
+      
       setSaved({ ...form });
+      setCurrentSavedPhoto(photoUrl); // 🔥 Sync state to dismiss save bar immediately
     } catch {
       setSaveError('Network error');
     } finally {
       setSaving(false);
     }
-  }, [form, photoUrl, artist.profile_photo]);
+  }, [form, photoUrl, currentSavedPhoto]);
 
   function handleDiscard() {
     setForm(saved);
-    setPhotoUrl(artist.profile_photo ?? '');
+    setPhotoUrl(currentSavedPhoto);
   }
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -225,9 +236,23 @@ export function ProfileClient({ artist }: { artist: Artist }) {
               </div>
             </div>
 
-            <div>
-              <label className={labelClass}>Artist Name</label>
-              <input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Your full name" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className={labelClass}>Display Name</label>
+                <input value={form.display_name} onChange={(e) => update('display_name', e.target.value)} className={inputClass} placeholder="Your artist name" />
+                <p className="text-caption font-caption text-on-surface-variant mt-1">Shown on your profile and across Engero.</p>
+              </div>
+              <div>
+                <label className={`${labelClass} flex items-center gap-1.5`}>
+                  Legal Name
+                  <svg className="w-3 h-3 text-on-surface-variant/60 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </label>
+                <input value={form.legal_name} onChange={(e) => update('legal_name', e.target.value)} className={inputClass} placeholder="Your full legal name" />
+                <p className="text-caption font-caption text-on-surface-variant mt-1">Used only on booking agreements. Never shown publicly.</p>
+              </div>
             </div>
 
             <div>
@@ -279,10 +304,10 @@ export function ProfileClient({ artist }: { artist: Artist }) {
                   <input value={form.country} onChange={(e) => update('country', e.target.value)} className={inputClass} placeholder="Kenya" />
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <label className={labelClass}>Active Since</label>
                 <input type="number" value={form.actives_since} onChange={(e) => update('actives_since', e.target.value)} className={inputClass} placeholder="2018" />
-              </div>
+              </div> */}
             </div>
           </section>
 
@@ -334,7 +359,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
               {photoUrl && (
                 <img
                   src={photoUrl}
-                  alt={form.name}
+                  alt={form.display_name}
                   className="w-full aspect-square object-cover rounded-xl mb-4"
                 />
               )}
@@ -344,7 +369,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
                 </div>
               )}
               <p className="text-label-mono font-label-mono text-on-surface font-semibold mb-0.5">
-                {form.name || 'Your name'}
+                {form.display_name || 'Your name'}
               </p>
               {(form.city || form.country) && (
                 <p className="text-caption font-caption text-on-surface-variant mb-3">
@@ -352,7 +377,7 @@ export function ProfileClient({ artist }: { artist: Artist }) {
                 </p>
               )}
               <Link
-                href={`/${artist.slug}`}
+                href={`/${form.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full border border-primary/30 text-primary text-sm font-semibold py-2.5 rounded-xl hover:bg-primary/5 transition-colors"
@@ -375,20 +400,23 @@ export function ProfileClient({ artist }: { artist: Artist }) {
 
       {/* Floating save bar */}
       {dirty && (
-        <div className="fixed bottom-0 left-0 right-0 md:left-60 bg-surface border-t border-outline-variant/30 p-4 flex items-center justify-between gap-4 z-30 shadow-lg">
-          <p className="text-caption font-caption text-on-surface-variant hidden sm:block">You have unsaved changes.</p>
+        <div className="fixed bottom-0 left-0 right-0 lg:left-64 bg-surface border-t border-outline-variant/30 px-4 py-3 sm:py-4 flex items-center justify-between gap-4 z-50 shadow-2xl safe-bottom">
+          <p className="text-caption font-caption text-on-surface-variant hidden sm:block">
+            You have unsaved changes.
+          </p>
           {saveError && <p className="text-error text-sm flex-1">{saveError}</p>}
-          <div className="flex gap-3 ml-auto">
+          
+          <div className="flex gap-3 w-full sm:w-auto justify-end">
             <button
               onClick={handleDiscard}
-              className="border border-outline-variant/40 text-on-surface px-4 py-2 rounded-lg text-label-mono font-label-mono text-sm hover:bg-surface-container transition-colors"
+              className="flex-1 sm:flex-initial text-center border border-outline-variant/40 text-on-surface px-4 py-2.5 rounded-lg text-label-mono font-label-mono text-sm hover:bg-surface-container transition-colors"
             >
               Discard
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-primary text-on-primary px-6 py-2 rounded-lg text-label-mono font-label-mono text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex-1 sm:flex-initial text-center bg-primary text-on-primary px-6 py-2.5 rounded-lg text-label-mono font-label-mono text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {saving ? 'Saving…' : 'Save changes'}
             </button>

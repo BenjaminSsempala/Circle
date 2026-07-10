@@ -6,11 +6,11 @@ function wrap(title: string, body: string, cta?: { label: string; url: string })
 <html>
   <body style="font-family:'Helvetica Neue',Arial,sans-serif;background:#fcf9f8;padding:24px;margin:0;">
     <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid rgba(0,84,64,0.12);">
-      <div style="color:#005440;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">The Circle</div>
+      <div style="color:#005440;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">Engero</div>
       <h1 style="font-size:18px;color:#1c1b1b;margin:0 0 12px;">${title}</h1>
       <p style="font-size:14px;color:#3a4540;line-height:1.6;margin:0;">${body}</p>
       ${cta ? `<a href="${cta.url}" style="display:inline-block;margin-top:20px;background:#005440;color:#ffffff;padding:11px 22px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">${cta.label}</a>` : ''}
-      <p style="font-size:11px;color:#6f7a74;margin-top:28px;letter-spacing:1px;text-transform:uppercase;">Facilitated by The Circle — thecircle.co</p>
+      <p style="font-size:11px;color:#6f7a74;margin-top:28px;letter-spacing:1px;text-transform:uppercase;">Facilitated by Engero — engero.art</p>
     </div>
   </body>
 </html>`;
@@ -76,7 +76,7 @@ export function declinedArtistEmail(audienceName: string) {
 export function declinedAudienceEmail(artistName: string) {
   return {
     subject: `${artistName} is unavailable for that date`,
-    html: wrap('Booking declined', `${artistName} is unavailable for that date. Feel free to try another date or browse other artists on The Circle.`),
+    html: wrap('Booking declined', `${artistName} is unavailable for that date. Feel free to try another date or browse other artists on Engero.`),
   };
 }
 

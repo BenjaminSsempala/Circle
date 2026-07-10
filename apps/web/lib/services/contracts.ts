@@ -122,17 +122,25 @@ export async function generateContract(
   if (!booking) return { ok: false, error: 'Booking not found' };
 
   const pkg = (booking as unknown as { packages: ContractPackage }).packages;
-  const artist = (booking as unknown as { artists: { name: string; city: string | null; country: string | null } }).artists;
+  const artist = (booking as unknown as { artists: { legal_name: string; city: string | null; country: string | null } }).artists;
 
   const templateType = selectTemplate(pkg);
   if (!templateType) return { ok: false, error: 'No contract required for merchandise bookings' };
 
   const referenceNumber = await generateReferenceNumber();
 
+  // Fetch audience legal name from profiles
+  const { data: audienceProfile } = await createServiceClient()
+    .from('profiles')
+    .select('legal_name, display_name')
+    .eq('id', booking.audience_id)
+    .maybeSingle();
+  const audienceLegalName = audienceProfile?.legal_name || audienceProfile?.display_name || booking.audience_name || '';
+
   const content: ContractContent = {
     parties: {
-      artist: { name: artist.name, city: artist.city, country: artist.country },
-      audience: { name: booking.audience_name ?? '', email: booking.audience_email ?? '' },
+      artist: { name: artist.legal_name, city: artist.city, country: artist.country },
+      audience: { name: audienceLegalName, email: booking.audience_email ?? '' },
     },
     service: {
       packageName: pkg.name,
@@ -173,7 +181,7 @@ export async function generateContract(
   if (error || !contract) return { ok: false, error: error?.message ?? 'Failed to create contract' };
 
   const pdfUrl = await generateContractPDF(contract as Contract, booking as unknown as Booking, artist, {
-    name: booking.audience_name ?? '',
+    name: audienceLegalName,
     email: booking.audience_email ?? '',
   });
 
@@ -190,10 +198,10 @@ export async function generateContract(
 export async function generateContractPDF(
   contract: Contract,
   booking: Booking,
-  artist: { name: string; city: string | null; country: string | null },
+  artist: { legal_name: string; city: string | null; country: string | null },
   audience: { name: string; email: string },
 ): Promise<string | null> {
-  const pdfBuffer = await renderContractPDF(contract, booking, artist, audience);
+  const pdfBuffer = await renderContractPDF(contract, booking, { name: artist.legal_name, city: artist.city, country: artist.country }, audience);
 
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;

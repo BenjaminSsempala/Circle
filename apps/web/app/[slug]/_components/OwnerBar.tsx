@@ -28,7 +28,7 @@ function triggerDownload(url: string, filename: string) {
 
 function SharePanel({ slug, onClose }: { slug: string; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const profileUrl = `thecircle.co/${slug}`;
+  const profileUrl = `engero.art/${slug}`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(`https://${profileUrl}`);
@@ -276,18 +276,15 @@ export function OwnerBar({
             )}
           </div>
 
-          {/* Dashboard */}
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 text-xs font-semibold bg-primary text-on-primary px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
-          >
-            Dashboard
-          </Link>
+         
+
+
+          
         </div>
       </div>
     </div>
 
-    {/* Export modal — centred overlay, rendered outside the bar so it's full-viewport */}
+    {/* Export modal: centred overlay, rendered outside the bar so it's full-viewport */}
     {exportModal && (
       <ExportModal
         mode={exportModal}

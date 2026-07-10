@@ -81,7 +81,7 @@ export function BookingActions({
             <Btn variant="amber" full>Review & send contract</Btn>
           </Link>
         ) : (
-          <Banner variant="teal" text="The artist is preparing your contract — you'll be notified once it's ready to review." />
+          <Banner variant="teal" text="The artist is preparing your contract. You'll be notified once it's ready to review." />
         )
       )}
 
@@ -101,7 +101,7 @@ export function BookingActions({
 
       {state === 'AUDIENCE_UPLOADED' && role === 'audience' && (
         <>
-          <Banner variant="teal" text="Your signed copy has been received — waiting for the artist's countersignature." />
+          <Banner variant="teal" text="Your signed copy has been received. Waiting for the artist to countersign." />
           <Link href={`/booking/${bookingId}/contract`}>
             <Btn variant="tealOutline" full>View contract</Btn>
           </Link>
@@ -140,13 +140,13 @@ export function BookingActions({
       {state === 'CONFIRMING' && (
         <>
           {!myConfirmed && role === 'artist' && audienceConfirmedAt && (
-            <Banner variant="teal" text="Your client has confirmed delivery — mark as complete to finish the booking." />
+            <Banner variant="teal" text="Your client has confirmed delivery. Mark as complete to finish the booking." />
           )}
           {!myConfirmed && role === 'audience' && artistConfirmedAt && (
-            <Banner variant="teal" text="The artist has confirmed — mark as delivered to complete the booking." />
+            <Banner variant="teal" text="The artist has confirmed. Mark as delivered to complete the booking." />
           )}
           {myConfirmed ? (
-            <Banner variant="amber" text="Done on your end — waiting for the other party to confirm." />
+            <Banner variant="amber" text="Submitted. Waiting for the other party to confirm." />
           ) : (
             <Btn variant="amber" full onClick={() => call('confirm')} disabled={loading !== null}>
               {loading === 'confirm'

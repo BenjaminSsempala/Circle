@@ -28,7 +28,7 @@ export default async function PackagesPage() {
       </p>
       <PackagesClient
         initialPackages={packages ?? []}
-        artistSlug={artist.slug}
+        artist={artist}
       />
     </div>
   );

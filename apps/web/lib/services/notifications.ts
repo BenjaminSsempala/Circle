@@ -5,7 +5,7 @@ import type { Contract } from '@/lib/services/contracts';
 import * as templates from '@/lib/emails/booking';
 
 function siteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thecircle.co';
+  return process.env.NEXT_PUBLIC_SITE_URL ?? 'https://engero.art';
 }
 
 async function getParties(booking: Booking) {
