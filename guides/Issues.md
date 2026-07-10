@@ -19,6 +19,8 @@ Profile page
 - Reintroduce QR codes, on profile as sharable, on epk and rate card too.
 - confirm socials links for different social in ui
 - add click to expand dp on artist profile
+- How do we handle alot of products -> maybe dedicated products page per artist 
+- Need to provide customisation options
 
 Export
 - EPK 2 pages has a bug and needs design work
@@ -31,7 +33,13 @@ Packages:
 - Add an info page that shows what types of creative packages we can add, 
 
 Deployment
-- Need staging and production
+- Set up staging properly
 
 Audience
 - Add phonenumber to audience
+
+Wandia
+- Font 
+- Onboarding
+- How to create packages
+- WHat draws the audience in? what draws the artist in?

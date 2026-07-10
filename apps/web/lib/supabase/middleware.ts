@@ -19,7 +19,16 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    user = authUser;
+  } catch (error) {
+    // Refresh token is missing or invalid — clear the session
+    supabaseResponse.cookies.delete('sb-access-token');
+    supabaseResponse.cookies.delete('sb-refresh-token');
+  }
+
   const url = request.nextUrl.clone();
   const path = url.pathname;
 
