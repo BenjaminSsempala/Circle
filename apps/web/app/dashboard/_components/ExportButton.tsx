@@ -7,20 +7,31 @@ export function ExportButton({ slug }: { slug: string }) {
   const { onOpenExport } = useDashboardExport();
   const [isOpen, setIsOpen] = useState(false);
   const [loadingProfileCard, setLoadingProfileCard] = useState(false);
+  const [profileCardError, setProfileCardError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const clickHandler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    const keyHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', clickHandler);
+    document.addEventListener('keydown', keyHandler);
+    return () => {
+      document.removeEventListener('mousedown', clickHandler);
+      document.removeEventListener('keydown', keyHandler);
+    };
+  }, [isOpen]);
 
   async function handleProfileCardDownload() {
     setLoadingProfileCard(true);
+    setProfileCardError(null);
     try {
       const res = await fetch(`/api/artists/${slug}/share-card`);
       if (!res.ok) throw new Error('Generation failed');
@@ -33,7 +44,9 @@ export function ExportButton({ slug }: { slug: string }) {
       URL.revokeObjectURL(objectUrl);
       setIsOpen(false);
     } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : 'Failed to generate profile card';
       console.error('[profile-card] failed:', e);
+      setProfileCardError(errorMsg);
     } finally {
       setLoadingProfileCard(false);
     }
@@ -50,6 +63,8 @@ export function ExportButton({ slug }: { slug: string }) {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
         className="w-full flex flex-col items-center gap-2 bg-surface-container rounded-xl p-3 hover:bg-surface-container-high transition-colors text-center"
       >
         <span className="text-xl">📥</span>
@@ -57,9 +72,10 @@ export function ExportButton({ slug }: { slug: string }) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/30 py-1.5 z-50">
+        <div role="menu" className="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/30 py-1.5 z-50">
           {/* EPK */}
           <button
+            role="menuitem"
             onClick={() => { onOpenExport('epk'); setIsOpen(false); }}
             className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left"
           >
@@ -74,6 +90,7 @@ export function ExportButton({ slug }: { slug: string }) {
 
           {/* Rate Card */}
           <button
+            role="menuitem"
             onClick={() => { onOpenExport('rate-card'); setIsOpen(false); }}
             className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left"
           >
@@ -90,6 +107,7 @@ export function ExportButton({ slug }: { slug: string }) {
 
           {/* Profile Card */}
           <button
+            role="menuitem"
             onClick={handleProfileCardDownload}
             disabled={loadingProfileCard}
             className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-surface-container transition-colors text-left disabled:opacity-60"
@@ -103,7 +121,9 @@ export function ExportButton({ slug }: { slug: string }) {
               <span className="block text-sm text-on-surface font-semibold">
                 {loadingProfileCard ? 'Generating…' : 'Profile Card (Image)'}
               </span>
-              <span className="block text-xs text-on-surface-variant font-normal">9:16 story card PNG</span>
+              <span className={`block text-xs font-normal ${profileCardError ? 'text-red-500' : 'text-on-surface-variant'}`}>
+                {profileCardError ? `Error: ${profileCardError}` : '9:16 story card PNG'}
+              </span>
             </span>
           </button>
         </div>

@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   const artist = artistResult.ok ? artistResult.artist : null;
 
   const { data: packages } = artist
-    ? await supabase.from('packages').select('id').eq('artist_id', artist.id).eq('is_active', true)
+    ? await supabase.from('packages').select('id,name,price,currency,duration,description,logistics_inclusive').eq('artist_id', artist.id).eq('is_active', true)
     : { data: [] };
 
   // Bookings – table may not exist yet, so catch the error gracefully
@@ -303,7 +303,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <DashboardClient artist={artist}>
+    <DashboardClient artist={artist} packages={packages ?? []}>
       {dashboardContent}
     </DashboardClient>
   );

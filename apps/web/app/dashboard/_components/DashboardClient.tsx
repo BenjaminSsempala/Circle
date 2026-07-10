@@ -20,10 +20,11 @@ export function useDashboardExport() {
 
 interface DashboardClientProps {
   artist: any;
+  packages: any[];
   children: React.ReactNode;
 }
 
-export function DashboardClient({ artist, children }: DashboardClientProps) {
+export function DashboardClient({ artist, packages, children }: DashboardClientProps) {
   const [exportModal, setExportModal] = useState<ExportModalMode | null>(null);
 
   const onOpenExport = (mode: ExportModalMode) => {
@@ -53,7 +54,7 @@ export function DashboardClient({ artist, children }: DashboardClientProps) {
             artistTags={Array.isArray(artist.tags) ? (artist.tags as string[]) : null}
             socialLinks={(artist.social_links as Record<string, string>) ?? {}}
             selectedWorks={(Array.isArray(artist.selected_works) ? artist.selected_works : []) as any[]}
-            packages={[]}
+            packages={packages.map((p) => ({ id: p.id, name: p.name, price: p.price, currency: p.currency, duration: p.duration ?? null, description: p.description ?? null, logistics_inclusive: p.logistics_inclusive }))}
             savedEPK={(artist as Record<string, unknown>).epk_data as any ?? null}
             savedRC={(artist as Record<string, unknown>).rate_card_data as any ?? null}
             onClose={() => setExportModal(null)}
