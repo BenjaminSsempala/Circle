@@ -33,7 +33,7 @@ export const POST = withAxiom(async () => {
       if (artistResult.ok && artistResult.artist) {
         sendArtistWelcomeEmail({
           to:          user.email!,
-          artistName:  artistResult.artist.name,
+          artistName:  artistResult.artist.display_name,
           artistSlug:  artistResult.artist.slug,
         }).catch((e) => {
           logger.error('Onboarding welcome email async transport delivery failure', { 
