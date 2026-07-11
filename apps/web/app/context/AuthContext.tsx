@@ -8,7 +8,7 @@ interface Profile {
   id: string;
   display_name?: string;
   legal_name?: string;
-  role?: 'artist' | 'organiser';
+  role?: 'artist' | 'audience';
   onboarding_complete?: boolean;
 }
 

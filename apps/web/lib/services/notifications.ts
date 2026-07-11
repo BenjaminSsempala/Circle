@@ -11,7 +11,7 @@ function siteUrl() {
 async function getParties(booking: Booking) {
   const { data: artist } = await createServiceClient()
     .from('artists')
-    .select('name, user_id')
+    .select('display_name, user_id')
     .eq('id', booking.artist_id)
     .maybeSingle();
 
@@ -32,7 +32,7 @@ async function getParties(booking: Booking) {
   }
 
   return {
-    artistName: artist?.name ?? 'Artist',
+    artistName: artist?.display_name ?? 'Artist',
     artistEmail,
     packageName: pkg?.name ?? 'package',
   };

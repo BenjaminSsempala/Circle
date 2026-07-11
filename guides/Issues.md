@@ -49,4 +49,13 @@ Wandia Feedback:
 - What would draw the artist in? What features? -payment at the click of a button, how do i get paid?
 - Comments on artists work/ packages/services... Rate the artist. Lice feedback
 - Font change the font to less calculatorly
-- Tutorial of sorts
+- Tutorial of sorts- feaure by feature
+- View artists link on dashboard
+
+AmaliTech
+- Add AI chatbot or something that guides the users on packages, platform etc
+The "Package Wizard" for Artists: Many independent creatives struggle to write professional, marketing-focused descriptions for their services. You can build a tool where an artist inputs: "I sing acoustic songs at weddings for 1 hour," and Groq instantly expands it into a polished, high-converting package structure with bullet points, best-for scenarios, and clear deliverables.
+
+Smart Pricing Assistant: Groq can parse an artist’s category, location, and experience level to suggest baseline competitive tiers. For example, it can advise: "Based on Spoken Word averages in Kampala, your standard 30-minute set is priced perfectly, but you could offer an Extended tier at UGX 250,000."
+
+AI Social Caption Generator: You can add a button next to an artist's portfolio pieces or circle updates: "Generate Instagram Caption." Groq can read the package details and spit out ready-to-copy social media posts complete with relevant creative hashtags.
