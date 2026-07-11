@@ -9,7 +9,7 @@ BEGIN
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'display_name', ''),
-    COALESCE(new.raw_user_meta_data->>'display_name', ''),
+    COALESCE(new.raw_user_meta_data->>'legal_name', ''),
     new.email
   )
   ON CONFLICT (id) DO UPDATE
