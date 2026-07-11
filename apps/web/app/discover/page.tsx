@@ -15,7 +15,7 @@ async function getRankedArtists(availableOn?: string): Promise<DiscoverArtist[]>
   );
 
   const [{ data: artists }, { data: packages }] = await Promise.all([
-    anonSupabase.from('artists').select('*').limit(100),
+    anonSupabase.from('artists').select('*').eq('is_visible', true).limit(100),
     anonSupabase.from('packages').select('artist_id, name, price, currency').eq('is_active', true),
   ]);
 

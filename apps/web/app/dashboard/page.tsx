@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getArtistByUserIdCached } from '@/lib/services/artists';
 import { ExportButton } from './_components/ExportButton';
 import { DashboardClient } from './_components/DashboardClient';
+import { VisibilityToggle } from './_components/VisibilityToggle';
 
 function greeting() {
   const h = new Date().getHours();
@@ -200,6 +201,11 @@ export default async function DashboardPage() {
 
         {/* Right: earnings + profile completeness + quick links */}
         <div className="flex flex-col gap-4">
+
+          {/* Visibility toggle */}
+          {artist && (
+            <VisibilityToggle initialVisible={artist.is_visible ?? true} artistSlug={artist.slug} />
+          )}
 
           {/* Profile completeness */}
           {pct < 100 && (
