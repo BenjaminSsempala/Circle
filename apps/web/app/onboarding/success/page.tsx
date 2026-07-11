@@ -25,7 +25,7 @@ export default function SuccessPage() {
   useEffect(() => {
     if (loading) return;
     if (!user) { router.push('/auth/signup'); return; }
-    if (user.role === 'organiser') { router.push('/onboarding/organiser'); return; }
+    if (user.role === 'audience') { router.push('/discover'); return; }
   }, [user, loading, router]);
 
   // ── Mark onboarding complete + fetch real slug ────────────────────────────

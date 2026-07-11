@@ -27,7 +27,7 @@ export default function PackageOnboardingPage() {
     if (loading) return;
     if (!user) { router.push('/auth/signup'); return; }
     if (user.onboarding_complete) { router.push('/dashboard'); return; }
-    if (user.role === 'organiser') { router.push('/onboarding/organiser'); return; }
+    if (user.role === 'audience') { router.push('/discover'); return; }
   }, [user, loading, router]);
 
   // ── Form helpers ──────────────────────────────────────────────────────────

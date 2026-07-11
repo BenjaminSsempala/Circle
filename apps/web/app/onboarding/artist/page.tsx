@@ -48,8 +48,8 @@ export default function ArtistOnboardingPage() {
       router.push('/auth/signup?step=role');
       return;
     }
-    if (user?.role === 'organiser') {
-      router.push('/onboarding/organiser');
+    if (user?.role === 'audience') {
+      router.push('/discover');
       return;
     }
     if (user?.onboarding_complete) {
