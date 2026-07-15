@@ -207,7 +207,7 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
             <div className="w-4 h-4 rounded bg-error/10 flex items-center justify-center">
               <span className="text-error text-[8px]">✕</span>
             </div>
-            <span className="text-caption font-caption text-on-surface-variant">Unavailable (Blackout)</span>
+            <span className="text-caption font-caption text-on-surface-variant">Unavailable</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-primary" />
@@ -236,14 +236,14 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
         {/* Upcoming blackouts */}
         <div className="bg-surface border border-outline-variant/30 rounded-2xl p-5">
           <h3 className="text-label-mono font-label-mono text-primary font-semibold text-sm mb-1">
-            Upcoming Blackouts
+            Unavailable Days
           </h3>
           <p className="text-caption font-caption text-on-surface-variant mb-4">
             Click any future date on the calendar to block or unblock it.
           </p>
 
           {upcomingBlackouts.length === 0 ? (
-            <p className="text-caption font-caption text-on-surface-variant">No blackout dates set.</p>
+            <p className="text-caption font-caption text-on-surface-variant">No unavailable dates set.</p>
           ) : (
             <div className="flex flex-col gap-3">
               {upcomingBlackouts.map((iso) => (

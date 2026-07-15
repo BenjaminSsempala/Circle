@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export function VisibilityToggle({ initialVisible, artistSlug }: { initialVisible: boolean; artistSlug: string }) {
   const [visible, setVisible] = useState(initialVisible);
@@ -26,13 +27,22 @@ export function VisibilityToggle({ initialVisible, artistSlug }: { initialVisibl
 
   return (
     <div className="bg-surface border border-outline-variant/30 rounded-xl p-4 flex items-center justify-between gap-3">
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-label-mono font-label-mono text-on-surface text-xs uppercase tracking-wider">
           Discover visibility
         </p>
         <p className="text-caption font-caption text-on-surface-variant mt-0.5">
           {visible ? 'Your profile appears on Discover' : 'Hidden from Discover'}
         </p>
+        <Link
+          href="/discover"
+          className="inline-flex items-center gap-1 mt-2 text-[11px] font-semibold text-primary hover:opacity-75 transition-opacity"
+        >
+          Explore artists
+          <svg viewBox="0 0 16 16" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 8h10M9 4l4 4-4 4" />
+          </svg>
+        </Link>
       </div>
       <button
         onClick={toggle}
