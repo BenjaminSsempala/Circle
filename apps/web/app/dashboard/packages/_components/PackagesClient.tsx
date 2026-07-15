@@ -32,10 +32,10 @@ function inspirationToForm(card: InspirationCard): FormState {
     price: String(card.price ?? ''),
     currency: card.currency ?? 'UGX',
     duration: card.duration ?? '',
-    logisticsInclusive: card.logisticsInclusive,
-    productType: card.productType,
-    autoAccept: card.autoAccept,
-    contractRequired: card.contractRequired,
+    logisticsInclusive: false,
+    productType: 'service',
+    autoAccept: false,
+    contractRequired: true,
   };
 }
 
