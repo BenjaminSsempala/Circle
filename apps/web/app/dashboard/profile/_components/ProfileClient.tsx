@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { uploadToCloudinary } from '@/lib/upload';
+import { getGroupedOptions } from '@/lib/data/art-forms';
 
 type Artist = {
   id: string;
@@ -25,7 +26,8 @@ type FormState = {
   legal_name: string;
   tagline: string;
   bio: string;
-  art_forms: string;
+  art_forms: string;       // registry value (e.g. 'musician') or 'other'
+  art_forms_other: string; // free-text when art_forms === 'other'
   tags: string;
   city: string;
   country: string;
@@ -41,14 +43,24 @@ type FormState = {
   social_website: string;
 };
 
+const KNOWN_ART_FORM_VALUES = new Set(getGroupedOptions().flatMap((g) => g.entries.map((e) => e.value)));
+
 function artistToForm(a: Artist): FormState {
   const sl = a.social_links ?? {};
+  const primaryStored = (a.art_forms ?? [])[0] ?? '';
+  // If the stored value is a known registry slug, use it as the select value.
+  // Otherwise treat it as free-text "other".
+  const isKnown = KNOWN_ART_FORM_VALUES.has(primaryStored);
+  const artFormsValue = primaryStored === '' ? '' : isKnown ? primaryStored : 'other';
+  const artFormsOther = isKnown ? '' : primaryStored;
+
   return {
     display_name: a.display_name,
     legal_name: a.legal_name,
     tagline: a.tagline ?? '',
     bio: a.bio ?? '',
-    art_forms: (a.art_forms ?? []).join(', '),
+    art_forms: artFormsValue,
+    art_forms_other: artFormsOther,
     tags: (a.tags ?? []).join(', '),
     city: a.city ?? '',
     country: a.country ?? '',
@@ -136,7 +148,10 @@ export function ProfileClient({ artist }: { artist: Artist }) {
     setSaving(true);
     setSaveError('');
     try {
-      const artForms = form.art_forms.split(',').map((s) => s.trim()).filter(Boolean);
+      const primaryArtForm = form.art_forms === 'other'
+        ? (form.art_forms_other || '').trim()
+        : form.art_forms;
+      const artForms = primaryArtForm ? [primaryArtForm] : [];
       const tags = form.tags.split(',').map((s) => s.trim()).filter(Boolean);
 
       const body: Record<string, unknown> = {
@@ -286,8 +301,31 @@ export function ProfileClient({ artist }: { artist: Artist }) {
             <div className="flex flex-col gap-4">
               <div>
                 <label className={labelClass}>Art Form</label>
-                <input value={form.art_forms} onChange={(e) => update('art_forms', e.target.value)} className={inputClass} placeholder="Musician, Painter, …" />
-                <p className="text-caption font-caption text-on-surface-variant mt-1">Comma-separated</p>
+                <select
+                  value={form.art_forms}
+                  onChange={(e) => {
+                    update('art_forms', e.target.value);
+                    if (e.target.value !== 'other') update('art_forms_other', '');
+                  }}
+                  className={inputClass}
+                >
+                  <option value="">Select your craft</option>
+                  {getGroupedOptions().map((g) => (
+                    <optgroup key={g.group} label={g.group}>
+                      {g.entries.map((entry) => (
+                        <option key={entry.value} value={entry.value}>{entry.label}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+                {form.art_forms === 'other' && (
+                  <input
+                    value={form.art_forms_other}
+                    onChange={(e) => update('art_forms_other', e.target.value)}
+                    className={`${inputClass} mt-2`}
+                    placeholder="Describe your art form"
+                  />
+                )}
               </div>
               <div>
                 <label className={labelClass}>Tags</label>

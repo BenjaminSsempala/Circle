@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
+import { getGroupedOptions } from '@/lib/data/art-forms';
 import '../../auth/auth.css';
 
 export default function ArtistOnboardingPage() {
@@ -481,17 +482,13 @@ export default function ArtistOnboardingPage() {
                     required
                   >
                     <option value="">Select your craft</option>
-                    <option value="poet">Poet</option>
-                    <option value="musician">Musician</option>
-                    <option value="visual">Visual Artist</option>
-                    <option value="dancer">Dancer</option>
-                    <option value="digital">Videographer</option>
-                    <option value="theater">Actor</option>
-                    <option value="spoken-word">Spoken Word Artist</option>
-                    <option value="author">Author</option>
-                    <option value="cinematographer">Cinematographer</option>
-                    <option value="story-teller">Story Teller</option>
-                    <option value="other">Other</option>
+                    {getGroupedOptions().map((g) => (
+                      <optgroup key={g.group} label={g.group}>
+                        {g.entries.map((entry) => (
+                          <option key={entry.value} value={entry.value}>{entry.label}</option>
+                        ))}
+                      </optgroup>
+                    ))}
                   </select>
                   {formData.artForm === 'other' && (
                     <div className="flex flex-col gap-xs pt-4">

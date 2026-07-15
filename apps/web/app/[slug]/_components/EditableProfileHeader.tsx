@@ -1,23 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-const ART_FORM_OPTIONS = [
-  { value: 'poet', label: 'Poet' },
-  { value: 'musician', label: 'Musician' },
-  { value: 'visual', label: 'Visual Artist' },
-  { value: 'dancer', label: 'Dancer' },
-  { value: 'digital', label: 'Videographer' },
-  { value: 'theater', label: 'Actor' },
-  { value: 'spoken-word', label: 'Spoken Word Artist' },
-  { value: 'author', label: 'Author' },
-  { value: 'cinematographer', label: 'Cinematographer' },
-  { value: 'story-teller', label: 'Story Teller' },
-];
-
-const ART_FORM_LABELS: Record<string, string> = Object.fromEntries(
-  ART_FORM_OPTIONS.map(({ value, label }) => [value, label])
-);
+import { getLabel, getGroupedOptions } from '@/lib/data/art-forms';
 
 type SocialKey = 'youtube' | 'spotify' | 'tiktok' | 'instagram' | 'soundcloud' | 'linkedin' | 'twitter' | 'website';
 
@@ -67,7 +51,7 @@ export function EditableProfileHeader({
   const socialLinks = artist.social_links ?? {};
   const connectedSocials = Object.entries(socialLinks).filter(([, url]) => url?.trim());
   const primaryArtForm = artist.art_forms?.[0] ?? '';
-  const artFormLabel = ART_FORM_LABELS[primaryArtForm] ?? primaryArtForm;
+  const artFormLabel = getLabel(primaryArtForm);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -211,7 +195,11 @@ export function EditableProfileHeader({
                   <label className="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Art Form</label>
                   <select value={draft.artForm} onChange={(e) => setDraft((p) => ({ ...p, artForm: e.target.value }))} className="w-full">
                     <option value="">Select</option>
-                    {ART_FORM_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    {getGroupedOptions().map((g) => (
+                      <optgroup key={g.group} label={g.group}>
+                        {g.entries.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </optgroup>
+                    ))}
                   </select>
                 </div>
                 <div className="flex flex-col gap-1">

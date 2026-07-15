@@ -3,7 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
+import { getTemplatesForArtForm, getTemplatesForGroup, type PackageTemplate } from '@/lib/data/package-templates';
+import { getGroupedOptions, type TemplateGroup } from '@/lib/data/art-forms';
 import '../../auth/auth.css';
+
+const ALLOWED_ONBOARDING_DURATIONS = ['30 min', '1 hour', '2 hours', '4 hours', 'Full Day', 'Per Piece', 'Negotiable'];
 
 export default function PackageOnboardingPage() {
   const router = useRouter();
@@ -22,6 +26,11 @@ export default function PackageOnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
 
+  // ── Template nudge state ────────────────────────────────────────────────────
+  const [detectedArtForm, setDetectedArtForm] = useState<string | null>(null);
+  const [manualGroup, setManualGroup] = useState<TemplateGroup>('generic');
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+
   // ── Auth guard ────────────────────────────────────────────────────────────
   useEffect(() => {
     if (loading) return;
@@ -29,6 +38,19 @@ export default function PackageOnboardingPage() {
     if (user.onboarding_complete) { router.push('/dashboard'); return; }
     if (user.role === 'audience') { router.push('/discover'); return; }
   }, [user, loading, router]);
+
+  // ── Detect the artist's art form from the previous onboarding step ──────────
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('onboarding_artist_data');
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      const af = d?.artForm === 'other' ? (d?.otherArtForm || '') : (d?.artForm || '');
+      if (af) setDetectedArtForm(af);
+    } catch {
+      // ignore — fall back to manual group selection
+    }
+  }, []);
 
   // ── Form helpers ──────────────────────────────────────────────────────────
   const setFormValue = (name: string, value: string) => {
@@ -89,6 +111,23 @@ export default function PackageOnboardingPage() {
   const handleSkip = () => {
     // Artist chose to add packages later: skip to socials
     router.push('/onboarding/socials');
+  };
+
+  // ── Template helpers ────────────────────────────────────────────────────────
+  const coerceDuration = (d: string) => (ALLOWED_ONBOARDING_DURATIONS.includes(d) ? d : '1 hour');
+
+  const templateList: PackageTemplate[] = detectedArtForm
+    ? getTemplatesForArtForm(detectedArtForm)
+    : getTemplatesForGroup(manualGroup);
+
+  const applyTemplate = (t: PackageTemplate) => {
+    setFormData((prev) => ({
+      ...prev,
+      packageName: t.name,
+      description: t.description,
+      duration: coerceDuration(t.duration),
+    }));
+    setTemplatesOpen(false);
   };
 
   // ── Render guards ─────────────────────────────────────────────────────────
@@ -162,6 +201,63 @@ export default function PackageOnboardingPage() {
                   Define your core service. This single, comprehensive package will be the first
                   thing clients see on your profile.
                 </p>
+              </div>
+
+              {/* Template nudge */}
+              <div className="mb-gutter border border-primary-container/20 rounded-2xl overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setTemplatesOpen((o) => !o)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-primary-container/5 hover:bg-primary-container/10 transition-colors text-left"
+                >
+                  <span className="text-label-mono font-label-mono text-primary text-sm font-semibold">
+                    Need ideas? Start from a template
+                  </span>
+                  <span className="text-primary text-sm">{templatesOpen ? '▲' : '▼'}</span>
+                </button>
+                {templatesOpen && (
+                  <div className="p-4 flex flex-col gap-3 bg-surface">
+                    {!detectedArtForm && (
+                      <div className="flex flex-col gap-xs">
+                        <label htmlFor="templateGroup" className="text-caption font-caption text-on-surface-variant">
+                          Pick a category to see relevant templates
+                        </label>
+                        <select
+                          id="templateGroup"
+                          value={manualGroup}
+                          onChange={(e) => setManualGroup(e.target.value as TemplateGroup)}
+                          className="w-full"
+                        >
+                          {getGroupedOptions().map((g) => (
+                            <optgroup key={g.group} label={g.group}>
+                              {g.entries.map((entry) => (
+                                <option key={entry.value} value={entry.templateGroup}>
+                                  {entry.label}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {templateList.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => applyTemplate(t)}
+                        className="text-left rounded-xl border border-outline-variant/30 hover:border-primary/40 hover:bg-primary/5 px-4 py-3 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-semibold text-on-surface">{t.name}</span>
+                          <span className="text-[10px] uppercase tracking-wider text-on-surface-variant">{t.duration}</span>
+                        </div>
+                        <p className="text-caption font-caption text-on-surface-variant line-clamp-2 mt-0.5">
+                          {t.description}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-gutter">

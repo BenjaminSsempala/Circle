@@ -6,33 +6,14 @@ import { ArtistCard, type DiscoverArtist } from '@/app/components/discover/Artis
 import { FilterBar } from '@/app/components/discover/FilterBar';
 import { GuestBlurOverlay } from '@/app/components/discover/GuestBlurOverlay';
 import { OccasionBanner } from '@/app/components/discover/OccasionBanner';
+import { artFormMatches } from '@/lib/data/art-forms';
 
 const GUEST_VISIBLE = 10;
 
-// Maps filter chip labels → all stored values that should match.
-// Onboarding stores raw option values (e.g. "spoken-word", "visual", "theater").
-const ART_FORM_MAP: Record<string, string[]> = {
-  'Musician':     ['musician'],
-  'Dancer':       ['dancer'],
-  'Poet':         ['poet'],
-  'Visual Artist':['visual', 'visual artist', 'visual_artist'],
-  'Spoken Word':  ['spoken-word', 'spoken word', 'spoken_word', 'spoken word artist'],
-  'Actor':        ['theater', 'actor', 'theatre'],
-  'Videographer': ['digital', 'videographer', 'cinematographer'],
-};
-
-function normalize(s: string) {
-  return s.toLowerCase().replace(/[-_]+/g, ' ').trim();
-}
-
+// Resolve a filter chip label against an artist's stored art-form values using the
+// canonical registry matcher (folds in the former local alias map).
 function matchesArtFormFilter(artForms: string[], filterLabel: string): boolean {
-  const targets = ART_FORM_MAP[filterLabel];
-  if (!targets) {
-    // Fallback: normalized includes comparison
-    const nf = normalize(filterLabel);
-    return artForms.some((f) => normalize(f).includes(nf) || nf.includes(normalize(f)));
-  }
-  return artForms.some((f) => targets.includes(normalize(f)));
+  return artForms.some((f) => artFormMatches(f, filterLabel));
 }
 
 interface Props {

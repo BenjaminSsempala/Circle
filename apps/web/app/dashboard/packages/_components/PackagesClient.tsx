@@ -3,57 +3,40 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ExportModal } from '@/app/[slug]/_components/ExportModal';
+import { getTemplatesForArtForm, type PackageTemplate } from '@/lib/data/package-templates';
+import { templateToFormState, type PackageFormState, type PackagePrefill } from '@/lib/packages/prefill';
+import type { InspirationCard } from '@/lib/services/inspiration';
+import { PackageDrawer, type Package } from '@/app/components/packages/PackageDrawer';
 
-type ProductType = 'service' | 'digital' | 'merchandise';
+type FormState = PackageFormState;
 
-type Package = {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  currency: string;
-  duration: string | null;
-  tier: string;
-  logistics_inclusive: boolean;
-  is_active: boolean;
-  created_at: string;
-  product_type: ProductType;
-  auto_accept: boolean;
-  contract_required: boolean;
-};
-
-type FormState = {
-  name: string;
-  description: string;
-  price: string;
-  currency: string;
-  duration: string;
-  logisticsInclusive: boolean;
-  productType: ProductType;
-  autoAccept: boolean;
-  contractRequired: boolean;
-};
-
-const EMPTY_FORM: FormState = {
-  name: '',
-  description: '',
-  price: '',
-  currency: 'UGX',
-  duration: '',
-  logisticsInclusive: false,
-  productType: 'service',
-  autoAccept: false,
-  contractRequired: true,
-};
-
-const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
+const PRODUCT_TYPE_LABELS: Record<string, string> = {
   service: 'Service',
   digital: 'Digital',
   merchandise: 'Merchandise',
 };
 
+const INLINE_MIN = 3;
+
 function formatPrice(price: number, currency: string) {
   return `${currency} ${Number(price).toLocaleString()}`;
+}
+
+// Map an in-memory inspiration card to form state for the "Use as example" preview action.
+// Full-fidelity example prefill (with product type / logistics) happens server-side via the
+// ?example= param; this in-memory path uses sensible defaults for the fields a card lacks.
+function inspirationToForm(card: InspirationCard): FormState {
+  return {
+    name: card.packageName,
+    description: card.description ?? '',
+    price: String(card.price ?? ''),
+    currency: card.currency ?? 'UGX',
+    duration: card.duration ?? '',
+    logisticsInclusive: false,
+    productType: 'service',
+    autoAccept: false,
+    contractRequired: true,
+  };
 }
 
 function PackageCard({
@@ -171,336 +154,115 @@ function PackageCard({
   );
 }
 
-function PackageDrawer({
-  editing,
-  onClose,
-  artistSlug,
-  onSaved,
-}: {
-  editing: Package | null;
-  onClose: () => void;
-  artistSlug: string;
-  onSaved: (pkg: Package) => void;
-}) {
-  const [form, setForm] = useState<FormState>(
-    editing
-      ? {
-          name: editing.name,
-          description: editing.description ?? '',
-          price: String(editing.price),
-          currency: editing.currency,
-          duration: editing.duration ?? '',
-          logisticsInclusive: editing.logistics_inclusive,
-          productType: editing.product_type ?? 'service',
-          autoAccept: editing.auto_accept ?? false,
-          contractRequired: editing.contract_required ?? true,
-        }
-      : EMPTY_FORM,
-  );
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-
-  function update(key: keyof FormState, value: string | boolean) {
-    setForm((f) => ({ ...f, [key]: value }));
-  }
-
-  async function handleSave() {
-    if (!form.name.trim() || !form.price) {
-      setError('Name and price are required.');
-      return;
-    }
-    setSaving(true);
-    setError('');
-    try {
-      const body = {
-        name: form.name,
-        description: form.description,
-        price: Number(form.price),
-        currency: form.currency || 'UGX',
-        duration: form.duration,
-        logisticsInclusive: form.logisticsInclusive,
-        productType: form.productType,
-        autoAccept: form.autoAccept,
-        contractRequired: form.productType === 'merchandise' ? false : form.contractRequired,
-      };
-
-      const res = editing
-        ? await fetch(`/api/packages/${editing.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          })
-        : await fetch(`/api/artists/${artistSlug}/packages`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          });
-
-      if (!res.ok) {
-        const d = await res.json();
-        setError(d.error ?? 'Save failed');
-        return;
-      }
-      const d = await res.json();
-      onSaved(d.package);
-    } catch {
-      setError('Network error');
-    } finally {
-      setSaving(false);
-    }
-  }
-
+// Small preview card used in the empty-state inline inspiration preview.
+function InspirationPreviewCard({ card, onUse }: { card: InspirationCard; onUse: () => void }) {
   return (
-    <>
-      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
-      <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-surface shadow-2xl z-50 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-outline-variant/30">
-          <h2 className="text-headline-md font-headline-md text-on-surface">
-            {editing ? 'Edit Package' : 'Add Package'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5">
-          {/* Product type */}
-          <div>
-            <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Booking type</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['service', 'digital', 'merchandise'] as ProductType[]).map((pt) => (
-                <button
-                  key={pt}
-                  type="button"
-                  onClick={() => {
-                    update('productType', pt);
-                    if (pt === 'digital') update('contractRequired', false);
-                    if (pt === 'service') update('contractRequired', true);
-                    if (pt === 'merchandise') update('contractRequired', false);
-                  }}
-                  className={`text-sm font-semibold rounded-lg border px-3 py-2.5 transition-colors ${
-                    form.productType === pt
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-outline-variant/40 text-on-surface-variant hover:border-primary/40'
-                  }`}
-                >
-                  {PRODUCT_TYPE_LABELS[pt]}
-                </button>
-              ))}
-            </div>
-            <p className="text-caption font-caption text-on-surface-variant mt-1.5">
-              {form.productType === 'service' && 'Live performances, workshops, sessions: contract always required.'}
-              {form.productType === 'digital' && 'Birthday messages, custom videos, digital art: no contract needed by default.'}
-              {form.productType === 'merchandise' && 'Physical goods: audience sees your contact card to arrange purchase.'}
-            </p>
-          </div>
-
-          {/* Name */}
-          <div>
-            <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">
-              Package name <span className="text-error">*</span>
-            </label>
-            <input
-              value={form.name}
-              onChange={(e) => update('name', e.target.value)}
-              placeholder="e.g. Solo Performance"
-              className="w-full border border-outline-variant/40 rounded-lg px-3 py-2.5 text-body-md font-body-md text-on-surface bg-surface focus:outline-none focus:border-primary"
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Description</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => update('description', e.target.value)}
-              rows={3}
-              placeholder="What's included in this package?"
-              className="w-full border border-outline-variant/40 rounded-lg px-3 py-2.5 text-body-md font-body-md text-on-surface bg-surface focus:outline-none focus:border-primary resize-none"
-            />
-          </div>
-
-          {/* Price + Currency */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">
-                Price <span className="text-error">*</span>
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={form.price}
-                onChange={(e) => update('price', e.target.value)}
-                placeholder="0"
-                className="w-full border border-outline-variant/40 rounded-lg px-3 py-2.5 text-body-md font-body-md text-on-surface bg-surface focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Currency</label>
-              <select
-                value={form.currency}
-                onChange={(e) => update('currency', e.target.value)}
-                className="w-full border border-outline-variant/40 rounded-lg px-3 py-2.5 text-body-md font-body-md text-on-surface bg-surface focus:outline-none focus:border-primary"
-              >
-                {['UGX', 'USD', 'KES', 'GHS', 'ZAR', 'NGN'].map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Duration */}
-          <div>
-            <label className="block text-label-mono font-label-mono text-on-surface text-sm mb-1.5">Duration</label>
-            <input
-              value={form.duration}
-              onChange={(e) => update('duration', e.target.value)}
-              placeholder="e.g. 2 Hours, Half day"
-              className="w-full border border-outline-variant/40 rounded-lg px-3 py-2.5 text-body-md font-body-md text-on-surface bg-surface focus:outline-none focus:border-primary"
-            />
-          </div>
-
-          {/* Logistics toggle */}
-          <div>
-            <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Logistics</p>
-            <button
-              type="button"
-              onClick={() => update('logisticsInclusive', !form.logisticsInclusive)}
-              className={`flex items-center gap-3 w-full border rounded-xl p-4 transition-colors ${
-                form.logisticsInclusive
-                  ? 'border-primary/40 bg-primary/5'
-                  : 'border-outline-variant/40 bg-surface'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${form.logisticsInclusive ? 'bg-primary/15' : 'bg-error/10'}`}>
-                {form.logisticsInclusive ? (
-                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                )}
-              </div>
-              <div className="text-left">
-                <p className="text-label-mono font-label-mono text-on-surface text-sm font-semibold">Transport</p>
-                <p className="text-caption font-caption text-on-surface-variant">
-                  {form.logisticsInclusive ? 'Included in package' : 'Not included'}
-                </p>
-              </div>
-              <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.logisticsInclusive ? 'bg-primary' : 'bg-outline-variant'}`}>
-                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.logisticsInclusive ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
-              </div>
-            </button>
-          </div>
-
-          {/* Auto-accept */}
-          <div>
-            <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Booking acceptance</p>
-            <button
-              type="button"
-              onClick={() => update('autoAccept', !form.autoAccept)}
-              className={`flex items-center gap-3 w-full border rounded-xl p-4 transition-colors ${
-                form.autoAccept ? 'border-primary/40 bg-primary/5' : 'border-outline-variant/40 bg-surface'
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${form.autoAccept ? 'bg-primary/15' : 'bg-surface-container'}`}>
-                <svg className={`w-4 h-4 ${form.autoAccept ? 'text-primary' : 'text-on-surface-variant'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <div className="text-left">
-                <p className="text-label-mono font-label-mono text-on-surface text-sm font-semibold">Auto-accept bookings</p>
-                <p className="text-caption font-caption text-on-surface-variant">
-                  {form.autoAccept ? 'Booking accepted instantly' : 'You manually review each request'}
-                </p>
-              </div>
-              <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.autoAccept ? 'bg-primary' : 'bg-outline-variant'}`}>
-                <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.autoAccept ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
-              </div>
-            </button>
-          </div>
-
-          {/* Contract required: hide for merchandise */}
-          {form.productType !== 'merchandise' && (
-            <div>
-              <p className="text-label-mono font-label-mono text-on-surface text-sm mb-2">Contract</p>
-              <button
-                type="button"
-                onClick={() => update('contractRequired', !form.contractRequired)}
-                className={`flex items-center gap-3 w-full border rounded-xl p-4 transition-colors ${
-                  form.contractRequired ? 'border-primary/40 bg-primary/5' : 'border-outline-variant/40 bg-surface'
-                }`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${form.contractRequired ? 'bg-primary/15' : 'bg-surface-container'}`}>
-                  <svg className={`w-4 h-4 ${form.contractRequired ? 'text-primary' : 'text-on-surface-variant'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <p className="text-label-mono font-label-mono text-on-surface text-sm font-semibold">
-                    {form.contractRequired ? 'Contract required' : 'No contract'}
-                  </p>
-                  <p className="text-caption font-caption text-on-surface-variant">
-                    {form.contractRequired
-                      ? 'Both parties sign before booking is locked in'
-                      : 'Booking locks in immediately after acceptance'}
-                  </p>
-                </div>
-                <div className={`ml-auto w-10 h-6 rounded-full transition-colors shrink-0 ${form.contractRequired ? 'bg-primary' : 'bg-outline-variant'}`}>
-                  <span className={`block w-5 h-5 bg-white rounded-full shadow-sm mt-0.5 transition-transform ${form.contractRequired ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
-                </div>
-              </button>
-            </div>
-          )}
-
-          {error && <p className="text-error text-sm">{error}</p>}
-        </div>
-
-        <div className="p-6 border-t border-outline-variant/30">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full bg-primary text-on-primary font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            {saving ? 'Saving…' : editing ? 'Save changes' : 'Add package'}
-          </button>
-        </div>
+    <div className="bg-surface border border-outline-variant/30 rounded-xl p-4 flex flex-col">
+      <div className="flex items-center gap-2 mb-1 flex-wrap">
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+          {card.artForm}
+        </span>
+        {card.artistSlug && (
+          <Link href={`/${card.artistSlug}`} className="text-caption font-caption text-on-surface-variant hover:text-primary hover:underline">
+            {card.artistName}
+          </Link>
+        )}
       </div>
-    </>
+      <h4 className="text-label-mono font-label-mono text-on-surface font-semibold">{card.packageName}</h4>
+      {card.description && (
+        <p className="text-caption font-caption text-on-surface-variant mt-1 line-clamp-2">{card.description}</p>
+      )}
+      <div className="flex items-center gap-2 mt-2 mb-3">
+        {card.duration && (
+          <span className="bg-surface-container border border-outline-variant/30 text-on-surface-variant text-xs px-2 py-0.5 rounded-full">
+            {card.duration}
+          </span>
+        )}
+        <span className="text-label-mono font-label-mono text-on-surface font-bold text-sm">
+          {formatPrice(card.price, card.currency)}
+        </span>
+      </div>
+      <button
+        onClick={onUse}
+        className="mt-auto min-h-[44px] text-sm font-semibold rounded-lg border border-primary/40 text-primary hover:bg-primary/5 transition-colors"
+      >
+        Use as example
+      </button>
+    </div>
+  );
+}
+
+// Small preview card used when there aren't enough live examples (template fallback).
+function TemplatePreviewCard({ tpl, onUse }: { tpl: PackageTemplate; onUse: () => void }) {
+  return (
+    <div className="bg-surface border border-outline-variant/30 rounded-xl p-4 flex flex-col">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-secondary bg-secondary-container/40 px-2 py-0.5 rounded-full">
+          Template
+        </span>
+      </div>
+      <h4 className="text-label-mono font-label-mono text-on-surface font-semibold">{tpl.name}</h4>
+      <p className="text-caption font-caption text-on-surface-variant mt-1 line-clamp-2">{tpl.description}</p>
+      <div className="flex items-center gap-2 mt-2 mb-3">
+        <span className="bg-surface-container border border-outline-variant/30 text-on-surface-variant text-xs px-2 py-0.5 rounded-full">
+          {tpl.duration}
+        </span>
+      </div>
+      <button
+        onClick={onUse}
+        className="mt-auto min-h-[44px] text-sm font-semibold rounded-lg border border-primary/40 text-primary hover:bg-primary/5 transition-colors"
+      >
+        Use as template
+      </button>
+    </div>
   );
 }
 
 export function PackagesClient({
   initialPackages,
   artist,
+  inspiration = [],
+  initialPrefill = null,
+  openDrawer = false,
 }: {
   initialPackages: Package[];
   artist: any;
+  inspiration?: InspirationCard[];
+  initialPrefill?: PackagePrefill | null;
+  openDrawer?: boolean;
 }) {
   const artistSlug = artist.slug;
+  const artForm: string | null = Array.isArray(artist.art_forms) ? artist.art_forms[0] ?? null : null;
+
   const [packages, setPackages] = useState<Package[]>(initialPackages);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(!!openDrawer);
   const [editing, setEditing] = useState<Package | null>(null);
+  const [activePrefill, setActivePrefill] = useState<FormState | null>(initialPrefill?.form ?? null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [drawerSeq, setDrawerSeq] = useState(0);
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
-  function openAdd() {
+  function openAdd(opts?: { picker?: boolean; prefill?: FormState | null }) {
     setEditing(null);
+    setActivePrefill(opts?.prefill ?? null);
+    setPickerOpen(!!opts?.picker);
+    setDrawerSeq((n) => n + 1);
     setDrawerOpen(true);
   }
 
   function openEdit(pkg: Package) {
     setEditing(pkg);
+    setActivePrefill(null);
+    setPickerOpen(false);
+    setDrawerSeq((n) => n + 1);
     setDrawerOpen(true);
   }
 
   function closeDrawer() {
     setDrawerOpen(false);
     setEditing(null);
+    setActivePrefill(null);
+    setPickerOpen(false);
   }
 
   function handleSaved(pkg: Package) {
@@ -538,13 +300,19 @@ export function PackagesClient({
     await fetch(`/api/packages/${id}`, { method: 'DELETE' });
   }
 
+  const showInspirationFallback = inspiration.length < INLINE_MIN;
+  const fallbackTemplates = getTemplatesForArtForm(artForm).slice(0, 3);
+  const allTemplates = getTemplatesForArtForm(artForm);
+  const previewCards = inspiration.slice(0, 3);
+  const [templateGridOpen, setTemplateGridOpen] = useState(false);
+
   return (
     <>
       {/* Add button + rate card */}
       <div className="flex items-center justify-between mb-6">
         <div />
         <button
-          onClick={openAdd}
+          onClick={() => openAdd()}
           className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-label-mono font-label-mono font-semibold hover:opacity-90 transition-opacity"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -555,30 +323,170 @@ export function PackagesClient({
       </div>
 
       {packages.length === 0 ? (
-        <div className="bg-surface border border-outline-variant/30 border-dashed rounded-xl p-12 text-center">
-          <p className="text-on-surface-variant text-body-md font-body-md mb-2">No packages yet.</p>
-          <p className="text-caption font-caption text-on-surface-variant mb-4">
-            Add your first package to start getting booked.
-          </p>
-          <button
-            onClick={openAdd}
-            className="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-label-mono font-label-mono font-semibold hover:opacity-90"
-          >
-            + Add package
-          </button>
+        <div className="bg-surface border border-outline-variant/30 border-dashed rounded-xl p-8 md:p-12">
+          <div className="text-center">
+            <p className="text-on-surface-variant text-body-md font-body-md mb-2">No packages yet.</p>
+            <p className="text-caption font-caption text-on-surface-variant mb-6">
+              Add your first package to start getting booked.
+            </p>
+
+            {/* Two CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+              <button
+                onClick={() => setTemplateGridOpen((o) => !o)}
+                className="w-full sm:w-auto min-h-[44px] bg-primary text-on-primary px-5 py-2.5 rounded-xl text-label-mono font-label-mono font-semibold hover:opacity-90 flex items-center justify-center gap-2 transition-all"
+              >
+                Start with a template
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${templateGridOpen ? 'rotate-180' : ''}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <Link
+                href="/dashboard/packages/inspiration"
+                className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center border border-outline-variant/50 text-on-surface px-5 py-2.5 rounded-xl text-label-mono font-label-mono font-semibold hover:bg-surface-container transition-colors"
+              >
+                See how other artists do it
+              </Link>
+            </div>
+          </div>
+
+          {/* Template grid — expands inline when "Start with a template" is clicked */}
+          {templateGridOpen && (
+            <div className="mt-2 mb-8">
+              <p className="text-label-mono font-label-mono text-on-surface-variant text-xs uppercase tracking-wider mb-3 text-left">
+                Choose a template to start from
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {allTemplates.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setTemplateGridOpen(false);
+                      openAdd({ prefill: templateToFormState(t) });
+                    }}
+                    className="text-left rounded-xl border border-outline-variant/30 hover:border-primary hover:bg-primary/5 p-4 transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <span className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">{t.name}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full shrink-0">{t.duration}</span>
+                    </div>
+                    <p className="text-caption font-caption text-on-surface-variant line-clamp-2">{t.description}</p>
+                    <p className="text-xs text-primary mt-2 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Use this template →</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Inline preview: live examples or template fallback */}
+          {!templateGridOpen && (
+            <div className="text-left">
+              <p className="text-label-mono font-label-mono text-on-surface-variant text-xs uppercase tracking-wider mb-3">
+                {showInspirationFallback ? 'Template ideas' : 'How other artists package their work'}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {showInspirationFallback
+                  ? fallbackTemplates.map((t) => (
+                      <TemplatePreviewCard key={t.id} tpl={t} onUse={() => openAdd({ prefill: templateToFormState(t) })} />
+                    ))
+                  : previewCards.map((card) => (
+                      <InspirationPreviewCard
+                        key={card.packageId}
+                        card={card}
+                        onUse={() => openAdd({ prefill: inspirationToForm(card) })}
+                      />
+                    ))}
+              </div>
+              {!showInspirationFallback && (
+                <div className="mt-4 text-center">
+                  <Link href="/dashboard/packages/inspiration" className="text-primary text-label-mono font-label-mono text-sm hover:underline">
+                    See more examples →
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {packages.map((pkg) => (
-            <PackageCard
-              key={pkg.id}
-              pkg={pkg}
-              onEdit={openEdit}
-              onToggle={handleToggle}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {packages.map((pkg) => (
+              <PackageCard
+                key={pkg.id}
+                pkg={pkg}
+                onEdit={openEdit}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+
+          {/* Subdued templates + inspiration section for artists who already have packages */}
+          <div className="mt-6 border-t border-outline-variant/20 pt-5">
+            <button
+              onClick={() => setTemplateGridOpen((o) => !o)}
+              className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <svg
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${templateGridOpen ? 'rotate-180' : ''}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              Need more ideas? Browse templates &amp; examples
+            </button>
+
+            {templateGridOpen && (
+              <div className="mt-4">
+                {/* Template grid */}
+                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold mb-2">Templates</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
+                  {allTemplates.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setTemplateGridOpen(false);
+                        openAdd({ prefill: templateToFormState(t) });
+                      }}
+                      className="text-left rounded-xl border border-outline-variant/20 hover:border-primary/40 hover:bg-primary/5 p-3.5 transition-all group"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <span className="text-xs font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">{t.name}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded-full shrink-0">{t.duration}</span>
+                      </div>
+                      <p className="text-[11px] text-on-surface-variant line-clamp-2">{t.description}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Inspiration preview */}
+                {inspiration.length > 0 && (
+                  <>
+                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold mb-2">How other artists package their work</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                      {previewCards.map((card) => (
+                        <InspirationPreviewCard
+                          key={card.packageId}
+                          card={card}
+                          onUse={() => { setTemplateGridOpen(false); openAdd({ prefill: inspirationToForm(card) }); }}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+                <Link
+                  href="/dashboard/packages/inspiration"
+                  className="text-xs text-primary hover:underline"
+                >
+                  See all examples →
+                </Link>
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* Export rate card */}
@@ -597,9 +505,13 @@ export function PackagesClient({
       {/* Package drawer */}
       {drawerOpen && (
         <PackageDrawer
+          key={editing ? editing.id : `new-${drawerSeq}`}
           editing={editing}
           onClose={closeDrawer}
           artistSlug={artistSlug}
+          artForm={artForm}
+          prefill={activePrefill}
+          initialTemplatePickerOpen={pickerOpen}
           onSaved={handleSaved}
         />
       )}

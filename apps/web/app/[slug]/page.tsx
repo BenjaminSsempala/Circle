@@ -154,6 +154,7 @@ export default async function ArtistProfilePage({ params }: { params: { slug: st
                 profile_photo: artist.profile_photo ?? null,
                 social_links: (artist.social_links as Record<string, string>) ?? {},
                 account_email: artist.account_email,
+                art_forms: Array.isArray(artist.art_forms) ? artist.art_forms : null,
               }}
             />
           </div>
