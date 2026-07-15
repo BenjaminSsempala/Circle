@@ -102,7 +102,11 @@ export function extractHandleFromUrl(url: string, platform: string): string {
     if (platform === 'twitter') return path.split('/')[0].replace('@', '');
     if (platform === 'tiktok') return path.replace('@', '').split('/')[0];
     if (platform === 'linkedin') return path.replace('in/', '').replace('company/', '').split('/')[0];
-    if (platform === 'youtube') return path.replace('@', '').split('/')[0];
+    if (platform === 'youtube') {
+      // Patterns: /@handle  /c/name  /channel/UCxxxx  /user/name
+      const ytMatch = path.match(/^(?:channel\/|c\/|user\/|@?)(.+?)(?:\/|$)/);
+      return ytMatch ? ytMatch[1] : path;
+    }
     if (platform === 'spotify') return path.split('/').pop() ?? path;
     return path;
   } catch {
