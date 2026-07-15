@@ -2,8 +2,9 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { getFilterOptions } from '@/lib/data/art-forms';
 
-const ART_FORMS = ['All', 'Musician', 'Dancer', 'Poet', 'Visual Artist', 'Spoken Word', 'Actor', 'Videographer'];
+const ART_FORMS = ['All', ...getFilterOptions().map((e) => e.label)];
 
 export function FilterBar({ totalCount }: { totalCount: number }) {
   const router = useRouter();

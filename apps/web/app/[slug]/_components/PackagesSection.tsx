@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { BookingPanel } from '../../components/booking/BookingPanel';
+import { getTemplatesForArtForm } from '@/lib/data/package-templates';
+import { templateToFormState, type PackageFormState } from '@/lib/packages/prefill';
+import { PackageDrawer, type Package as DrawerPackage } from '@/app/components/packages/PackageDrawer';
 
 type ProductType = 'service' | 'digital' | 'merchandise';
 
@@ -29,103 +33,24 @@ type ArtistInfo = {
   profile_photo: string | null;
   social_links: Record<string, string>;
   account_email: string | null;
-};
-
-type PackageFormData = {
-  name: string;
-  description: string;
-  price: string;
-  duration: string;
-  logisticsInclusive: boolean;
-};
-
-const BLANK_FORM: PackageFormData = {
-  name: '', description: '', price: '', duration: '1 hour', logisticsInclusive: false,
+  art_forms?: string[] | null;
 };
 
 function formatPrice(price: number, currency: string) {
   return `${currency} ${Number(price).toLocaleString()}`;
 }
 
-function PackageForm({
-  initial,
-  onSave,
-  onCancel,
-}: {
-  initial: PackageFormData;
-  onSave: (data: PackageFormData) => Promise<void>;
-  onCancel: () => void;
-}) {
-  const [form, setForm] = useState(initial);
-  const [saving, setSaving] = useState(false);
-
-  const set = (k: keyof PackageFormData, v: string | boolean) =>
-    setForm((p) => ({ ...p, [k]: v }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name || !form.price) return;
-    setSaving(true);
-    await onSave(form);
-    setSaving(false);
+/** Cast a local Package to the full DrawerPackage shape, supplying safe defaults for missing fields. */
+function fullPackageFromLocal(pkg: Package): DrawerPackage {
+  return {
+    ...pkg,
+    tier: 'standard',
+    is_active: true,
+    created_at: '',
+    product_type: pkg.product_type ?? 'service',
+    auto_accept: false,
+    contract_required: true,
   };
-
-  return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-primary/20 p-md flex flex-col gap-3 bg-surface-container-lowest">
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Package Name *</label>
-        <input value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="e.g. Signature Performance" className="w-full" required />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Price (UGX) *</label>
-          <input type="number" min="0" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="0" className="w-full" required />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Duration</label>
-          <select value={form.duration} onChange={(e) => set('duration', e.target.value)} className="w-full">
-            {['30 min', '1 hour', '2 hours', '4 hours', 'Full Day', 'Per Piece', 'Negotiable'].map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">What&apos;s included *</label>
-        <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} className="w-full resize-none" placeholder="e.g. Sound system, Stage setup, 2 Revisions" required />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Logistics</label>
-        <button
-          type="button"
-          onClick={() => set('logisticsInclusive', !form.logisticsInclusive)}
-          className="flex items-center gap-3 rounded-lg border border-outline-variant/40 px-3 py-2.5 hover:border-primary/40 transition-colors text-left"
-        >
-          <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${form.logisticsInclusive ? 'bg-primary/10' : 'bg-error/10'}`}>
-            {form.logisticsInclusive ? (
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-error" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-            )}
-          </span>
-          <span className="text-sm text-on-surface">Transport</span>
-          <span className="ml-auto text-xs text-on-surface-variant">{form.logisticsInclusive ? 'Included' : 'Not included'}</span>
-        </button>
-      </div>
-      <div className="flex gap-2 pt-1">
-        <button type="submit" disabled={saving || !form.name || !form.price} className="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold hover:opacity-90 disabled:opacity-50">
-          {saving ? 'Saving…' : 'Save package'}
-        </button>
-        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-on-surface-variant hover:text-primary transition-colors">
-          Cancel
-        </button>
-      </div>
-    </form>
-  );
 }
 
 function ReadonlyCard({ pkg, featured, isOwner, onEdit, onDelete, onBook }: {
@@ -210,45 +135,29 @@ export function PackagesSection({ packages: initial, isOwner, isLoggedIn, artist
   artist: ArtistInfo;
 }) {
   const [packages, setPackages] = useState(initial);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [addingNew, setAddingNew] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerEditing, setDrawerEditing] = useState<Package | null>(null);
+  const [drawerPrefill, setDrawerPrefill] = useState<PackageFormState | null>(null);
+  const [drawerPickerOpen, setDrawerPickerOpen] = useState(false);
   const [bookingPkg, setBookingPkg] = useState<Package | null>(null);
+  const [templateGridOpen, setTemplateGridOpen] = useState(false);
 
-  const handleAdd = async (form: PackageFormData) => {
-    const res = await fetch('/api/artists/packages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: form.name,
-        description: form.description,
-        price: Number(form.price),
-        currency: 'UGX',
-        duration: form.duration,
-        logisticsInclusive: form.logisticsInclusive,
-      }),
-    });
-    const { package: pkg } = await res.json();
-    if (pkg) setPackages((prev) => [...prev, pkg]);
-    setAddingNew(false);
-  };
+  const artForm = artist.art_forms?.[0] ?? null;
+  const allTemplates = getTemplatesForArtForm(artForm);
 
-  const handleUpdate = async (id: string, form: PackageFormData) => {
-    const res = await fetch(`/api/packages/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: form.name,
-        description: form.description,
-        price: Number(form.price),
-        currency: 'UGX',
-        duration: form.duration,
-        logisticsInclusive: form.logisticsInclusive,
-      }),
-    });
-    const { package: pkg } = await res.json();
-    if (pkg) setPackages((prev) => prev.map((p) => (p.id === id ? pkg : p)));
-    setEditingId(null);
-  };
+  function openDrawer() {
+    setDrawerEditing(null);
+    setDrawerPrefill(null);
+    setDrawerPickerOpen(false);
+    setDrawerOpen(true);
+  }
+
+  function openEdit(pkg: Package) {
+    setDrawerEditing(pkg);
+    setDrawerPrefill(null);
+    setDrawerPickerOpen(false);
+    setDrawerOpen(true);
+  }
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/packages/${id}`, { method: 'DELETE' });
@@ -260,8 +169,8 @@ export function PackagesSection({ packages: initial, isOwner, isLoggedIn, artist
       {(packages.length > 0 || isOwner) && (
         <div className="flex items-center justify-between">
           <h3 className="text-headline-md font-headline-md text-primary">Booking Packages</h3>
-          {isOwner && !addingNew && (
-            <button onClick={() => setAddingNew(true)} className="flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-80 transition-opacity">
+          {isOwner && (
+            <button onClick={openDrawer} className="flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-80 transition-opacity">
               <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
@@ -272,29 +181,64 @@ export function PackagesSection({ packages: initial, isOwner, isLoggedIn, artist
       )}
 
       <div className="flex flex-col gap-sm">
-        {packages.map((pkg, i) =>
-          editingId === pkg.id ? (
-            <PackageForm
-              key={pkg.id}
-              initial={{ name: pkg.name, description: pkg.description ?? '', price: String(pkg.price), duration: pkg.duration ?? '1 hour', logisticsInclusive: pkg.logistics_inclusive }}
-              onSave={(form) => handleUpdate(pkg.id, form)}
-              onCancel={() => setEditingId(null)}
-            />
-          ) : (
-            <ReadonlyCard
-              key={pkg.id}
-              pkg={pkg}
-              featured={i === 0}
-              isOwner={isOwner}
-              onEdit={() => setEditingId(pkg.id)}
-              onDelete={() => handleDelete(pkg.id)}
-              onBook={() => setBookingPkg(pkg)}
-            />
-          )
-        )}
+        {packages.map((pkg, i) => (
+          <ReadonlyCard
+            key={pkg.id}
+            pkg={pkg}
+            featured={i === 0}
+            isOwner={isOwner}
+            onEdit={() => openEdit(pkg)}
+            onDelete={() => handleDelete(pkg.id)}
+            onBook={() => setBookingPkg(pkg)}
+          />
+        ))}
 
-        {addingNew && (
-          <PackageForm initial={BLANK_FORM} onSave={handleAdd} onCancel={() => setAddingNew(false)} />
+        {/* Subdued templates section for owners who already have packages */}
+        {packages.length > 0 && isOwner && (
+          <div className="mt-2 border-t border-outline-variant/20 pt-4">
+            <button
+              onClick={() => setTemplateGridOpen((o) => !o)}
+              className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <svg
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${templateGridOpen ? 'rotate-180' : ''}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              Need more ideas? Browse templates
+            </button>
+
+            {templateGridOpen && (
+              <div className="mt-3 flex flex-col gap-2">
+                {allTemplates.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setDrawerPrefill(templateToFormState(t));
+                      setDrawerEditing(null);
+                      setDrawerPickerOpen(false);
+                      setTemplateGridOpen(false);
+                      setDrawerOpen(true);
+                    }}
+                    className="text-left rounded-xl border border-outline-variant/20 hover:border-primary/40 hover:bg-primary/5 px-3 py-2.5 transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-xs font-semibold text-on-surface group-hover:text-primary transition-colors">{t.name}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-on-surface-variant shrink-0">{t.duration}</span>
+                    </div>
+                    <p className="text-[11px] text-on-surface-variant line-clamp-2 mt-0.5">{t.description}</p>
+                  </button>
+                ))}
+                <Link
+                  href="/dashboard/packages/inspiration"
+                  className="text-xs text-primary hover:underline mt-1"
+                >
+                  See how other artists do it →
+                </Link>
+              </div>
+            )}
+          </div>
         )}
 
         {packages.length === 0 && !isOwner && (
@@ -303,15 +247,92 @@ export function PackagesSection({ packages: initial, isOwner, isLoggedIn, artist
           </div>
         )}
 
-        {packages.length === 0 && isOwner && !addingNew && (
-          <button onClick={() => setAddingNew(true)} className="rounded-xl border border-dashed border-outline-variant p-md flex flex-col items-center gap-2 hover:border-primary hover:text-primary text-on-surface-variant transition-colors">
-            <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            <span className="text-sm font-medium">Add your first package</span>
-          </button>
+        {packages.length === 0 && isOwner && (
+          <div className="rounded-xl border border-dashed border-outline-variant/40 p-md flex flex-col items-center gap-3 text-center">
+            <p className="text-sm text-on-surface-variant">No packages yet. Add one to start getting booked.</p>
+
+            <div className="flex flex-col gap-2 w-full">
+              <button
+                onClick={() => setTemplateGridOpen((o) => !o)}
+                className="w-full min-h-[44px] bg-primary text-on-primary rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2"
+              >
+                Start with a template
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${templateGridOpen ? 'rotate-180' : ''}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <Link
+                href="/dashboard/packages/inspiration"
+                className="w-full min-h-[44px] inline-flex items-center justify-center rounded-lg border border-outline-variant/50 text-on-surface text-sm font-semibold hover:bg-surface-container transition-colors"
+              >
+                See how other artists do it
+              </Link>
+            </div>
+
+            {/* Inline template grid */}
+            {templateGridOpen && (
+              <div className="w-full text-left mt-1">
+                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold mb-2">
+                  Choose a template
+                </p>
+                <div className="flex flex-col gap-2">
+                  {allTemplates.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setDrawerPrefill(templateToFormState(t));
+                        setDrawerEditing(null);
+                        setDrawerPickerOpen(false);
+                        setTemplateGridOpen(false);
+                        setDrawerOpen(true);
+                      }}
+                      className="text-left rounded-xl border border-outline-variant/30 hover:border-primary hover:bg-primary/5 px-3 py-2.5 transition-all group"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">{t.name}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-on-surface-variant shrink-0">{t.duration}</span>
+                      </div>
+                      <p className="text-[11px] text-on-surface-variant line-clamp-2 mt-0.5">{t.description}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Link
+              href="/dashboard/packages"
+              className="text-xs text-on-surface-variant hover:text-primary transition-colors"
+            >
+              Go to full package manager →
+            </Link>
+          </div>
         )}
       </div>
+
+      {drawerOpen && (
+        <PackageDrawer
+          key={drawerEditing ? drawerEditing.id : 'new'}
+          editing={drawerEditing ? fullPackageFromLocal(drawerEditing) : null}
+          artistSlug={artist.slug}
+          artForm={artForm}
+          prefill={drawerPrefill}
+          initialTemplatePickerOpen={drawerPickerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onSaved={(pkg) => {
+            setPackages((prev) => {
+              const idx = prev.findIndex((p) => p.id === pkg.id);
+              if (idx === -1) return [...prev, pkg];
+              const next = [...prev];
+              next[idx] = pkg;
+              return next;
+            });
+            setDrawerOpen(false);
+          }}
+        />
+      )}
 
       {bookingPkg && (
         <BookingPanel

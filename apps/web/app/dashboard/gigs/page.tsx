@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { ApplyToGigPanel } from '@/app/components/gigs/ApplyToGigPanel';
 import type { GigPost } from '@/lib/services/gigs';
+import { getFilterOptions } from '@/lib/data/art-forms';
 
 type GigWithApplied = GigPost & { alreadyApplied: boolean };
 
-const DISCIPLINES = ['All', 'Musician', 'Dancer', 'Poet', 'Visual Artist', 'Spoken Word', 'Actor', 'Videographer'];
+const DISCIPLINES = ['All', ...getFilterOptions().map((e) => e.label)];
 
 function GigCard({
   gig,

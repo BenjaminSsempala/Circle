@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import type { GigPost } from '@/lib/services/gigs';
+import { getFilterOptions } from '@/lib/data/art-forms';
 
-const DISCIPLINES = ['Musician', 'Dancer', 'Poet', 'Visual Artist', 'Spoken Word', 'Actor', 'Videographer'];
+const DISCIPLINES = getFilterOptions().map((e) => e.label);
 const SLOT_DURATIONS = ['30 min', '45 min', '1 hr', '2 hrs', 'Half day', 'Full day'];
 const CURRENCIES = ['UGX', 'KES', 'TZS', 'USD', 'GBP'];
 

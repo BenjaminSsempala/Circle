@@ -9,11 +9,12 @@ Security:
 
 Tech-Debt
 1. Email resending not working, wrong token error, check forgot password
-4. Create simple onboarding flow for users if they havent visited a page before
+4. Create simple incremental onboarding flow for users if they havent visited a page before
 
 Auth:
 - Cookie error still present?
 - Confirmation email is ugly ux
+- Insonsistency for display name across db tables, need a function that updates regularly
 
 Profile page    
 - Reintroduce QR codes, on profile as sharable, on epk and rate card too.
@@ -31,6 +32,9 @@ Export
 
 Packages:
 - Add an info page that shows what types of creative packages we can add, 
+- Examples of packages? what packages are?
+AI chatbot
+The "Package Wizard" for Artists: Many independent creatives struggle to write professional, marketing-focused descriptions for their services. You can build a tool where an artist inputs: "I sing acoustic songs at weddings for 1 hour," and Groq instantly expands it into a polished, high-converting package structure with bullet points, best-for scenarios, and clear deliverables.
 
 Deployment
 - Set up staging properly
@@ -39,9 +43,6 @@ Audience
 - Add phonenumber to audience
 
 Wandia Feedback:
-- Make legalname optional
-- Hidde profiles at will for artists
-- Examples of packages? what packages are?
 - On artist profile, change currency to auto?
 - Adding payment details? Do we add them?
 - Upcoming Blackouts? Blockades? Unavailable Days?
@@ -49,12 +50,14 @@ Wandia Feedback:
 - What would draw the artist in? What features? -payment at the click of a button, how do i get paid?
 - Comments on artists work/ packages/services... Rate the artist. Lice feedback
 - Font change the font to less calculatorly
-- Tutorial of sorts- feaure by feature
+- Tutorial of sorts- feaure by feature/l
 - View artists link on dashboard
+- Delete profile
+
 
 AmaliTech
 - Add AI chatbot or something that guides the users on packages, platform etc
-The "Package Wizard" for Artists: Many independent creatives struggle to write professional, marketing-focused descriptions for their services. You can build a tool where an artist inputs: "I sing acoustic songs at weddings for 1 hour," and Groq instantly expands it into a polished, high-converting package structure with bullet points, best-for scenarios, and clear deliverables.
+
 
 Smart Pricing Assistant: Groq can parse an artist’s category, location, and experience level to suggest baseline competitive tiers. For example, it can advise: "Based on Spoken Word averages in Kampala, your standard 30-minute set is priced perfectly, but you could offer an Extended tier at UGX 250,000."
 
