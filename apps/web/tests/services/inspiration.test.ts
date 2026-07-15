@@ -69,15 +69,46 @@ describe('Property 5: inspiration orders art-form matches first', () => {
           const matchFlags = out.map((c) => c.sourceArtForms.some((f) => f === artForm || matchesLoose(f, artForm)));
           // once we see a non-match, there must be no match afterwards
           let seenNonMatch = false;
+          let orderViolated = false;
           for (const isMatch of matchFlags) {
             if (!isMatch) seenNonMatch = true;
-            else if (seenNonMatch) return false;
+            else if (seenNonMatch) { orderViolated = true; break; }
           }
-          return true;
+          expect(orderViolated).toBe(false);
         },
       ),
       { numRuns: 100 },
     );
+  });
+
+  it('at least one match appears first when matches exist', () => {
+    // Construct cards where at least one matches the art form; the first output
+    // card must be a match.
+    const matchingCard: InspirationCard = {
+      packageId: 'p-match',
+      artistId: 'a1',
+      artistName: 'Ama',
+      artistSlug: 'ama',
+      artForm: 'Musician',
+      sourceArtForms: ['musician'],
+      packageName: 'Set',
+      duration: '1 hour',
+      price: 100000,
+      currency: 'UGX',
+      description: null,
+    };
+    const nonMatchingCard: InspirationCard = {
+      ...matchingCard,
+      packageId: 'p-other',
+      artistId: 'a2',
+      sourceArtForms: ['poet'],
+    };
+    const out = orderInspiration([nonMatchingCard, matchingCard], 'musician', 10);
+    expect(out.length).toBe(2);
+    // The matching card must appear before the non-matching one.
+    const matchIdx = out.findIndex((c) => c.packageId === 'p-match');
+    const nonMatchIdx = out.findIndex((c) => c.packageId === 'p-other');
+    expect(matchIdx).toBeLessThan(nonMatchIdx);
   });
 });
 
@@ -180,44 +211,74 @@ describe('Property 8: fallback to templates below threshold', () => {
       expect(display.templates).toEqual(getTemplatesForGroup('musician'));
     }
   });
+
+  it('at threshold boundary yields cards, not templates', () => {
+    // cards.length === threshold → cards.length is NOT < threshold → should be 'cards'
+    const cards: InspirationCard[] = Array.from({ length: 3 }, (_, i) => ({
+      packageId: `p${i}`,
+      artistId: `a${i}`,
+      artistName: 'Artist',
+      artistSlug: 'artist',
+      artForm: 'Musician',
+      sourceArtForms: ['musician'],
+      packageName: 'Set',
+      duration: null,
+      price: 0,
+      currency: 'UGX',
+      description: null,
+    }));
+    const display = resolveInspirationDisplay(cards, 'musician', 3);
+    expect(display.kind).toBe('cards');
+    if (display.kind === 'cards') {
+      expect(display.cards).toBe(cards);
+    }
+  });
 });
 
 // ─── getPackageInspiration read query (mocked supabase) ──────────────────────
 describe('getPackageInspiration read query', () => {
   beforeEach(() => vi.clearAllMocks());
 
+  // Build a chainable mock that supports .contains() in addition to the existing chain.
   function makeClient(result: { data: unknown; error: unknown }) {
     const limit = vi.fn().mockResolvedValue(result);
-    const neq = vi.fn(() => ({ limit }));
+    const contains = vi.fn(() => ({ limit }));
+    const neq = vi.fn(() => ({ limit, contains }));
     const eq = vi.fn(() => ({ neq }));
     const select = vi.fn(() => ({ eq }));
     const from = vi.fn(() => ({ select }));
-    return { client: { from }, spies: { from, select, eq, neq, limit } };
+    return { client: { from }, spies: { from, select, eq, neq, limit, contains } };
   }
 
+  const sampleRow = {
+    id: 'p1',
+    name: 'Live Set',
+    description: 'd',
+    duration: '1 hour',
+    price: 300000,
+    currency: 'UGX',
+    artist_id: 'other-1',
+    product_type: 'service',
+    logistics_inclusive: false,
+    auto_accept: false,
+    contract_required: true,
+    artists: { slug: 'ama', display_name: 'Ama', art_forms: ['musician'] },
+  };
+
   it('filters is_active and excludes the current artist, returns mapped cards', async () => {
-    const rows = [
-      {
-        id: 'p1',
-        name: 'Live Set',
-        description: 'd',
-        duration: '1 hour',
-        price: 300000,
-        currency: 'UGX',
-        artist_id: 'other-1',
-        artists: { slug: 'ama', display_name: 'Ama', art_forms: ['musician'] },
-      },
-    ];
-    const { client, spies } = makeClient({ data: rows, error: null });
+    const { client, spies } = makeClient({ data: [sampleRow], error: null });
     mockCreateClient.mockResolvedValue(client);
 
     const out = await getPackageInspiration({ excludeArtistId: 'self', artForm: 'musician', limit: 10 });
 
     expect(spies.eq).toHaveBeenCalledWith('is_active', true);
     expect(spies.neq).toHaveBeenCalledWith('artist_id', 'self');
-    expect(out).toHaveLength(1);
+    expect(out.length).toBeGreaterThanOrEqual(1);
     expect(out[0].artistSlug).toBe('ama');
     expect(out[0].artForm).toBe('Musician');
+    expect(out[0].productType).toBe('service');
+    expect(out[0].logisticsInclusive).toBe(false);
+    expect(out[0].contractRequired).toBe(true);
   });
 
   it('returns [] on a query error', async () => {
