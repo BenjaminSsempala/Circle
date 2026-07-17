@@ -207,7 +207,7 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
             <div className="w-4 h-4 rounded bg-error/10 flex items-center justify-center">
               <span className="text-error text-[8px]">✕</span>
             </div>
-            <span className="text-caption font-caption text-on-surface-variant">Unavailable (Blackout)</span>
+            <span className="text-caption font-caption text-on-surface-variant">Unavailable</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-primary" />
@@ -236,14 +236,14 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
         {/* Upcoming blackouts */}
         <div className="bg-surface border border-outline-variant/30 rounded-2xl p-5">
           <h3 className="text-label-mono font-label-mono text-primary font-semibold text-sm mb-1">
-            Upcoming Blackouts
+            Unavailable Days
           </h3>
           <p className="text-caption font-caption text-on-surface-variant mb-4">
             Click any future date on the calendar to block or unblock it.
           </p>
 
           {upcomingBlackouts.length === 0 ? (
-            <p className="text-caption font-caption text-on-surface-variant">No blackout dates set.</p>
+            <p className="text-caption font-caption text-on-surface-variant">No unavailable dates set.</p>
           ) : (
             <div className="flex flex-col gap-3">
               {upcomingBlackouts.map((iso) => (
@@ -262,7 +262,7 @@ export function AvailabilityClient({ artistSlug, initialBlackouts, bookedDates }
                   <button
                     onClick={() => removeBlackout(iso)}
                     className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors"
-                    title="Remove blackout"
+                    title="Remove Unavailability"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

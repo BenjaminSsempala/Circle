@@ -27,12 +27,9 @@ Export
 - EPK 2 pages has a bug and needs design work
 - Design rate card also needs work, 2 pages and 1, stats are missing
 - Image and pdf are completely different. We can allow differnt styles of export
-- Yt is broken on profile card export, shows just channel instead of channel name
 
 
 Packages:
-- Add an info page that shows what types of creative packages we can add, 
-- Examples of packages? what packages are?
 AI chatbot
 The "Package Wizard" for Artists: Many independent creatives struggle to write professional, marketing-focused descriptions for their services. You can build a tool where an artist inputs: "I sing acoustic songs at weddings for 1 hour," and Groq instantly expands it into a polished, high-converting package structure with bullet points, best-for scenarios, and clear deliverables.
 

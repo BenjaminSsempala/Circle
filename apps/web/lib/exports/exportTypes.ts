@@ -102,7 +102,19 @@ export function extractHandleFromUrl(url: string, platform: string): string {
     if (platform === 'twitter') return path.split('/')[0].replace('@', '');
     if (platform === 'tiktok') return path.replace('@', '').split('/')[0];
     if (platform === 'linkedin') return path.replace('in/', '').replace('company/', '').split('/')[0];
-    if (platform === 'youtube') return path.replace('@', '').split('/')[0];
+    if (platform === 'youtube') {
+      // Preserve route prefix for /channel/, /user/, /c/ so ExportModal can
+      // build a valid canonical URL (https://youtube.com/channel/UCxxxx etc.).
+      // @-style handles are stored bare; the display layer re-adds the @.
+      if (/^channel\//.test(path)) return path.split('/').slice(0, 2).join('/'); // channel/UCxxxx
+      if (/^user\//.test(path))    return path.split('/').slice(0, 2).join('/'); // user/name
+      if (/^c\//.test(path))       return path.split('/').slice(0, 2).join('/'); // c/name
+      // /@handle  (strip leading @)
+      const atMatch = path.match(/^@(.+?)(?:\/|$)/);
+      if (atMatch) return atMatch[1];
+      // Bare path segment fallback
+      return path.split('/')[0];
+    }
     if (platform === 'spotify') return path.split('/').pop() ?? path;
     return path;
   } catch {
