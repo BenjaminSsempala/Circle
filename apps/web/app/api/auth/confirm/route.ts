@@ -5,9 +5,11 @@ import { cookies } from 'next/headers';
 import { logger, withAxiom } from '@/lib/axiom/server';
 
 // GET /api/auth/confirm
-// Handles email confirmation from Supabase email link
-// Supabase sends: ?code=... (pkce code)
-// This exchanges the code for a session, then redirects to role selection
+// Handles email confirmation from Supabase email link.
+// Supabase sends: ?code=... (PKCE code)
+// This exchanges the code for a session to verify the email, then signs the
+// user back out and redirects them to the login page with ?confirmed=true.
+// The login page shows a "✓ Email confirmed!" banner when that param is present.
 export const GET = withAxiom(async (request: NextRequest) => {
   const context = { endpoint: '/api/auth/confirm', method: 'GET' };
   const { searchParams, origin } = new URL(request.url);
@@ -28,7 +30,6 @@ export const GET = withAxiom(async (request: NextRequest) => {
   }
 
   const cookieStore = await cookies();
-  const cookiesToSetList: { name: string; value: string; options: any }[] = [];
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,69 +42,36 @@ export const GET = withAxiom(async (request: NextRequest) => {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options);
-            cookiesToSetList.push({ name, value, options });
           });
         },
       },
     },
   );
-  
-  // Exchange code for session (same as OAuth callback)
+
+  // Exchange code for session — this is what marks the email as confirmed in Supabase.
   logger.info('Exchanging email confirmation code for user session', { ...context });
   const { data: { session }, error: exchangeError } =
     await supabase.auth.exchangeCodeForSession(code);
 
   if (exchangeError || !session) {
-    logger.error('Email confirmation token exchange failed', { 
-      ...context, 
-      error: exchangeError?.message ?? 'Session generation failed' 
+    logger.error('Email confirmation token exchange failed', {
+      ...context,
+      error: exchangeError?.message ?? 'Session generation failed',
     });
     return NextResponse.redirect(
       `${origin}/auth/login?error=${encodeURIComponent(exchangeError?.message ?? 'unknown')}`,
     );
   }
 
-  // Email is now confirmed: check profile status
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('role, onboarding_complete')
-    .eq('id', session.user.id)
-    .single();
-
-  if (profileError) {
-    logger.error('Profile fetch failed during email confirmation routing', { 
-      ...context, 
-      userId: session.user.id, 
-      error: profileError.message 
-    });
-  }
-
-  // Determine redirect destination
-  let redirectPath = '/auth/signup?step=role'; // Default: no role yet
-
-  if (profile?.role && profile?.onboarding_complete) {
-    // Already fully onboarded
-    redirectPath = profile.role === 'audience' ? '/discover' : '/dashboard';
-  } else if (profile?.role && !profile?.onboarding_complete) {
-    redirectPath = profile.role === 'audience' ? '/discover' : '/onboarding/artist';
-  }
-
-  logger.info('Email confirmed and user routing evaluated', {
+  logger.info('Email confirmed — signing out and redirecting to login', {
     ...context,
     userId: session.user.id,
-    hasRole: !!profile?.role,
-    role: profile?.role ?? null,
-    onboardingComplete: profile?.onboarding_complete ?? false,
-    destination: redirectPath
   });
 
-  // Create response and ensure session cookies are included
-  const response = NextResponse.redirect(`${origin}${redirectPath}`);
+  // Sign the user out — confirmation is a verification step only.
+  // The user must log in explicitly. The login page shows a
+  // "✓ Email confirmed!" banner when ?confirmed=true is present.
+  await supabase.auth.signOut();
 
-  // Set cookies with their original options (preserving httpOnly: false for the client SDK)
-  cookiesToSetList.forEach(({ name, value, options }) => {
-    response.cookies.set(name, value, options);
-  });
-
-  return response;
+  return NextResponse.redirect(`${origin}/auth/login?confirmed=true`);
 });

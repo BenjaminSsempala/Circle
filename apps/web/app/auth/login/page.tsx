@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(
     searchParams.get('error') ? 'There was a problem signing in. Please try again.' : null,
   );
+  const confirmed = searchParams.get('confirmed') === 'true';
 
   async function handleGoogleLogin() {
     setGoogleLoading(true);
@@ -76,6 +77,11 @@ export default function LoginPage() {
 
   return (
     <AuthLayout title="Welcome Back" subtitle="Log in to your Engero profile." showImage>
+      {confirmed && (
+        <div className="rounded-xl bg-primary/10 border border-primary/30 px-4 py-3 text-sm text-primary font-medium mb-1">
+          ✓ Email confirmed! You can now log in.
+        </div>
+      )}
       {error && <ErrorBanner message={error} />}
 
       {/* Google: outside the form so it never triggers form validation */}

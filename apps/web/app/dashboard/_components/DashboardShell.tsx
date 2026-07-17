@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 const NAV = [
@@ -79,7 +79,6 @@ interface Props {
 
 export function DashboardShell({ artistName, artistSlug, artistPhoto, children }: Props) {
   const pathname = usePathname();
-  const router = useRouter();
 
   function isActive(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard';
@@ -89,9 +88,7 @@ export function DashboardShell({ artistName, artistSlug, artistPhoto, children }
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.refresh(); // Refresh the page to update the auth state
     window.location.href = '/auth/login';
-    // router.push('/auth/login');
   }
 
   return (
