@@ -35,7 +35,7 @@ export const POST = withAxiom(async (req: NextRequest) => {
     const { error: resendError } = await supabase.auth.resend({
       type: 'signup',
       email: body.email,
-      options: { emailRedirectTo: `${siteUrl}/api/auth/confirm` },
+      options: { emailRedirectTo: `${siteUrl}/auth/login?confirmed=true` },
     });
 
     if (!resendError) {

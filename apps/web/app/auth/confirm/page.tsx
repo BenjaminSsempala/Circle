@@ -23,7 +23,7 @@ export default function AuthConfirmPage() {
           setStatus('error');
           return;
         }
-        return redirect(supabase);
+        return afterConfirm(supabase);
       }
 
       // ── Implicit flow: #access_token in the URL hash ──────────────────
@@ -35,7 +35,7 @@ export default function AuthConfirmPage() {
         return;
       }
       if (session) {
-        return redirect(supabase);
+        return afterConfirm(supabase);
       }
 
       // Neither: something went wrong
@@ -43,28 +43,10 @@ export default function AuthConfirmPage() {
       setStatus('error');
     }
 
-    async function redirect(supabase: ReturnType<typeof createClient>) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setErrorMsg('Could not load session.'); setStatus('error'); return; }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role, onboarding_complete')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      const role = profile?.role ?? null;
-      const done = profile?.onboarding_complete ?? false;
-
-      if (!role) {
-        router.replace('/auth/signup?step=role');
-      } else if (role === 'audience') {
-        router.replace('/discover');
-      } else if (done) {
-        router.replace('/dashboard');
-      } else {
-        router.replace('/onboarding/artist');
-      }
+    async function afterConfirm(supabase: ReturnType<typeof createClient>) {
+      // Sign out — we confirmed the email only; the user must log in explicitly.
+      await supabase.auth.signOut();
+      router.replace('/auth/login?confirmed=true');
     }
 
     handleConfirm();
